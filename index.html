@@ -236,7 +236,16 @@ function addDays(d,n){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate()+n)
 function today(){var n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())}
 function nthOfMonth(d){return Math.floor((d.getDate()-1)/7)+1}
 function isLastOfMonth(d){return addDays(d,7).getMonth()!==d.getMonth()}
-function occursOn(ev,d){
+function isOver(ev,d){
+  if(iso(d)!==iso(today())||!ev.start) return false;
+  if(ev.endDate&&ev.endDate>iso(d)) return false;
+  var m=function(t){var p=t.split(":");return (+p[0])*60+(+p[1])};
+  var st=m(ev.start), en=ev.end?m(ev.end):st+60;
+  if(en<=st) return false;
+  var n=new Date(); return n.getHours()*60+n.getMinutes()>=en;
+}
+function occursOn(ev,d){return occursOnDay(ev,d)&&!isOver(ev,d)}
+function occursOnDay(ev,d){
   var s=iso(d);
   if(!ev.rule){ var end=ev.endDate||ev.date; return s>=ev.date && s<=end; }
   if(s<ev.date) return false;
@@ -613,6 +622,8 @@ function save(events,onErr){
 
 /* ---------- start ---------- */
 shell(); render();
+document.addEventListener("visibilitychange",function(){if(!document.hidden)render()});
+setInterval(function(){if(!document.hidden&&!document.querySelector(".detail"))render()},300000);
 /* editing removed: read-only page */
 })();
 </script>
