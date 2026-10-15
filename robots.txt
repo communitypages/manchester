@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://communitypages.org.uk/sitemap.xml
