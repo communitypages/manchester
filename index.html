@@ -169,6 +169,10 @@ html,body{background:#fff!important;color:#000!important}
 .p-head{border-bottom:1.5px solid #000;padding-bottom:3px;margin-bottom:4px}
 .p-head h1{font-size:15pt;margin:0;display:inline}
 .p-head p{margin:1px 0 0;font-size:8.5pt}
+.p-head{overflow:hidden}
+.p-qr{float:right;width:19mm;height:19mm;margin-left:3mm}
+.p-contact{float:right;text-align:right;font-weight:700;font-size:9.5pt;line-height:1.3;margin-top:1mm}
+.p-contact small{font-weight:400;font-size:7.5pt}
 .p-cols{column-count:2;column-gap:6mm}
 .p-day{font-family:var(--display);font-size:10.5pt;margin:5px 0 1px;padding-bottom:1px;border-bottom:1px solid #000;break-after:avoid}
 .p-ev{padding:1.5px 0;border-bottom:.4pt solid #ccc;break-inside:avoid}
@@ -425,9 +429,9 @@ function printList(){
   if(S.q)f.push('search: “'+S.q+'”');
   var t=today();
   document.getElementById("printout").innerHTML=
-   '<div class="p-head"><h1>Community Pages</h1><p><b>'+esc(f.join(" · "))+'</b> · '+total+' activities · free, donation or under £5</p></div>'+
+   '<div class="p-head"><h1>Community Pages</h1><svg class="p-qr" role="img" aria-label="QR code for communitypages.org.uk" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 31 31" class="segno"><path class="qrline" stroke="#000" d="M1 1.5h7m2 0h1m1 0h3m3 0h1m1 0h2m1 0h7m-29 1h1m5 0h1m1 0h4m1 0h1m2 0h3m1 0h1m1 0h1m5 0h1m-29 1h1m1 0h3m1 0h1m1 0h2m3 0h4m1 0h1m1 0h1m1 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m2 0h1m1 0h4m2 0h1m1 0h1m2 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m3 0h3m3 0h2m1 0h1m2 0h1m1 0h3m1 0h1m-29 1h1m5 0h1m4 0h1m2 0h2m2 0h3m1 0h1m5 0h1m-29 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-20 1h1m1 0h3m2 0h4m-19 1h3m1 0h2m4 0h1m3 0h4m7 0h2m-21 1h1m1 0h2m2 0h1m2 0h4m1 0h2m1 0h1m3 0h1m-28 1h1m1 0h2m1 0h4m1 0h3m1 0h4m3 0h1m1 0h1m1 0h2m-26 1h4m4 0h1m1 0h1m1 0h3m1 0h1m1 0h1m7 0h1m-29 1h5m1 0h1m4 0h1m2 0h4m3 0h1m1 0h1m2 0h3m-27 1h2m1 0h1m1 0h1m1 0h1m2 0h1m1 0h2m2 0h2m2 0h2m1 0h4m-23 1h2m2 0h1m1 0h1m3 0h2m1 0h3m1 0h3m1 0h2m-29 1h1m2 0h2m2 0h1m1 0h4m2 0h1m3 0h1m1 0h2m1 0h2m-26 1h1m1 0h2m1 0h2m2 0h2m1 0h1m1 0h4m2 0h2m2 0h2m2 0h1m-27 1h3m2 0h2m4 0h1m2 0h1m3 0h1m2 0h1m1 0h1m-26 1h1m3 0h3m1 0h3m4 0h2m5 0h4m-24 1h3m3 0h1m5 0h1m2 0h6m2 0h3m-27 1h1m1 0h5m1 0h3m1 0h2m2 0h11m-20 1h3m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m3 0h2m2 0h1m-29 1h7m2 0h1m2 0h1m1 0h1m1 0h2m1 0h2m1 0h1m1 0h1m1 0h2m-28 1h1m5 0h1m1 0h2m1 0h2m3 0h1m3 0h1m3 0h1m3 0h1m-29 1h1m1 0h3m1 0h1m4 0h3m4 0h1m1 0h7m-27 1h1m1 0h3m1 0h1m1 0h2m2 0h3m1 0h1m2 0h1m4 0h4m-28 1h1m1 0h3m1 0h1m1 0h1m1 0h2m1 0h6m1 0h1m2 0h1m2 0h1m1 0h1m-29 1h1m5 0h1m1 0h1m1 0h1m2 0h1m2 0h1m1 0h3m1 0h1m1 0h2m1 0h1m-28 1h7m2 0h1m1 0h2m2 0h1m2 0h6m3 0h1"/></svg><span class="p-contact">communitypages.org.uk<br>hello@communitypages.org.uk<br><small>Scan for the full list</small></span><p><b>'+esc(f.join(" · "))+'</b> · '+total+' activities · free, donation or under £5</p></div>'+
    (total?'<div class="p-cols">'+body+'</div>':'<p>Nothing matches these filters.</p>')+
-   '<div class="p-foot">Printed '+t.getDate()+' '+MONLONG[t.getMonth()]+' '+t.getFullYear()+'. Details can change – check with the organiser before going. Full list and details: communitypages.org.uk</div>';
+   '<div class="p-foot">Printed '+t.getDate()+' '+MONLONG[t.getMonth()]+' '+t.getFullYear()+'. Details can change – check with the organiser before going. More activities and full details: <b>communitypages.org.uk</b> · Questions or changes: <b>hello@communitypages.org.uk</b></div>';
   try{window.print();}catch(e){}
 }
 /* ---------- views ---------- */
