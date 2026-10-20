@@ -1,0 +1,19 @@
+# Community Pages
+
+> Free, donation-based and under-£5 community activities and events across Greater Manchester (Manchester, Salford, Trafford, Stockport, Tameside, Oldham, Rochdale, Bury, Bolton and Wigan). Coffee mornings, ESOL classes, job clubs, walking groups, stay and play, food banks, lunch clubs, wellbeing groups, choirs, gardening and more. Built for residents and social prescribing link workers.
+
+- Updated every Monday from a checked community events calendar.
+- Every event lists its date or how often it runs, time, venue with postcode, area, cost (free, donation, under £5 or price not stated) and whether to drop in or book.
+- Paid events are not listed.
+- People should check with the organiser before going.
+
+## Main page
+
+- [Community Pages – all events](https://communitypages.org.uk/): the full list of 713 current events and regular groups is in the page as plain HTML and as schema.org Event data.
+
+## Contact
+
+- Email: hello@communitypages.org.uk
+- To add an event, groups can email the details or upload a flyer.
+
+Last updated: 2026-10-20
