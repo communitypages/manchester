@@ -1,0 +1,52 @@
+# Rebuilds the website from the "MCR Free Community Events" Google Calendar every morning.
+# No AI involved. Needs one repository secret: CALENDAR_ICAL_URL
+# (Google Calendar > Settings > the calendar > "Secret address in iCal format").
+name: Update site from calendar
+
+on:
+  schedule:
+    - cron: '23 5 * * *'   # every day, about 5:23am UTC
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Publish even if lots of listings would disappear'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-site
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install icalendar==7.* recurring-ical-events==3.*
+      - name: Read the calendar
+        env:
+          CALENDAR_ICAL_URL: ${{ secrets.CALENDAR_ICAL_URL }}
+        run: |
+          TODAY=$(TZ=Europe/London date +%F)
+          END=$(TZ=Europe/London date -d '+150 days' +%F)
+          echo "TODAY=$TODAY" >> $GITHUB_ENV
+          echo "END=$END" >> $GITHUB_ENV
+          python3 scripts/ical_to_pages.py --url "$CALENDAR_ICAL_URL" --out "$RUNNER_TEMP/pages" --from "$TODAY" --to "$END"
+      - name: Rebuild the page
+        run: |
+          python3 scripts/build_site.py --pages "$RUNNER_TEMP/pages" --today "$TODAY" --window-end "$END" \
+            ${{ inputs.force && '--force' || '' }}
+      - name: Publish if anything changed
+        run: |
+          git config user.name "Community Pages bot"
+          git config user.email "hello@communitypages.org.uk"
+          git add index.html sitemap.xml llms.txt
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Update events from calendar ($TODAY)"
+          git push
