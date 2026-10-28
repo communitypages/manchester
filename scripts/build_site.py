@@ -50,8 +50,8 @@ out = os.environ.get('GITHUB_STEP_SUMMARY')
 lines = [f"## Site rebuilt {a.today}", f"- Listings: {report['total']} ({len(items)} showing on the site)",
          f"- Added: {len(report['added'])}", f"- Removed (ended or deleted from calendar): {len(report['removed'])}",
          f"- Changed: {report['updated']}"]
-for k, label in (('added', 'Added'), ('removed', 'Removed'), ('check_area', 'Area to check'), ('check_rules', 'Check against listing rules')):
-    if report[k]:
+for k, label in (('added', 'Added'), ('removed', 'Removed'), ('check_area', 'Area to check'), ('check_rules', 'Check against listing rules'), ('no_contact', 'No contact for the organiser – add a link, email or phone')):
+    if report.get(k):
         lines.append(f"\n### {label}\n" + '\n'.join('- ' + t for t in report[k][:60]))
 text = '\n'.join(lines)
 print(text)

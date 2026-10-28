@@ -218,6 +218,13 @@ def find_duplicates(events):
                 groups.append(g)
     return groups
 
+CONTACT = re.compile(r'[\w.+-]+@[\w-]+\.[\w.]+|(\+44|\b0)\s?\d[\d ]{8,12}\d')
+
+def no_contact(events):
+    """Titles of events with no link, email or phone number, so a way to contact the organiser can be added."""
+    return [e['title'] for e in events if e.get('cost') != 'Paid' and not e.get('link')
+            and not CONTACT.search(' '.join([e.get('info') or '', e.get('org') or '']))]
+
 def rule_flags(events):
     return [e['title'] for e in events if re.search(RULE_CHECK, ' '.join([e['title'], e.get('org') or '', e.get('info') or '']), re.I)]
 
@@ -283,6 +290,7 @@ def cmd_build(pages, app_path, today, window_end, out):
                       'check_area': [e['title'] for e in out_ev if e['area'] == OTHER],
                       'duplicates_left_out': [{'kept': g[0]['title'], 'kept_gid': g[0]['gid'], 'left_out_gids': [e['gid'] for e in g[1:]]} for g in dups],
                       'check_rules': rule_flags(out_ev),
+                      'no_contact': no_contact(out_ev),
                       'no_postcode': [e['title'] + ' | ' + e['venue'] for e in out_ev if not POSTCODE.search(e.get('venue') or '')]},
                      ensure_ascii=False, indent=1))
 
