@@ -111,7 +111,7 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,6vw,46px);lin
 .detail .kv{display:grid;grid-template-columns:90px 1fr;gap:4px 10px;margin-bottom:8px}
 .detail .kv dt{color:var(--muted)}
 .detail .kv dd{margin:0;overflow-wrap:anywhere}
-.addev{margin:6px 0 0;font-size:15px;color:var(--muted)}.addev a{font-weight:700}.addev{margin-top:12px}.addev .btn{color:var(--accent-ink);text-decoration:none;padding:11px 20px;font-size:16px}
+.addev{margin:6px 0 0;font-size:15px;color:var(--muted)}.addev a{font-weight:700}.addev{margin-top:12px}.addev{display:flex;flex-wrap:wrap;gap:10px}.addev .btn{text-decoration:none;padding:11px 20px;font-size:16px}.addev a.btn{color:var(--accent-ink)}.addev .btn.ghost{background:var(--card);color:var(--ink);border:1.5px solid var(--line);padding:9.5px 18.5px}
 .calrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.calrow .btn{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .admin-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
 
@@ -1328,7 +1328,7 @@ function shell(){
   '<p class="eyebrow"><span class="hex" aria-hidden="true"></span>Greater Manchester</p>'+
   '<h1>Community Pages</h1>'+
   '<p class="lede">Local activities and events – free, donation or under £5</p>'+
-  '<p class="addev"><a class="btn" href="/add/">Add your event</a></p>'+
+  '<p class="addev"><a class="btn" href="/add/">Add your event</a><button type="button" class="btn ghost" id="printbtn">Print this list</button></p>'+
   '</div></div>'+
   '</header></div>'+
   '<div class="filters"><div class="wrap">'+
@@ -1338,7 +1338,7 @@ function shell(){
   '</div>'+
   '<div class="row pcrow"><input class="sel pcin" id="pc" type="text" inputmode="text" autocomplete="postal-code" placeholder="Postcode, e.g. M19" aria-label="Your postcode">'+
   '<select class="sel" id="near" aria-label="Distance"><option value="1">Within 1 mile</option><option value="2">Within 2 miles</option><option value="3">Within 3 miles</option><option value="5">Within 5 miles</option><option value="10">Within 10 miles</option></select>'+
-  '<span class="pcmsg" id="pcmsg" aria-live="polite"></span><button type="button" class="btn small ghost printbtn" id="printbtn">Print this list</button></div>'+
+  '<span class="pcmsg" id="pcmsg" aria-live="polite"></span></div>'+
   
   ''+
   '</div></div>'+
