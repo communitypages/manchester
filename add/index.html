@@ -50,7 +50,7 @@ button:focus-visible{outline:3px solid var(--bee);outline-offset:2px}
 <main class="wrap">
   <a class="back" href="/">← Community Pages</a>
   <h1>Add your event</h1>
-  <p class="lede">Listing is free. We list activities across Greater Manchester that are free, donation-based or £5 or less. We check every entry, and it usually appears on the site within a week. You can add several activities in one go.</p>
+  <p class="lede">Listing is free. We list activities across Greater Manchester that are free, donation-based or £5 or less. We check every entry, and it usually appears on the site within a week. You can add several events in one go.</p>
 
   <form action="https://formsubmit.co/hello@communitypages.org.uk" method="POST">
     <input type="hidden" name="_subject" value="New events for Community Pages">
@@ -63,7 +63,7 @@ button:focus-visible{outline:3px solid var(--bee);outline-offset:2px}
       <label for="group">Group or organisation</label>
       <input type="text" id="group" name="Group" required>
       <label for="venue">Venue name and address, with postcode
-        <span class="hint">Where your activities happen. If one is somewhere else, add it to that activity below.</span></label>
+        <span class="hint">Where your activities happen. If one is somewhere else, add it to that event below.</span></label>
       <input type="text" id="venue" name="Venue" required placeholder="e.g. Gorton Library, 27 Garratt Way, M18 8HE">
       <label for="contact">Phone or email for enquiries <span class="hint">This goes on the website</span></label>
       <input type="text" id="contact" name="Public contact" required>
@@ -72,39 +72,39 @@ button:focus-visible{outline:3px solid var(--bee);outline-offset:2px}
     </fieldset>
 
     <fieldset>
-      <legend>Your activities</legend>
+      <legend>Your events</legend>
       <div id="acts">
         <div class="act" data-n="1">
-          <div class="act-head"><h3>Activity 1</h3><button type="button" class="remove" hidden>Remove</button></div>
-          <label>Name of the activity</label>
-          <input type="text" data-f="Name" name="Activity 1 – Name" required placeholder="e.g. Coffee morning">
+          <div class="act-head"><h3>Event 1</h3><button type="button" class="remove" hidden>Remove</button></div>
+          <label>Name of the event</label>
+          <input type="text" data-f="Name" name="Event 1 – Name" required placeholder="e.g. Coffee morning">
           <label>When is it?
             <span class="hint">The day and how often, or the date. E.g. “Every Tuesday”, “1st Monday of the month”, “Saturday 14 November”.</span></label>
-          <input type="text" data-f="When" name="Activity 1 – When" required>
+          <input type="text" data-f="When" name="Event 1 – When" required>
           <div class="row">
-            <div><label>Start time</label><input type="text" data-f="Start" name="Activity 1 – Start" required placeholder="e.g. 10am"></div>
-            <div><label>End time</label><input type="text" data-f="End" name="Activity 1 – End" placeholder="e.g. 12pm"></div>
+            <div><label>Start time</label><input type="text" data-f="Start" name="Event 1 – Start" required placeholder="e.g. 10am"></div>
+            <div><label>End time</label><input type="text" data-f="End" name="Event 1 – End" placeholder="e.g. 12pm"></div>
           </div>
           <label>Cost</label>
           <div class="choices">
-            <label><input type="radio" data-f="Cost" name="Activity 1 – Cost" value="Free" required> Free</label>
-            <label><input type="radio" data-f="Cost" name="Activity 1 – Cost" value="Donation / pay what you can"> Donation</label>
-            <label><input type="radio" data-f="Cost" name="Activity 1 – Cost" value="£5 or less"> £5 or less</label>
+            <label><input type="radio" data-f="Cost" name="Event 1 – Cost" value="Free" required> Free</label>
+            <label><input type="radio" data-f="Cost" name="Event 1 – Cost" value="Donation / pay what you can"> Donation</label>
+            <label><input type="radio" data-f="Cost" name="Event 1 – Cost" value="£5 or less"> £5 or less</label>
           </div>
           <label>If it costs something, how much? <span class="hint">Optional</span></label>
-          <input type="text" data-f="Price" name="Activity 1 – Price">
+          <input type="text" data-f="Price" name="Event 1 – Price">
           <label>Do people need to book?</label>
           <div class="choices">
-            <label><input type="radio" data-f="Booking" name="Activity 1 – Booking" value="Just turn up" required> Just turn up</label>
-            <label><input type="radio" data-f="Booking" name="Activity 1 – Booking" value="Book first"> Book first</label>
+            <label><input type="radio" data-f="Booking" name="Event 1 – Booking" value="Just turn up" required> Just turn up</label>
+            <label><input type="radio" data-f="Booking" name="Event 1 – Booking" value="Book first"> Book first</label>
           </div>
           <label>What happens, and who is it for?</label>
-          <textarea data-f="Description" name="Activity 1 – Description" required></textarea>
+          <textarea data-f="Description" name="Event 1 – Description" required></textarea>
           <label>Venue, if different from above <span class="hint">Optional</span></label>
-          <input type="text" data-f="Venue if different" name="Activity 1 – Venue if different">
+          <input type="text" data-f="Venue if different" name="Event 1 – Venue if different">
         </div>
       </div>
-      <button type="button" class="add" id="addAct">+ Add another activity</button>
+      <button type="button" class="add" id="addAct">+ Add another event</button>
     </fieldset>
 
     <fieldset>
@@ -116,14 +116,14 @@ button:focus-visible{outline:3px solid var(--bee);outline-offset:2px}
       <input type="email" id="email" name="email" required autocomplete="email">
     </fieldset>
 
-    <p class="small">By sending, you confirm the activities are open to the public and are not political campaigns, religious worship or business promotion.</p>
+    <p class="small">By sending, you confirm the events are open to the public and are not political campaigns, religious worship or business promotion.</p>
     <button type="submit">Send to Community Pages</button>
   </form>
   <p class="small" style="margin-top:18px">Changing or removing a listing? Email <a href="mailto:hello@communitypages.org.uk">hello@communitypages.org.uk</a>.</p>
 </main>
 
 <script>
-/* Lets people add more activity boxes. Each box's answers are sent as "Activity 2 – Name" etc. */
+/* Lets people add more event boxes. Each box's answers are sent as "Event 2 – Name" etc. */
 (function () {
   var MAX = 10, list = document.getElementById("acts"), addBtn = document.getElementById("addAct");
   var blank = list.firstElementChild.cloneNode(true);
@@ -132,10 +132,10 @@ button:focus-visible{outline:3px solid var(--bee);outline-offset:2px}
     var boxes = list.querySelectorAll(".act");
     boxes.forEach(function (box, i) {
       var n = i + 1;
-      box.querySelector("h3").textContent = "Activity " + n;
+      box.querySelector("h3").textContent = "Event " + n;
       box.querySelector(".remove").hidden = boxes.length === 1;
       box.querySelectorAll("[data-f]").forEach(function (el) {
-        el.name = "Activity " + n + " – " + el.getAttribute("data-f");
+        el.name = "Event " + n + " – " + el.getAttribute("data-f");
       });
     });
     addBtn.hidden = boxes.length >= MAX;
