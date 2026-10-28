@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Make a free poster – Community Pages</title>
+<meta name="description" content="Free poster maker for community groups in Greater Manchester. Make a printable A4 poster and a social media image of your activities, then send them to Community Pages to be listed free.">
+<link rel="canonical" href="https://communitypages.org.uk/poster/">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="theme-color" content="#1C6B61">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3F5EF;--card:#FFFFFF;--ink:#15302B;--muted:#56706A;--line:#D6DED5;
+  --accent:#1C6B61;--accent-soft:#DCEBE6;--bee:#E3B52C;--brick:#9E3F28;--brick-soft:#F6E1D9;
+  --display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.5 var(--body)}
+a{color:var(--accent)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+header.top{padding:28px 0 8px}
+.brand{font:800 15px var(--display);letter-spacing:.02em;color:var(--accent);text-decoration:none}
+h1{font:800 clamp(30px,5vw,46px)/1.05 var(--display);margin:10px 0 10px;letter-spacing:-.01em}
+.lede{max-width:62ch;margin:0 0 6px;color:var(--ink)}
+.steps{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 24px;padding:0;list-style:none}
+.steps li{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:15px}
+.steps b{color:var(--accent)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start;padding-bottom:60px}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.panel h2{font:800 22px var(--display);margin:0 0 4px}
+.panel .hint{color:var(--muted);font-size:15px;margin:0 0 14px}
+fieldset{border:0;margin:0 0 18px;padding:0;min-width:0}
+legend{font:800 18px var(--display);margin-bottom:8px;padding:0}
+label{display:block;font-weight:700;font-size:15px;margin:12px 0 4px}
+label .opt{font-weight:400;color:var(--muted)}
+input,select,textarea{width:100%;font:16px var(--body);color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{min-height:76px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:3px solid var(--accent-soft);border-color:var(--accent)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media (max-width:480px){.row3{grid-template-columns:1fr 1fr}}
+.act{border:1.5px solid var(--line);border-radius:12px;padding:6px 14px 14px;margin-bottom:12px;background:#FBFCF9}
+.act-head{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.act-head strong{font:800 16px var(--display);color:var(--accent)}
+.linkbtn{background:none;border:0;color:var(--brick);font:700 14px var(--body);cursor:pointer;padding:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:700 16px var(--body);border-radius:999px;padding:12px 18px;border:2px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--accent)}
+.btn.bee{background:var(--bee);border-color:var(--bee);color:#2A1F00}
+.btn:focus-visible{outline:3px solid var(--bee);outline-offset:2px}
+.swatches{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:6px}
+.swatches label{margin:0;display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer}
+.swatches input{width:auto}
+.dot{width:22px;height:22px;border-radius:50%;display:inline-block;border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}
+.warn{background:var(--brick-soft);color:#5C2414;border-radius:10px;padding:10px 12px;font-size:15px;margin-top:10px}
+.preview{position:sticky;top:16px}
+@media (max-width:900px){.preview{position:static}}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.tabs button{font:700 15px var(--body);border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:8px 14px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.small{font-size:14px;color:var(--muted)}
+.copybox{width:100%;min-height:220px;font:15px/1.5 var(--body);white-space:pre-wrap}
+.status{font-size:15px;color:var(--accent);font-weight:700;min-height:1.4em;margin-top:8px}
+
+/* ---------- the A4 poster ---------- */
+.sheet{container-type:inline-size;width:100%;aspect-ratio:210/297;background:#fff;border-radius:6px;box-shadow:0 1px 2px rgba(21,48,43,.08),0 10px 30px rgba(21,48,43,.12);overflow:hidden;display:flex;flex-direction:column;--pc:#1C6B61}
+.p-top{background:var(--pc);color:#fff;padding:6cqw 7cqw 5cqw}
+.p-kicker{font:700 2.6cqw var(--body);text-transform:uppercase;letter-spacing:.12em;opacity:.9}
+.p-title{font:800 8.4cqw/1.02 var(--display);margin:1.6cqw 0 0;letter-spacing:-.01em;overflow-wrap:anywhere}
+.p-about{font:400 3.1cqw/1.4 var(--body);margin:2.4cqw 0 0;opacity:.95}
+.p-body{flex:1;padding:4.5cqw 7cqw 2cqw;display:flex;flex-direction:column;gap:calc(3cqw*var(--fs,1));min-height:0;overflow:hidden}
+.p-act{display:grid;grid-template-columns:1.5cqw 1fr;gap:3cqw}
+.p-bar{background:var(--pc);border-radius:2cqw}
+.p-name{font:800 calc(4.6cqw*var(--fs,1))/1.1 var(--display);overflow-wrap:anywhere}
+.p-when{font:700 calc(3.4cqw*var(--fs,1))/1.3 var(--body);margin-top:.6cqw}
+.p-meta{font:400 calc(3cqw*var(--fs,1))/1.35 var(--body);color:#33504A;margin-top:.4cqw}
+.p-tag{display:inline-block;background:var(--bee);color:#2A1F00;font:700 calc(2.7cqw*var(--fs,1)) var(--body);padding:.4cqw 1.8cqw;border-radius:99cqw;margin-right:1cqw}
+.p-empty{color:#8AA19A;font:400 3.2cqw var(--body)}
+.p-where{margin:0 7cqw;border-top:.5cqw solid var(--pc);padding:3cqw 0 3.4cqw;display:grid;gap:1cqw}
+.p-where div{font:400 3.2cqw/1.35 var(--body)}
+.p-where b{font-weight:700}
+.p-foot{background:#F3F5EF;color:#15302B;padding:2.6cqw 7cqw;font:400 2.5cqw var(--body);display:flex;justify-content:space-between;gap:2cqw;flex-wrap:wrap}
+.p-foot b{font:800 2.7cqw var(--display);color:#1C6B61}
+.p-title{font-size:calc(8.4cqw*var(--ts,1))}
+.p-about{font-size:calc(3.1cqw*var(--ts,1))}
+#printSheet{display:none}
+
+#socialWrap img{width:100%;border-radius:6px;box-shadow:0 10px 30px rgba(21,48,43,.12);display:block}
+[hidden]{display:none!important}
+footer.site{border-top:1px solid var(--line);padding:20px 0 40px;font-size:15px;color:var(--muted)}
+
+@media print{
+  @page{size:A4 portrait;margin:0}
+  html,body{background:#fff;margin:0}
+  body>*:not(#printSheet){display:none!important}
+  #printSheet{display:flex!important;width:210mm;height:296mm;aspect-ratio:auto;border-radius:0;box-shadow:none;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<header class="top wrap">
+  <a class="brand" href="/">← COMMUNITY PAGES</a>
+  <h1>Make a free poster for your group</h1>
+  <p class="lede">Fill in your activities once. You get a printable A4 poster, an image for Facebook or Instagram, and text for your website. Then send it to us and we’ll list your activities on Community Pages for free.</p>
+  <ol class="steps">
+    <li><b>1</b> Fill in your details</li>
+    <li><b>2</b> Print, download or copy</li>
+    <li><b>3</b> Send to Community Pages</li>
+  </ol>
+</header>
+
+<main class="wrap layout">
+  <section class="panel" aria-labelledby="formTitle">
+    <h2 id="formTitle">Your details</h2>
+    <p class="hint">Saved on this device as you type, so you can come back and update it.</p>
+
+    <fieldset>
+      <legend>Your group</legend>
+      <label for="group">Group or organisation name</label>
+      <input id="group" autocomplete="organization" placeholder="e.g. Gorton Friends Group">
+      <label for="heading">Poster heading <span class="opt">(optional)</span></label>
+      <input id="heading" placeholder="e.g. What’s on this autumn">
+      <label for="about">A line about your group <span class="opt">(optional)</span></label>
+      <textarea id="about" maxlength="220" placeholder="e.g. Friendly activities for everyone. New faces always welcome."></textarea>
+      <label for="venue">Venue name and address, with postcode</label>
+      <input id="venue" placeholder="e.g. Gorton Library, 27 Garratt Way, M18 8HE">
+    </fieldset>
+
+    <fieldset>
+      <legend>Activities</legend>
+      <div id="acts"></div>
+      <button class="btn ghost" type="button" id="addAct">+ Add another activity</button>
+    </fieldset>
+
+    <fieldset>
+      <legend>Contact</legend>
+      <label for="contact">Phone or email for enquiries <span class="opt">(goes on the poster)</span></label>
+      <input id="contact" placeholder="e.g. 0161 000 0000 or hello@yourgroup.org">
+      <label for="web">Website or social media <span class="opt">(optional)</span></label>
+      <input id="web" placeholder="e.g. facebook.com/yourgroup">
+      <label>Poster colour</label>
+      <div class="swatches" role="radiogroup" aria-label="Poster colour">
+        <label><input type="radio" name="colour" value="#1C6B61" checked><span class="dot" style="background:#1C6B61"></span>Green</label>
+        <label><input type="radio" name="colour" value="#9E3F28"><span class="dot" style="background:#9E3F28"></span>Red</label>
+        <label><input type="radio" name="colour" value="#2B4A8B"><span class="dot" style="background:#2B4A8B"></span>Blue</label>
+        <label><input type="radio" name="colour" value="#5B3A7A"><span class="dot" style="background:#5B3A7A"></span>Purple</label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>For Community Pages <span class="opt" style="font:400 15px var(--body);color:var(--muted)">(not on the poster)</span></legend>
+      <div class="row2">
+        <div><label for="yname">Your name</label><input id="yname" autocomplete="name"></div>
+        <div><label for="yemail">Your email</label><input id="yemail" type="email" autocomplete="email"></div>
+      </div>
+    </fieldset>
+    <button class="linkbtn" type="button" id="clearAll">Clear everything and start again</button>
+  </section>
+
+  <section class="preview" aria-labelledby="prevTitle">
+    <h2 id="prevTitle" class="sr" style="font:800 22px var(--display);margin:0 0 10px">Preview</h2>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="posterWrap">A4 poster</button>
+      <button role="tab" aria-selected="false" data-tab="socialWrap">Social media image</button>
+      <button role="tab" aria-selected="false" data-tab="textWrap">Website text</button>
+    </div>
+
+    <div id="posterWrap">
+      <div class="sheet" id="sheet"></div>
+      <div class="actions">
+        <button class="btn" type="button" id="print">Print poster</button>
+      </div>
+      <p class="small">Tip: in the print window, choose “Save as PDF” to email it or put it on your website.</p>
+    </div>
+
+    <div id="socialWrap" hidden>
+      <img id="socialImg" alt="Preview of the social media image">
+      <div class="actions">
+        <button class="btn" type="button" id="dlImg">Download image</button>
+      </div>
+      <p class="small">Sized for Facebook and Instagram posts (1080 × 1350).</p>
+    </div>
+
+    <div id="textWrap" hidden>
+      <label for="plain" style="margin-top:0">Copy and paste onto your website, Facebook or newsletter</label>
+      <textarea id="plain" class="copybox" readonly></textarea>
+      <div class="actions"><button class="btn" type="button" id="copyText">Copy text</button></div>
+    </div>
+
+    <div class="panel" style="margin-top:20px">
+      <h2>Get listed free on Community Pages</h2>
+      <p class="hint" style="margin-bottom:8px">Send your details to us and we’ll add your activities to communitypages.org.uk, where local people and social prescribing link workers look for things to do. We check every entry. Free, donation and £5-or-less activities only.</p>
+      <div id="sendWarn"></div>
+      <div class="actions">
+        <button class="btn bee" type="button" id="send">Send to Community Pages</button>
+        <button class="btn ghost" type="button" id="copyDetails">Copy details instead</button>
+      </div>
+      <p class="small">“Send” opens your email with everything filled in – just press send. If nothing opens, use “Copy details” and paste them into an email to <a href="mailto:hello@communitypages.org.uk">hello@communitypages.org.uk</a>.</p>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site wrap">Community Pages – free and low-cost local activities across Greater Manchester. <a href="/">See what’s on</a> · <a href="mailto:hello@communitypages.org.uk">hello@communitypages.org.uk</a></footer>
+
+<div class="sheet" id="printSheet" aria-hidden="true"></div>
+<template id="actTpl">
+  <div class="act">
+    <div class="act-head"><strong class="n">Activity</strong><button class="linkbtn rm" type="button">Remove</button></div>
+    <label>Activity name</label>
+    <input data-k="name" placeholder="e.g. Coffee morning">
+    <div class="row2">
+      <div><label>How often</label>
+        <select data-k="freq">
+          <option value="weekly">Every week</option>
+          <option value="fortnightly">Every 2 weeks</option>
+          <option value="m1">1st of the month</option>
+          <option value="m2">2nd of the month</option>
+          <option value="m3">3rd of the month</option>
+          <option value="m4">4th of the month</option>
+          <option value="mlast">Last of the month</option>
+          <option value="once">One date only</option>
+        </select></div>
+      <div class="dayBox"><label>Day</label>
+        <select data-k="day">
+          <option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
+        </select></div>
+      <div class="dateBox" hidden><label>Date</label><input type="date" data-k="date"></div>
+    </div>
+    <div class="row2">
+      <div><label>Starts</label><input type="time" data-k="start" step="300"></div>
+      <div><label>Ends</label><input type="time" data-k="end" step="300"></div>
+    </div>
+    <div class="row3">
+      <div><label>Cost</label>
+        <select data-k="cost"><option value="free">Free</option><option value="donation">Donation</option><option value="price">Price</option></select></div>
+      <div class="priceBox" hidden><label>Price</label><input data-k="price" inputmode="decimal" placeholder="£2"></div>
+      <div><label>Booking</label>
+        <select data-k="book"><option value="drop">Just turn up</option><option value="book">Book first</option></select></div>
+    </div>
+    <label>Who it’s for, or anything else <span class="opt">(optional)</span></label>
+    <input data-k="note" maxlength="90" placeholder="e.g. Over 50s, wheelchair accessible">
+  </div>
+</template>
+
+<script>
+(function(){
+"use strict";
+var KEY="cp-poster-v1", MAX_ACTS=8, EMAIL="hello@communitypages.org.uk";
+var $=function(id){return document.getElementById(id)};
+var FIELDS=["group","heading","about","venue","contact","web","yname","yemail"];
+var acts=$("acts"), tpl=$("actTpl");
+
+/* ---------- state ---------- */
+function blankAct(){return {name:"",freq:"weekly",day:"Tuesday",date:"",start:"",end:"",cost:"free",price:"",book:"drop",note:""}}
+function read(){
+  var s={acts:[]};
+  FIELDS.forEach(function(f){s[f]=$(f).value.trim()});
+  var c=document.querySelector('input[name="colour"]:checked'); s.colour=c?c.value:"#1C6B61";
+  acts.querySelectorAll(".act").forEach(function(el){
+    var a={}; el.querySelectorAll("[data-k]").forEach(function(i){a[i.dataset.k]=i.value.trim()}); s.acts.push(a);
+  });
+  return s;
+}
+function save(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){return null}}
+
+function addAct(a){
+  if(acts.children.length>=MAX_ACTS)return;
+  var el=tpl.content.firstElementChild.cloneNode(true);
+  a=a||blankAct();
+  el.querySelectorAll("[data-k]").forEach(function(i){if(a[i.dataset.k]!=null)i.value=a[i.dataset.k]});
+  el.querySelector(".rm").addEventListener("click",function(){el.remove();renumber();update()});
+  el.addEventListener("input",function(){toggles(el);update()});
+  el.addEventListener("change",function(){toggles(el);update()});
+  acts.appendChild(el); toggles(el); renumber();
+}
+function toggles(el){
+  var once=el.querySelector('[data-k="freq"]').value==="once";
+  el.querySelector(".dayBox").hidden=once; el.querySelector(".dateBox").hidden=!once;
+  el.querySelector(".priceBox").hidden=el.querySelector('[data-k="cost"]').value!=="price";
+}
+function renumber(){
+  var list=acts.querySelectorAll(".act");
+  list.forEach(function(el,i){el.querySelector(".n").textContent="Activity "+(i+1);el.querySelector(".rm").hidden=list.length===1});
+  $("addAct").hidden=list.length>=MAX_ACTS;
+}
+
+/* ---------- wording ---------- */
+var ORD={m1:"1st",m2:"2nd",m3:"3rd",m4:"4th",mlast:"Last"};
+function t12(t){
+  if(!t)return "";
+  var p=t.split(":"),h=+p[0],m=p[1],ap=h<12?"am":"pm";h=h%12||12;
+  return h+(m!=="00"?"."+m:"")+ap;
+}
+function whenText(a){
+  var d;
+  if(a.freq==="once"){
+    if(!a.date)return "Date to be confirmed";
+    var dt=new Date(a.date+"T12:00:00");
+    d=dt.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
+  } else if(a.freq==="weekly") d="Every "+a.day;
+  else if(a.freq==="fortnightly") d="Every other "+a.day;
+  else d=ORD[a.freq]+" "+a.day+" of the month";
+  var t=a.start?(t12(a.start)+(a.end?"–"+t12(a.end):"")):"";
+  return d+(t?", "+t:"");
+}
+function priceNum(p){var m=String(p||"").match(/(\d+(?:\.\d{1,2})?)/g);return m?Math.max.apply(null,m.map(Number)):null}
+function costText(a){
+  if(a.cost==="free")return "Free";
+  if(a.cost==="donation")return "Donation / pay what you can";
+  var p=(a.price||"").trim(); if(!p)return "Small charge";
+  return /^\d/.test(p)?"£"+p:p;
+}
+function bookText(a){return a.book==="book"?"Please book first":"Just turn up"}
+function filled(a){return a.name||a.start||a.date}
+
+/* ---------- A4 poster ---------- */
+function esc(s){return String(s||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function renderPoster(s){
+  var list=s.acts.filter(filled), sh=$("sheet");
+  sh.style.setProperty("--pc",s.colour);
+  var h='<div class="p-top"><div class="p-kicker">'+esc(s.heading||"What’s on")+'</div>'+
+        '<div class="p-title">'+(esc(s.group)||'<span style="opacity:.6">Your group name</span>')+'</div>'+
+        (s.about?'<p class="p-about">'+esc(s.about)+'</p>':'')+'</div><div class="p-body">';
+  if(!list.length)h+='<div class="p-empty">Your activities will appear here.</div>';
+  list.forEach(function(a){
+    h+='<div class="p-act"><div class="p-bar"></div><div><div class="p-name">'+esc(a.name||"Activity")+'</div>'+
+       '<div class="p-when">'+esc(whenText(a))+'</div><div class="p-meta"><span class="p-tag">'+esc(costText(a))+'</span>'+
+       esc(bookText(a))+(a.note?' · '+esc(a.note):'')+'</div></div></div>';
+  });
+  h+='</div><div class="p-where">'+
+     (s.venue?'<div><b>Where:</b> '+esc(s.venue)+'</div>':'')+
+     (s.contact?'<div><b>Contact:</b> '+esc(s.contact)+'</div>':'')+
+     (s.web?'<div><b>More info:</b> '+esc(s.web)+'</div>':'')+
+     '</div><div class="p-foot"><span>Everyone welcome</span><span>More free local activities: <b>communitypages.org.uk</b></span></div>';
+  sh.innerHTML=h;
+  fitSheet(sh);
+  var ps=$("printSheet"); ps.style.setProperty("--pc",s.colour); ps.innerHTML=h;
+  ps.style.setProperty("--fs",sh.style.getPropertyValue("--fs")); ps.style.setProperty("--ts",sh.style.getPropertyValue("--ts"));
+}
+/* shrink the text until everything fits on the page */
+function fitSheet(sh){
+  if(!sh.offsetWidth)return;
+  var body=sh.querySelector(".p-body"), fs=1, ts=1;
+  sh.style.setProperty("--fs",1); sh.style.setProperty("--ts",1);
+  while(body.scrollHeight>body.clientHeight+1&&fs>0.5){
+    fs-=0.04; if(fs<0.85&&ts>0.75)ts-=0.04;
+    sh.style.setProperty("--fs",fs.toFixed(2)); sh.style.setProperty("--ts",ts.toFixed(2));
+  }
+}
+
+/* ---------- social image (canvas) ---------- */
+function wrap(ctx,text,maxW){
+  var words=String(text).split(/\s+/),lines=[],line="";
+  words.forEach(function(w){
+    var t=line?line+" "+w:w;
+    if(ctx.measureText(t).width>maxW&&line){lines.push(line);line=w}else line=t;
+  });
+  if(line)lines.push(line);
+  return lines;
+}
+var DISPLAY='"Bricolage Grotesque","Segoe UI",sans-serif', BODY='"Atkinson Hyperlegible","Segoe UI",sans-serif';
+function drawSocial(s){
+  var cv;
+  for(var k=1;k>=0.5;k-=0.05){cv=drawAt(s,k,k-0.05<0.5);if(cv.fits)break}
+  return cv;
+}
+function drawAt(s,k,last){
+  var W=1080,H=1350,P=80,cv=document.createElement("canvas");cv.width=W;cv.height=H;
+  var c=cv.getContext("2d"), list=s.acts.filter(filled), tk=Math.max(k,0.75);
+  c.fillStyle="#fff";c.fillRect(0,0,W,H);c.textBaseline="top";
+  // top band
+  c.font="800 "+Math.round(92*tk)+"px "+DISPLAY;
+  var title=wrap(c,s.group||"Your group name",W-2*P).slice(0,3);
+  c.font="400 "+Math.round(34*tk)+"px "+BODY;
+  var about=s.about?wrap(c,s.about,W-2*P).slice(0,3):[];
+  var topH=P+40+title.length*96*tk+(about.length?20+about.length*46*tk:0)+50;
+  c.fillStyle=s.colour;c.fillRect(0,0,W,topH);
+  c.fillStyle="#fff";c.font="700 30px "+BODY;c.globalAlpha=.9;c.fillText((s.heading||"What’s on").toUpperCase(),P,P-10);c.globalAlpha=1;
+  c.font="800 "+Math.round(92*tk)+"px "+DISPLAY;
+  var y=P+40;title.forEach(function(l){c.fillText(l,P,y);y+=96*tk});
+  if(about.length){y+=20;c.font="400 "+Math.round(34*tk)+"px "+BODY;about.forEach(function(l){c.fillText(l,P,y);y+=46*tk})}
+  // where / contact block position (fixed at the bottom)
+  var lines=[];if(s.venue)lines.push(["Where: ",s.venue]);if(s.contact)lines.push(["Contact: ",s.contact]);if(s.web)lines.push(["More info: ",s.web]);
+  var footTop=H-100, whereTop=footTop-(lines.length?lines.length*54+50:0), limit=whereTop-20;
+  // activities
+  y=topH+44*k; cv.fits=true;
+  if(!list.length){c.fillStyle="#8AA19A";c.font="400 38px "+BODY;c.fillText("Your activities will appear here.",P,y)}
+  for(var i=0;i<list.length;i++){
+    var a=list[i], x=P+40, maxW=W-x-P, y0=y;
+    c.font="800 "+Math.round(52*k)+"px "+DISPLAY;
+    var nm=wrap(c,a.name||"Activity",maxW).slice(0,2);
+    var need=nm.length*58*k+50*k+60*k;
+    if(y+need>limit){
+      cv.fits=false; if(!last)return cv;
+      c.fillStyle="#33504A";c.font="700 30px "+BODY;c.fillText("+ "+(list.length-i)+" more – ask us for details",P,Math.min(y,limit-34));break;
+    }
+    c.fillStyle="#15302B";nm.forEach(function(l){c.fillText(l,x,y);y+=58*k});
+    c.font="700 "+Math.round(38*k)+"px "+BODY;c.fillText(fit(c,whenText(a),maxW),x,y+2);y+=50*k;
+    c.font="700 "+Math.round(30*k)+"px "+BODY;var tag=costText(a),tw=c.measureText(tag).width+36*k;
+    c.fillStyle="#E3B52C";roundRect(c,x,y,tw,44*k,22*k);c.fill();
+    c.fillStyle="#2A1F00";c.fillText(tag,x+18*k,y+8*k);
+    c.fillStyle="#33504A";c.font="400 "+Math.round(32*k)+"px "+BODY;
+    c.fillText(fit(c,bookText(a)+(a.note?" · "+a.note:""),maxW-tw-20),x+tw+16,y+6*k);y+=56*k;
+    c.fillStyle=s.colour;roundRect(c,P,y0,14,y-y0-8,7);c.fill();
+    y+=30*k;
+  }
+  if(lines.length){
+    var by=whereTop;c.fillStyle=s.colour;c.fillRect(P,by,W-2*P,6);by+=30;
+    lines.forEach(function(l){c.fillStyle="#15302B";c.font="700 34px "+BODY;c.fillText(l[0],P,by);var lw=c.measureText(l[0]).width;
+      c.font="400 34px "+BODY;c.fillText(fit(c,l[1],W-2*P-lw),P+lw,by);by+=54});
+  }
+  c.fillStyle="#F3F5EF";c.fillRect(0,footTop,W,100);
+  c.fillStyle="#15302B";c.font="400 30px "+BODY;c.fillText("Everyone welcome",P,footTop+34);
+  c.font="800 32px "+DISPLAY;c.fillStyle="#1C6B61";var ft="communitypages.org.uk";c.fillText(ft,W-P-c.measureText(ft).width,footTop+32);
+  return cv;
+}
+function fit(c,t,maxW){if(c.measureText(t).width<=maxW)return t;while(t.length>1&&c.measureText(t+"…").width>maxW)t=t.slice(0,-1);return t+"…"}
+function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+
+/* ---------- plain text ---------- */
+function plainText(s){
+  var list=s.acts.filter(filled), out=[];
+  out.push((s.group||"Our group")+" – "+(s.heading||"What’s on"));
+  if(s.about)out.push(s.about);
+  out.push("");
+  list.forEach(function(a){
+    out.push("• "+(a.name||"Activity")+": "+whenText(a)+". "+costText(a)+". "+bookText(a)+"."+(a.note?" "+a.note+".":""));
+  });
+  out.push("");
+  if(s.venue)out.push("Where: "+s.venue);
+  if(s.contact)out.push("Contact: "+s.contact);
+  if(s.web)out.push("More info: "+s.web);
+  out.push("","Everyone welcome. Find more free local activities at communitypages.org.uk");
+  return out.join("\n");
+}
+
+/* ---------- details for Community Pages ---------- */
+function freqText(a){return {weekly:"Every week",fortnightly:"Every 2 weeks",m1:"1st "+a.day+" of the month",m2:"2nd "+a.day+" of the month",m3:"3rd "+a.day+" of the month",m4:"4th "+a.day+" of the month",mlast:"Last "+a.day+" of the month",once:"One date only"}[a.freq]}
+function detailsText(s){
+  var list=s.acts.filter(filled), out=["Please list these activities on Community Pages.",""];
+  out.push("Group: "+s.group,"Venue: "+s.venue,"Contact (public): "+s.contact);
+  if(s.web)out.push("Website: "+s.web);
+  if(s.about)out.push("About: "+s.about);
+  list.forEach(function(a,i){
+    out.push("","Activity "+(i+1)+": "+a.name,
+      "  When: "+freqText(a)+(a.freq==="once"?" – "+(a.date||"?"):(a.freq==="weekly"||a.freq==="fortnightly"?" – "+a.day:"")),
+      "  Time: "+(a.start||"?")+"–"+(a.end||"?"),
+      "  Cost: "+costText(a),"  Booking: "+(a.book==="book"?"Book first":"Drop in"));
+    if(a.note)out.push("  Notes: "+a.note);
+  });
+  out.push("","Sent by: "+(s.yname||"?")+" ("+(s.yemail||"no email given")+")","Made with the Community Pages poster maker.");
+  return out.join("\n");
+}
+function problems(s){
+  var p=[], list=s.acts.filter(filled);
+  if(!s.group)p.push("your group name");
+  if(!s.venue)p.push("the venue");
+  else if(!/[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}/i.test(s.venue))p.push("a postcode in the venue address");
+  if(!s.contact)p.push("a phone or email for enquiries");
+  if(!list.length)p.push("at least one activity");
+  list.forEach(function(a,i){if(!a.name||!a.start)p.push("a name and start time for activity "+(i+1));if(a.freq==="once"&&!a.date)p.push("a date for activity "+(i+1))});
+  return p;
+}
+function overLimit(s){return s.acts.filter(function(a){return filled(a)&&a.cost==="price"&&priceNum(a.price)>5}).map(function(a){return a.name||"an activity"})}
+
+/* ---------- wiring ---------- */
+var socialURL=null, imgTimer=null;
+function update(){
+  var s=read(); save(s);
+  renderPoster(s);
+  $("plain").value=plainText(s);
+  clearTimeout(imgTimer); imgTimer=setTimeout(function(){
+    if($("socialWrap").hidden)return;
+    drawSocial(s).toBlob(function(b){if(socialURL)URL.revokeObjectURL(socialURL);socialURL=URL.createObjectURL(b);$("socialImg").src=socialURL});
+  },250);
+  var over=overLimit(s);
+  $("sendWarn").innerHTML=over.length?'<div class="warn">Community Pages only lists activities costing £5 or less, so '+esc(over.join(", "))+' can’t be listed. You can still print the poster.</div>':"";
+}
+function say(t){$("status").textContent=t;setTimeout(function(){if($("status").textContent===t)$("status").textContent=""},6000)}
+function copy(t,done){
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(function(){say(done)},function(){fallback()});
+  else fallback();
+  function fallback(){var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");say(done)}catch(e){say("Couldn’t copy – please select the text and copy it.")}ta.remove()}
+}
+
+document.querySelectorAll(".tabs button").forEach(function(b){
+  b.addEventListener("click",function(){
+    document.querySelectorAll(".tabs button").forEach(function(x){x.setAttribute("aria-selected",x===b);$(x.dataset.tab).hidden=x!==b});
+    update();
+  });
+});
+FIELDS.forEach(function(f){$(f).addEventListener("input",update)});
+document.querySelectorAll('input[name="colour"]').forEach(function(r){r.addEventListener("change",update)});
+$("addAct").addEventListener("click",function(){addAct();update();var last=acts.lastElementChild;if(last)last.querySelector("input").focus()});
+$("print").addEventListener("click",function(){window.print()});
+window.addEventListener("resize",function(){fitSheet($("sheet"))});
+$("dlImg").addEventListener("click",function(){
+  var s=read();
+  drawSocial(s).toBlob(function(b){var a=document.createElement("a");a.href=URL.createObjectURL(b);
+    a.download=((s.group||"poster").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase()||"poster")+"-social.png";
+    document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000)});
+});
+$("copyText").addEventListener("click",function(){copy($("plain").value,"Text copied.")});
+$("copyDetails").addEventListener("click",function(){copy(detailsText(read()),"Details copied – paste them into an email to "+EMAIL+".")});
+$("send").addEventListener("click",function(){
+  var s=read(), p=problems(s);
+  if(p.length){say("Please add "+p.slice(0,3).join(", ")+".");return}
+  var url="mailto:"+EMAIL+"?subject="+encodeURIComponent("Please list: "+s.group)+"&body="+encodeURIComponent(detailsText(s));
+  location.href=url; say("Your email should open now – just press send.");
+});
+$("clearAll").addEventListener("click",function(){
+  FIELDS.forEach(function(f){$(f).value=""});acts.innerHTML="";addAct();
+  var g=document.querySelector('input[name="colour"][value="#1C6B61"]');if(g)g.checked=true;
+  try{localStorage.removeItem(KEY)}catch(e){} update();
+});
+
+/* ---------- start ---------- */
+var saved=load();
+if(saved){
+  FIELDS.forEach(function(f){if(saved[f])$(f).value=saved[f]});
+  var col=document.querySelector('input[name="colour"][value="'+(saved.colour||"")+'"]');if(col)col.checked=true;
+  (saved.acts&&saved.acts.length?saved.acts:[blankAct()]).slice(0,MAX_ACTS).forEach(addAct);
+} else addAct();
+update();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(update);
+})();
+</script>
+</body>
+</html>
