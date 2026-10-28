@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Add your event – Community Pages</title>
+<meta name="description" content="Send your free, donation or £5-or-less activity to Community Pages, Greater Manchester. It's free to be listed.">
+<link rel="canonical" href="https://communitypages.org.uk/add/">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action https://formsubmit.co; object-src 'none'">
+<!--
+  HOW THIS FORM WORKS (no AI, no code to run):
+  Entries are sent by FormSubmit (formsubmit.co, free) to the email address in the form's action below.
+  The very first entry sends a one-off "activate" email to that address – click the link in it once.
+  To change a question, edit the text between the tags below. To change where entries go, change the email in action="...".
+-->
+<style>
+:root{--paper:#F3F5EF;--card:#fff;--ink:#15302B;--muted:#56706A;--line:#D6DED5;--accent:#1C6B61;--soft:#DCEBE6;--bee:#E3B52C}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif}
+.wrap{max-width:680px;margin:0 auto;padding:24px 16px 60px}
+a{color:var(--accent)}
+.back{font-weight:700;text-decoration:none;font-size:15px}
+h1{font:800 clamp(30px,6vw,42px)/1.1 "Bricolage Grotesque","Segoe UI",system-ui,sans-serif;margin:12px 0 8px}
+.lede{margin:0 0 20px}
+form{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+fieldset{border:0;padding:0;margin:0 0 22px;min-width:0}
+legend{font:800 20px "Bricolage Grotesque","Segoe UI",system-ui,sans-serif;padding:0;margin-bottom:4px}
+label{display:block;font-weight:700;margin:14px 0 4px}
+.hint{display:block;font-weight:400;color:var(--muted);font-size:15px}
+input[type=text],input[type=email],input[type=tel],input[type=url],textarea{width:100%;font-size:16px;font-family:inherit;color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+textarea{min-height:90px;resize:vertical}
+input:focus,textarea:focus{outline:3px solid var(--soft);border-color:var(--accent)}
+.choices{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:4px}
+.choices label{display:flex;align-items:center;gap:8px;font-weight:400;margin:0}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:480px){.row{grid-template-columns:1fr}}
+button{font-weight:700;font-size:17px;font-family:inherit;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:14px 24px;cursor:pointer}
+button:focus-visible{outline:3px solid var(--bee);outline-offset:2px}
+.small{font-size:15px;color:var(--muted)}
+.hide{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <a class="back" href="/">← Community Pages</a>
+  <h1>Add your event</h1>
+  <p class="lede">Listing is free. We list activities across Greater Manchester that are free, donation-based or £5 or less. We check every entry, and it usually appears on the site within a week. One form per activity, please.</p>
+
+  <form action="https://formsubmit.co/hello@communitypages.org.uk" method="POST">
+    <input type="hidden" name="_subject" value="New event for Community Pages">
+    <input type="hidden" name="_template" value="table">
+    <input type="hidden" name="_next" value="https://communitypages.org.uk/add/thanks.html">
+    <input type="text" name="_honey" class="hide" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+    <fieldset>
+      <legend>The activity</legend>
+      <label for="event">Name of the activity</label>
+      <input type="text" id="event" name="Activity" required placeholder="e.g. Coffee morning">
+
+      <label for="group">Group or organisation</label>
+      <input type="text" id="group" name="Group" required>
+
+      <label for="when">When is it?
+        <span class="hint">The day and how often, or the date. E.g. “Every Tuesday”, “1st Monday of the month”, “Saturday 14 November”.</span></label>
+      <input type="text" id="when" name="When" required>
+
+      <div class="row">
+        <div><label for="start">Start time</label><input type="text" id="start" name="Start time" required placeholder="e.g. 10am"></div>
+        <div><label for="end">End time</label><input type="text" id="end" name="End time" placeholder="e.g. 12pm"></div>
+      </div>
+
+      <label for="venue">Venue name and address, with postcode</label>
+      <input type="text" id="venue" name="Venue" required placeholder="e.g. Gorton Library, 27 Garratt Way, M18 8HE">
+
+      <label>Cost</label>
+      <div class="choices">
+        <label><input type="radio" name="Cost" value="Free" required> Free</label>
+        <label><input type="radio" name="Cost" value="Donation / pay what you can"> Donation</label>
+        <label><input type="radio" name="Cost" value="£5 or less"> £5 or less</label>
+      </div>
+      <label for="price">If it costs something, how much? <span class="hint">Optional</span></label>
+      <input type="text" id="price" name="Price">
+
+      <label>Do people need to book?</label>
+      <div class="choices">
+        <label><input type="radio" name="Booking" value="Just turn up" required> Just turn up</label>
+        <label><input type="radio" name="Booking" value="Book first"> Book first</label>
+      </div>
+
+      <label for="about">What happens, and who is it for?</label>
+      <textarea id="about" name="Description" required></textarea>
+
+      <label for="contact">Phone or email for enquiries <span class="hint">This goes on the website</span></label>
+      <input type="text" id="contact" name="Public contact" required>
+
+      <label for="web">Website or social media <span class="hint">Optional</span></label>
+      <input type="text" id="web" name="Website">
+    </fieldset>
+
+    <fieldset>
+      <legend>About you</legend>
+      <p class="small" style="margin:0">So we can get in touch if anything is unclear. Not shown on the website.</p>
+      <label for="name">Your name</label>
+      <input type="text" id="name" name="Your name" required autocomplete="name">
+      <label for="email">Your email</label>
+      <input type="email" id="email" name="email" required autocomplete="email">
+    </fieldset>
+
+    <p class="small">By sending, you confirm the activity is open to the public and is not a political campaign, religious worship or business promotion.</p>
+    <button type="submit">Send to Community Pages</button>
+  </form>
+  <p class="small" style="margin-top:18px">Changing or removing a listing? Email <a href="mailto:hello@communitypages.org.uk">hello@communitypages.org.uk</a>.</p>
+</main>
+</body>
+</html>

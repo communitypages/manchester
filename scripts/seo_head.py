@@ -247,7 +247,7 @@ LLMS = '''# Community Pages
 ## Contact
 
 - Email: {email}
-- To add, change or remove an event, groups can fill in the online form or email the details.
+- To add an event, groups can fill in the form at {site}add/ or email the details.
 
 Last updated: {date}
 '''
