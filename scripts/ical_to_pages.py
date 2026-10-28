@@ -54,7 +54,12 @@ if __name__ == '__main__':
     else:
         if not a.url:
             sys.exit('No calendar address given (set the CALENDAR_ICAL_URL secret).')
-        data = urllib.request.urlopen(a.url, timeout=60).read()
+        try:
+            data = urllib.request.urlopen(a.url, timeout=60).read()
+        except Exception as e:
+            sys.exit(f'Could not read the calendar ({e}). Make the calendar public, or add the CALENDAR_ICAL_URL secret.')
+        if not data.lstrip().startswith(b'BEGIN:VCALENDAR'):
+            sys.exit('The calendar address did not return a calendar. Make the calendar public, or add the CALENDAR_ICAL_URL secret.')
     events = convert(data, dt.date.fromisoformat(a.start), dt.date.fromisoformat(a.end))
     os.makedirs(a.out, exist_ok=True)
     json.dump({'events': events}, open(os.path.join(a.out, 'calendar.json'), 'w'), ensure_ascii=False)

@@ -1,11 +1,14 @@
 # Rebuilds the website from the "MCR Free Community Events" Google Calendar every morning.
-# No AI involved. Needs one repository secret: CALENDAR_ICAL_URL
-# (Google Calendar > Settings > the calendar > "Secret address in iCal format").
+# No AI involved. Uses the secret CALENDAR_ICAL_URL if set (Google Calendar > Settings > the calendar >
+# "Secret address in iCal format"); otherwise the calendar's public address (calendar must be public).
 name: Update site from calendar
 
 on:
   schedule:
     - cron: '23 5 * * *'   # every day, about 5:23am UTC
+  push:
+    branches: [main]
+    paths: ['.github/workflows/update-site.yml', 'scripts/**']
   workflow_dispatch:
     inputs:
       force:
@@ -32,12 +35,14 @@ jobs:
       - name: Read the calendar
         env:
           CALENDAR_ICAL_URL: ${{ secrets.CALENDAR_ICAL_URL }}
+          PUBLIC_ICAL_URL: https://calendar.google.com/calendar/ical/184b8c166f44ce5ae5a5c962fc7a176159e216a1ec3747dc7d4c36b017c9daaa%40group.calendar.google.com/public/basic.ics
         run: |
+          URL="${CALENDAR_ICAL_URL:-$PUBLIC_ICAL_URL}"
           TODAY=$(TZ=Europe/London date +%F)
           END=$(TZ=Europe/London date -d '+150 days' +%F)
           echo "TODAY=$TODAY" >> $GITHUB_ENV
           echo "END=$END" >> $GITHUB_ENV
-          python3 scripts/ical_to_pages.py --url "$CALENDAR_ICAL_URL" --out "$RUNNER_TEMP/pages" --from "$TODAY" --to "$END"
+          python3 scripts/ical_to_pages.py --url "$URL" --out "$RUNNER_TEMP/pages" --from "$TODAY" --to "$END"
       - name: Rebuild the page
         run: |
           python3 scripts/build_site.py --pages "$RUNNER_TEMP/pages" --today "$TODAY" --window-end "$END" \
