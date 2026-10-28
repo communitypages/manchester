@@ -6,7 +6,7 @@
 <title>Add your event – Community Pages</title>
 <meta name="description" content="Send your free, donation or £5-or-less activities to Community Pages, Greater Manchester. It's free to be listed.">
 <link rel="canonical" href="https://communitypages.org.uk/add/">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action https://formsubmit.co; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; connect-src 'self'; form-action https://formsubmit.co; object-src 'none'">
 <!--
   HOW THIS FORM WORKS (no AI, nothing to run):
   Entries are sent by FormSubmit (formsubmit.co, free) to the email address in the form's action below.
@@ -44,6 +44,8 @@ button[type=submit]{font-weight:700;font-size:17px;font-family:inherit;backgroun
 button:focus-visible{outline:3px solid var(--bee);outline-offset:2px}
 .small{font-size:15px;color:var(--muted)}
 .hide{position:absolute;left:-9999px}
+.dup{background:#FFF4D6;border:1.5px solid var(--bee);border-radius:10px;padding:10px 12px;margin-top:12px;font-size:15px}
+.dup b{display:block}
 </style>
 </head>
 <body>
@@ -102,6 +104,8 @@ button:focus-visible{outline:3px solid var(--bee);outline-offset:2px}
           <textarea data-f="Description" name="Event 1 – Description" required></textarea>
           <label>Venue, if different from above <span class="hint">Optional</span></label>
           <input type="text" data-f="Venue if different" name="Event 1 – Venue if different">
+          <input type="hidden" data-f="Possibly already listed" name="Event 1 – Possibly already listed">
+          <div class="dup" hidden role="status"></div>
         </div>
       </div>
       <button type="button" class="add" id="addAct">+ Add another event</button>
@@ -156,6 +160,66 @@ button:focus-visible{outline:3px solid var(--bee);outline-offset:2px}
   });
 
   number();
+
+  /* ---- Flag events that look like they are already on the website ---- */
+  var listings = null, loading = null;
+  var DAYS = { MO: "Monday", TU: "Tuesday", WE: "Wednesday", TH: "Thursday", FR: "Friday", SA: "Saturday", SU: "Sunday" };
+  function load() {
+    if (listings) return Promise.resolve(listings);
+    if (!loading) loading = fetch("/").then(function (r) { return r.text(); }).then(function (html) {
+      var m = html.match(/<script type="application\/json" id="events-data">([\s\S]*?)<\/script>/);
+      listings = m ? JSON.parse(m[1]) : [];
+      return listings;
+    }).catch(function () { listings = []; return listings; });
+    return loading;
+  }
+  function postcode(t) { var m = (t || "").match(/[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}/i); return m ? m[0].replace(/\s/g, "").toUpperCase() : ""; }
+  function words(t) {
+    return (t || "").toLowerCase().replace(/\s[–—-]\s.*$/, "").replace(/[^a-z0-9 ]/g, " ").split(/\s+/)
+      .filter(function (w) { return w.length > 2 && ["the", "and", "for", "with", "club", "group"].indexOf(w) < 0; });
+  }
+  function similar(a, b) {
+    var A = words(a), B = words(b);
+    if (!A.length || !B.length) return false;
+    var hit = A.filter(function (w) { return B.indexOf(w) >= 0; }).length;
+    return hit / Math.min(A.length, B.length) >= 0.6;
+  }
+  function when(e) {
+    var r = e.rule, t = e.start ? ", " + e.start + (e.end ? "–" + e.end : "") : "";
+    if (!r) return new Date(e.date + "T12:00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }) + t;
+    var d = (r.byday || []).map(function (x) { return DAYS[x]; }).join(" and ");
+    if (r.freq === "monthly") return "Monthly on " + d + t;
+    return ((r.interval || 1) > 1 ? "Every other " : "Every ") + d + t;
+  }
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function check(box) {
+    var name = box.querySelector('[data-f="Name"]').value.trim();
+    var venue = box.querySelector('[data-f="Venue if different"]').value.trim() || document.getElementById("venue").value.trim();
+    var note = box.querySelector(".dup"), flag = box.querySelector('[data-f="Possibly already listed"]');
+    if (name.length < 3 || venue.length < 3) { note.hidden = true; flag.value = ""; return; }
+    load().then(function (L) {
+      var pc = postcode(venue), place = words(venue.split(",")[0]);
+      var found = L.filter(function (e) {
+        if (e.cost === "Paid" || !similar(name, e.title)) return false;
+        if (pc) return postcode(e.venue) === pc;
+        var v = words((e.venue || "").split(",")[0]);
+        return place.some(function (w) { return v.indexOf(w) >= 0; });
+      }).slice(0, 3);
+      if (!found.length) { note.hidden = true; flag.value = ""; return; }
+      note.innerHTML = "<b>This may already be on Community Pages:</b>" + found.map(function (e) {
+        return "“" + esc(e.title) + "” – " + esc(when(e)) + ", " + esc((e.venue || "").split(",")[0]);
+      }).join("<br>") + "<br>If it’s the same event and something has changed, say what in the description. If it’s all still correct, you can remove this event.";
+      note.hidden = false;
+      flag.value = found.map(function (e) { return e.title; }).join("; ");
+    });
+  }
+  list.addEventListener("change", function (e) {
+    var box = e.target.closest(".act");
+    if (box && (e.target.matches('[data-f="Name"]') || e.target.matches('[data-f="Venue if different"]'))) check(box);
+  });
+  document.getElementById("venue").addEventListener("change", function () {
+    list.querySelectorAll(".act").forEach(check);
+  });
 })();
 </script>
 </body>
