@@ -1328,13 +1328,13 @@ function shell(){
   '<p class="eyebrow"><span class="hex" aria-hidden="true"></span>Greater Manchester</p>'+
   '<h1>Community Pages</h1>'+
   '<p class="lede">Local activities and events – free, donation or under £5</p>'+
-  '<p class="addev">Run a group? <a href="mailto:hello@communitypages.org.uk?subject=Add%20my%20event%20to%20Community%20Pages&body=Name%20of%20event%3A%0ADate%20and%20time%20(and%20does%20it%20repeat%3F)%3A%0AVenue%20address%20and%20postcode%3A%0ACost%20(free%2C%20donation%20or%20under%20%C2%A35)%3A%0ADrop%20in%20or%20book%20first%3A%0APhone%20or%20email%20for%20enquiries%3A%0AWebsite%3A%0A">Email us to add your events</a> · <a href="/poster/">Make a free poster for your group</a> · <a href="https://www.patreon.com/c/communitypages" target="_blank" rel="noopener">Support us on Patreon</a></p>'+
+  '<p class="addev"><a href="mailto:hello@communitypages.org.uk?subject=Add%20my%20event%20to%20Community%20Pages&body=Name%20of%20event%3A%0ADate%20and%20time%20(and%20does%20it%20repeat%3F)%3A%0AVenue%20address%20and%20postcode%3A%0ACost%20(free%2C%20donation%20or%20under%20%C2%A35)%3A%0ADrop%20in%20or%20book%20first%3A%0APhone%20or%20email%20for%20enquiries%3A%0AWebsite%3A%0A">Email us to add your events</a> · <a href="/poster/">Make a free poster for your group</a> · <a href="https://www.patreon.com/c/communitypages" target="_blank" rel="noopener">Support us on Patreon</a></p>'+
   '</div></div>'+
   '</header></div>'+
   '<div class="filters"><div class="wrap">'+
   '<div class="row"><input class="search" id="q" type="search" placeholder="Search: yoga, choir, Stretford…" aria-label="Search events">'+
   '<select class="sel" id="when" aria-label="When"><option value="today">Today</option><option value="tomorrow">Tomorrow</option><option value="weekend">This weekend</option><option value="week">Next 7 days</option><option value="month">Next 30 days</option><option value="all">All upcoming</option><option value="date">Pick a date…</option></select><input type="date" class="sel" id="pickdate" aria-label="Choose a date" hidden>'+
-  '<select class="sel" id="cat" aria-label="Type of activity"><option value="">All activity types</option>'+CATS.map(function(c){return '<option>'+esc(c)+'</option>'}).join("")+'</select>'+
+  
   '</div>'+
   '<div class="row pcrow"><input class="sel pcin" id="pc" type="text" inputmode="text" autocomplete="postal-code" placeholder="Postcode, e.g. M19" aria-label="Your postcode">'+
   '<select class="sel" id="near" aria-label="Distance"><option value="1">Within 1 mile</option><option value="2">Within 2 miles</option><option value="3">Within 3 miles</option><option value="5">Within 5 miles</option><option value="10">Within 10 miles</option></select>'+
@@ -1343,8 +1343,8 @@ function shell(){
   ''+
   '</div></div>'+
   '<main class="wrap" id="list"></main>'+
-  '<div id="printout"></div>'+'<footer class="wrap">Always check with the organiser before you go: times and details can change.<br>Run a group? Email <a href="mailto:hello@communitypages.org.uk?subject=Add%20my%20event%20to%20Community%20Pages&body=Name%20of%20event%3A%0ADate%20and%20time%20(and%20does%20it%20repeat%3F)%3A%0AVenue%20address%20and%20postcode%3A%0ACost%20(free%2C%20donation%20or%20under%20%C2%A35)%3A%0ADrop%20in%20or%20book%20first%3A%0APhone%20or%20email%20for%20enquiries%3A%0AWebsite%3A%0A">hello@communitypages.org.uk</a> to add your events – it\'s free. Or <a href="/poster/">make a free poster</a> and send it to us.<br>Community Pages is free to use. If you can, <a href="https://www.patreon.com/c/communitypages" target="_blank" rel="noopener">support us on Patreon</a>. <span id="adminNote"></span></footer>';
-  var catSel=document.getElementById("cat");catSel.value=S.cat||"";if(catSel.value!==(S.cat||""))S.cat="";
+  '<div id="printout"></div>'+'<footer class="wrap">Always check with the organiser before you go: times and details can change.<br>Email <a href="mailto:hello@communitypages.org.uk?subject=Add%20my%20event%20to%20Community%20Pages&body=Name%20of%20event%3A%0ADate%20and%20time%20(and%20does%20it%20repeat%3F)%3A%0AVenue%20address%20and%20postcode%3A%0ACost%20(free%2C%20donation%20or%20under%20%C2%A35)%3A%0ADrop%20in%20or%20book%20first%3A%0APhone%20or%20email%20for%20enquiries%3A%0AWebsite%3A%0A">hello@communitypages.org.uk</a> to add your events – it\'s free. Or <a href="/poster/">make a free poster</a> and send it to us.<br>Community Pages is free to use. If you can, <a href="https://www.patreon.com/c/communitypages" target="_blank" rel="noopener">support us on Patreon</a>. <span id="adminNote"></span></footer>';
+  S.cat="";
   var q=document.getElementById("q"); q.value=S.q;
   document.getElementById("when").value=S.when;
   var pcin=document.getElementById("pc"),nr=document.getElementById("near");pcin.value=S.pc;nr.value=S.near;
@@ -1354,7 +1354,7 @@ function shell(){
   var pk=document.getElementById("pickdate"); pk.min=iso(today()); pk.max=iso(addDays(today(),120)); pk.value=S.date||iso(today());
   document.getElementById("when").addEventListener("change",function(e){S.when=e.target.value;if(S.when==="date"){if(!S.date||S.date<iso(today()))S.date=iso(today());pk.value=S.date;}remember();render();if(S.when==="date"){try{pk.showPicker&&pk.showPicker()}catch(_){}}});
   pk.addEventListener("change",function(e){if(e.target.value){S.date=e.target.value;remember();render()}});
-  catSel.addEventListener("change",function(e){S.cat=e.target.value;remember();render()});
+  
   
   document.getElementById("printbtn").addEventListener("click",printList);
   document.getElementById("list").addEventListener("click",function(e){var a=e.target.closest(".meta.addr");if(a){var x=a.getAttribute("aria-expanded")==="true";a.textContent=a.getAttribute(x?"data-short":"data-full");a.setAttribute("aria-expanded",String(!x));e.stopPropagation();return;}onListClick(e);});
