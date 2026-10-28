@@ -4,17 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Add your event – Community Pages</title>
-<meta name="description" content="Send your free, donation or £5-or-less activity to Community Pages, Greater Manchester. It's free to be listed.">
+<meta name="description" content="Send your free, donation or £5-or-less activities to Community Pages, Greater Manchester. It's free to be listed.">
 <link rel="canonical" href="https://communitypages.org.uk/add/">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action https://formsubmit.co; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action https://formsubmit.co; object-src 'none'">
 <!--
-  HOW THIS FORM WORKS (no AI, no code to run):
+  HOW THIS FORM WORKS (no AI, nothing to run):
   Entries are sent by FormSubmit (formsubmit.co, free) to the email address in the form's action below.
   The very first entry sends a one-off "activate" email to that address – click the link in it once.
-  To change a question, edit the text between the tags below. To change where entries go, change the email in action="...".
+  To change a question, edit the text between the tags below.
+  To change where entries go, change the email address in action="...".
 -->
 <style>
-:root{--paper:#F3F5EF;--card:#fff;--ink:#15302B;--muted:#56706A;--line:#D6DED5;--accent:#1C6B61;--soft:#DCEBE6;--bee:#E3B52C}
+:root{--paper:#F3F5EF;--card:#fff;--ink:#15302B;--muted:#56706A;--line:#D6DED5;--accent:#1C6B61;--soft:#DCEBE6;--bee:#E3B52C;--brick:#9E3F28}
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif}
 .wrap{max-width:680px;margin:0 auto;padding:24px 16px 60px}
@@ -23,18 +24,23 @@ a{color:var(--accent)}
 h1{font:800 clamp(30px,6vw,42px)/1.1 "Bricolage Grotesque","Segoe UI",system-ui,sans-serif;margin:12px 0 8px}
 .lede{margin:0 0 20px}
 form{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
-fieldset{border:0;padding:0;margin:0 0 22px;min-width:0}
+fieldset{border:0;padding:0;margin:0 0 24px;min-width:0}
 legend{font:800 20px "Bricolage Grotesque","Segoe UI",system-ui,sans-serif;padding:0;margin-bottom:4px}
 label{display:block;font-weight:700;margin:14px 0 4px}
 .hint{display:block;font-weight:400;color:var(--muted);font-size:15px}
-input[type=text],input[type=email],input[type=tel],input[type=url],textarea{width:100%;font-size:16px;font-family:inherit;color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
-textarea{min-height:90px;resize:vertical}
+input[type=text],input[type=email],textarea{width:100%;font-size:16px;font-family:inherit;color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+textarea{min-height:80px;resize:vertical}
 input:focus,textarea:focus{outline:3px solid var(--soft);border-color:var(--accent)}
 .choices{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:4px}
 .choices label{display:flex;align-items:center;gap:8px;font-weight:400;margin:0}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media (max-width:480px){.row{grid-template-columns:1fr}}
-button{font-weight:700;font-size:17px;font-family:inherit;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:14px 24px;cursor:pointer}
+.act{border:1.5px solid var(--line);border-radius:12px;padding:4px 14px 16px;margin:12px 0;background:#FBFCF9}
+.act-head{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.act-head h3{font:800 18px "Bricolage Grotesque","Segoe UI",system-ui,sans-serif;color:var(--accent);margin:0}
+.remove{background:none;border:0;color:var(--brick);font-weight:700;font-size:15px;font-family:inherit;cursor:pointer;padding:6px}
+.add{background:#fff;color:var(--accent);border:2px solid var(--accent);border-radius:999px;padding:10px 18px;font-weight:700;font-size:16px;font-family:inherit;cursor:pointer}
+button[type=submit]{font-weight:700;font-size:17px;font-family:inherit;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:14px 24px;cursor:pointer}
 button:focus-visible{outline:3px solid var(--bee);outline-offset:2px}
 .small{font-size:15px;color:var(--muted)}
 .hide{position:absolute;left:-9999px}
@@ -44,57 +50,61 @@ button:focus-visible{outline:3px solid var(--bee);outline-offset:2px}
 <main class="wrap">
   <a class="back" href="/">← Community Pages</a>
   <h1>Add your event</h1>
-  <p class="lede">Listing is free. We list activities across Greater Manchester that are free, donation-based or £5 or less. We check every entry, and it usually appears on the site within a week. One form per activity, please.</p>
+  <p class="lede">Listing is free. We list activities across Greater Manchester that are free, donation-based or £5 or less. We check every entry, and it usually appears on the site within a week. You can add several activities in one go.</p>
 
   <form action="https://formsubmit.co/hello@communitypages.org.uk" method="POST">
-    <input type="hidden" name="_subject" value="New event for Community Pages">
+    <input type="hidden" name="_subject" value="New events for Community Pages">
     <input type="hidden" name="_template" value="table">
     <input type="hidden" name="_next" value="https://communitypages.org.uk/add/thanks.html">
     <input type="text" name="_honey" class="hide" tabindex="-1" autocomplete="off" aria-hidden="true">
 
     <fieldset>
-      <legend>The activity</legend>
-      <label for="event">Name of the activity</label>
-      <input type="text" id="event" name="Activity" required placeholder="e.g. Coffee morning">
-
+      <legend>Your group</legend>
       <label for="group">Group or organisation</label>
       <input type="text" id="group" name="Group" required>
-
-      <label for="when">When is it?
-        <span class="hint">The day and how often, or the date. E.g. “Every Tuesday”, “1st Monday of the month”, “Saturday 14 November”.</span></label>
-      <input type="text" id="when" name="When" required>
-
-      <div class="row">
-        <div><label for="start">Start time</label><input type="text" id="start" name="Start time" required placeholder="e.g. 10am"></div>
-        <div><label for="end">End time</label><input type="text" id="end" name="End time" placeholder="e.g. 12pm"></div>
-      </div>
-
-      <label for="venue">Venue name and address, with postcode</label>
+      <label for="venue">Venue name and address, with postcode
+        <span class="hint">Where your activities happen. If one is somewhere else, add it to that activity below.</span></label>
       <input type="text" id="venue" name="Venue" required placeholder="e.g. Gorton Library, 27 Garratt Way, M18 8HE">
-
-      <label>Cost</label>
-      <div class="choices">
-        <label><input type="radio" name="Cost" value="Free" required> Free</label>
-        <label><input type="radio" name="Cost" value="Donation / pay what you can"> Donation</label>
-        <label><input type="radio" name="Cost" value="£5 or less"> £5 or less</label>
-      </div>
-      <label for="price">If it costs something, how much? <span class="hint">Optional</span></label>
-      <input type="text" id="price" name="Price">
-
-      <label>Do people need to book?</label>
-      <div class="choices">
-        <label><input type="radio" name="Booking" value="Just turn up" required> Just turn up</label>
-        <label><input type="radio" name="Booking" value="Book first"> Book first</label>
-      </div>
-
-      <label for="about">What happens, and who is it for?</label>
-      <textarea id="about" name="Description" required></textarea>
-
       <label for="contact">Phone or email for enquiries <span class="hint">This goes on the website</span></label>
       <input type="text" id="contact" name="Public contact" required>
-
       <label for="web">Website or social media <span class="hint">Optional</span></label>
       <input type="text" id="web" name="Website">
+    </fieldset>
+
+    <fieldset>
+      <legend>Your activities</legend>
+      <div id="acts">
+        <div class="act" data-n="1">
+          <div class="act-head"><h3>Activity 1</h3><button type="button" class="remove" hidden>Remove</button></div>
+          <label>Name of the activity</label>
+          <input type="text" data-f="Name" name="Activity 1 – Name" required placeholder="e.g. Coffee morning">
+          <label>When is it?
+            <span class="hint">The day and how often, or the date. E.g. “Every Tuesday”, “1st Monday of the month”, “Saturday 14 November”.</span></label>
+          <input type="text" data-f="When" name="Activity 1 – When" required>
+          <div class="row">
+            <div><label>Start time</label><input type="text" data-f="Start" name="Activity 1 – Start" required placeholder="e.g. 10am"></div>
+            <div><label>End time</label><input type="text" data-f="End" name="Activity 1 – End" placeholder="e.g. 12pm"></div>
+          </div>
+          <label>Cost</label>
+          <div class="choices">
+            <label><input type="radio" data-f="Cost" name="Activity 1 – Cost" value="Free" required> Free</label>
+            <label><input type="radio" data-f="Cost" name="Activity 1 – Cost" value="Donation / pay what you can"> Donation</label>
+            <label><input type="radio" data-f="Cost" name="Activity 1 – Cost" value="£5 or less"> £5 or less</label>
+          </div>
+          <label>If it costs something, how much? <span class="hint">Optional</span></label>
+          <input type="text" data-f="Price" name="Activity 1 – Price">
+          <label>Do people need to book?</label>
+          <div class="choices">
+            <label><input type="radio" data-f="Booking" name="Activity 1 – Booking" value="Just turn up" required> Just turn up</label>
+            <label><input type="radio" data-f="Booking" name="Activity 1 – Booking" value="Book first"> Book first</label>
+          </div>
+          <label>What happens, and who is it for?</label>
+          <textarea data-f="Description" name="Activity 1 – Description" required></textarea>
+          <label>Venue, if different from above <span class="hint">Optional</span></label>
+          <input type="text" data-f="Venue if different" name="Activity 1 – Venue if different">
+        </div>
+      </div>
+      <button type="button" class="add" id="addAct">+ Add another activity</button>
     </fieldset>
 
     <fieldset>
@@ -106,10 +116,47 @@ button:focus-visible{outline:3px solid var(--bee);outline-offset:2px}
       <input type="email" id="email" name="email" required autocomplete="email">
     </fieldset>
 
-    <p class="small">By sending, you confirm the activity is open to the public and is not a political campaign, religious worship or business promotion.</p>
+    <p class="small">By sending, you confirm the activities are open to the public and are not political campaigns, religious worship or business promotion.</p>
     <button type="submit">Send to Community Pages</button>
   </form>
   <p class="small" style="margin-top:18px">Changing or removing a listing? Email <a href="mailto:hello@communitypages.org.uk">hello@communitypages.org.uk</a>.</p>
 </main>
+
+<script>
+/* Lets people add more activity boxes. Each box's answers are sent as "Activity 2 – Name" etc. */
+(function () {
+  var MAX = 10, list = document.getElementById("acts"), addBtn = document.getElementById("addAct");
+  var blank = list.firstElementChild.cloneNode(true);
+
+  function number() {
+    var boxes = list.querySelectorAll(".act");
+    boxes.forEach(function (box, i) {
+      var n = i + 1;
+      box.querySelector("h3").textContent = "Activity " + n;
+      box.querySelector(".remove").hidden = boxes.length === 1;
+      box.querySelectorAll("[data-f]").forEach(function (el) {
+        el.name = "Activity " + n + " – " + el.getAttribute("data-f");
+      });
+    });
+    addBtn.hidden = boxes.length >= MAX;
+  }
+
+  addBtn.addEventListener("click", function () {
+    var box = blank.cloneNode(true);
+    list.appendChild(box);
+    number();
+    box.querySelector("input").focus();
+  });
+
+  list.addEventListener("click", function (e) {
+    if (e.target.classList.contains("remove")) {
+      e.target.closest(".act").remove();
+      number();
+    }
+  });
+
+  number();
+})();
+</script>
 </body>
 </html>

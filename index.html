@@ -111,7 +111,7 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,6vw,46px);lin
 .detail .kv{display:grid;grid-template-columns:90px 1fr;gap:4px 10px;margin-bottom:8px}
 .detail .kv dt{color:var(--muted)}
 .detail .kv dd{margin:0;overflow-wrap:anywhere}
-.addev{margin:6px 0 0;font-size:15px;color:var(--muted)}.addev a{font-weight:700}
+.addev{margin:6px 0 0;font-size:15px;color:var(--muted)}.addev a{font-weight:700}.addev{margin-top:12px}.addev .btn{color:var(--accent-ink);text-decoration:none;padding:11px 20px;font-size:16px}
 .calrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.calrow .btn{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .admin-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
 
@@ -1328,7 +1328,7 @@ function shell(){
   '<p class="eyebrow"><span class="hex" aria-hidden="true"></span>Greater Manchester</p>'+
   '<h1>Community Pages</h1>'+
   '<p class="lede">Local activities and events – free, donation or under £5</p>'+
-  '<p class="addev"><a href="/add/">Add your event</a> · <a href="https://www.patreon.com/c/communitypages" target="_blank" rel="noopener">Support us on Patreon</a></p>'+
+  '<p class="addev"><a class="btn" href="/add/">Add your event</a></p>'+
   '</div></div>'+
   '</header></div>'+
   '<div class="filters"><div class="wrap">'+
@@ -1343,7 +1343,7 @@ function shell(){
   ''+
   '</div></div>'+
   '<main class="wrap" id="list"></main>'+
-  '<div id="printout"></div>'+'<footer class="wrap">Always check with the organiser before you go: times and details can change.<br><a href="/add/">Add your event</a> – it\'s free. Questions: <a href="mailto:hello@communitypages.org.uk">hello@communitypages.org.uk</a><br>Community Pages is free to use. If you can, <a href="https://www.patreon.com/c/communitypages" target="_blank" rel="noopener">support us on Patreon</a>. <span id="adminNote"></span></footer>';
+  '<div id="printout"></div>'+'<footer class="wrap">Always check with the organiser before you go: times and details can change.<br>Questions: <a href="mailto:hello@communitypages.org.uk">hello@communitypages.org.uk</a><br>Community Pages is free to use. If you can, <a href="https://www.patreon.com/c/communitypages" target="_blank" rel="noopener">support us on Patreon</a>. <span id="adminNote"></span></footer>';
   S.cat="";
   var q=document.getElementById("q"); q.value=S.q;
   document.getElementById("when").value=S.when;
