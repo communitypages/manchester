@@ -351,11 +351,22 @@ function costText(a){
 }
 function bookText(a){return a.book==="book"?"Please book first":"Just turn up"}
 function filled(a){return a.name||a.start||a.date}
+/* Poster order: Monday to Sunday, then by start time; one-date events after, by date. */
+var DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+function dayIdx(a){if(a.freq==="once"){if(!a.date)return 99;var d=new Date(a.date+"T12:00:00").getDay();return (d+6)%7}return DAYS.indexOf(a.day)}
+function ordered(s){
+  return s.acts.filter(filled).map(function(a,i){return {a:a,i:i}}).sort(function(x,y){
+    var ox=x.a.freq==="once"?1:0, oy=y.a.freq==="once"?1:0;
+    if(ox!==oy)return ox-oy;
+    if(ox)return (x.a.date||"9").localeCompare(y.a.date||"9")||(x.a.start||"").localeCompare(y.a.start||"");
+    return dayIdx(x.a)-dayIdx(y.a)||(x.a.start||"99").localeCompare(y.a.start||"99")||x.i-y.i;
+  }).map(function(x){return x.a});
+}
 
 /* ---------- A4 poster ---------- */
 function esc(s){return String(s||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function renderPoster(s){
-  var list=s.acts.filter(filled), sh=$("sheet");
+  var list=ordered(s), sh=$("sheet");
   sh.style.setProperty("--pc",s.colour);
   var h='<div class="p-top"><div class="p-kicker">'+esc(s.heading||"What’s on")+'</div>'+
         '<div class="p-title">'+(esc(s.group)||'<span style="opacity:.6">Your group name</span>')+'</div>'+
@@ -405,7 +416,7 @@ function drawSocial(s){
 }
 function drawAt(s,k,last){
   var W=1080,H=1350,P=80,cv=document.createElement("canvas");cv.width=W;cv.height=H;
-  var c=cv.getContext("2d"), list=s.acts.filter(filled), tk=Math.max(k,0.75);
+  var c=cv.getContext("2d"), list=ordered(s), tk=Math.max(k,0.75);
   c.fillStyle="#fff";c.fillRect(0,0,W,H);c.textBaseline="top";
   // top band
   c.font="800 "+Math.round(92*tk)+"px "+DISPLAY;
@@ -458,7 +469,7 @@ function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,
 
 /* ---------- plain text ---------- */
 function plainText(s){
-  var list=s.acts.filter(filled), out=[];
+  var list=ordered(s), out=[];
   out.push((s.group||"Our group")+" – "+(s.heading||"What’s on"));
   if(s.about)out.push(s.about);
   out.push("");
@@ -476,7 +487,7 @@ function plainText(s){
 /* ---------- details for Community Pages ---------- */
 function freqText(a){return {weekly:"Every week",fortnightly:"Every 2 weeks",m1:"1st "+a.day+" of the month",m2:"2nd "+a.day+" of the month",m3:"3rd "+a.day+" of the month",m4:"4th "+a.day+" of the month",mlast:"Last "+a.day+" of the month",once:"One date only"}[a.freq]}
 function detailsText(s){
-  var list=s.acts.filter(filled), out=["Please list these activities on Community Pages.",""];
+  var list=ordered(s), out=["Please list these activities on Community Pages.",""];
   out.push("Group: "+s.group,"Venue: "+s.venue,"Contact (public): "+s.contact);
   if(s.web)out.push("Website: "+s.web);
   if(s.about)out.push("About: "+s.about);
@@ -592,7 +603,9 @@ function search(q){
     });
   }).catch(function(){box.innerHTML='<li class="small">Couldn’t load the listings just now. Please fill in the form below.</li>'});
 }
-function sortItems(a,b){return (a.r?0:1)-(b.r?0:1)||(a.d||"").localeCompare(b.d||"")||(a.s||"").localeCompare(b.s||"")}
+var DI={MO:0,TU:1,WE:2,TH:3,FR:4,SA:5,SU:6};
+function sortItems(a,b){var da=a.r?DI[(a.r.byday||["SU"])[0]]:9,db=b.r?DI[(b.r.byday||["SU"])[0]]:9;
+  return (a.r?0:1)-(b.r?0:1)||da-db||(a.d||"").localeCompare(b.d||"")||(a.s||"").localeCompare(b.s||"")}
 function itemWhen(x){
   var a=toActs(x)[0]; return a?whenText(a):"";
 }
