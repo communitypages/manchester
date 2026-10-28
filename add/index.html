@@ -4,223 +4,31 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Add your event – Community Pages</title>
-<meta name="description" content="Send your free, donation or £5-or-less activities to Community Pages, Greater Manchester. It's free to be listed.">
 <link rel="canonical" href="https://communitypages.org.uk/add/">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; connect-src 'self'; form-action https://formsubmit.co; object-src 'none'">
-<!--
-  HOW THIS FORM WORKS (no AI, nothing to run):
-  Entries are sent by FormSubmit (formsubmit.co, free) to the email address in the form's action below.
-  The very first entry sends a one-off "activate" email to that address – click the link in it once.
-  To change a question, edit the text between the tags below.
-  Entries go to hello@communitypages.org.uk. The code after formsubmit.co/ in action="..." is FormSubmit's private alias for that address (it hides the email from spammers).
--->
 <style>
-:root{--paper:#F3F5EF;--card:#fff;--ink:#15302B;--muted:#56706A;--line:#D6DED5;--accent:#1C6B61;--soft:#DCEBE6;--bee:#E3B52C;--brick:#9E3F28}
-*{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif}
-.wrap{max-width:680px;margin:0 auto;padding:24px 16px 60px}
-a{color:var(--accent)}
-.back{font-weight:700;text-decoration:none;font-size:15px}
+body{margin:0;background:#F3F5EF;color:#15302B;font:17px/1.5 "Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif}
+.wrap{max-width:680px;margin:0 auto;padding:32px 16px 60px}
 h1{font:800 clamp(30px,6vw,42px)/1.1 "Bricolage Grotesque","Segoe UI",system-ui,sans-serif;margin:12px 0 8px}
-.lede{margin:0 0 20px}
-form{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
-fieldset{border:0;padding:0;margin:0 0 24px;min-width:0}
-legend{font:800 20px "Bricolage Grotesque","Segoe UI",system-ui,sans-serif;padding:0;margin-bottom:4px}
-label{display:block;font-weight:700;margin:14px 0 4px}
-.hint{display:block;font-weight:400;color:var(--muted);font-size:15px}
-input[type=text],input[type=email],textarea{width:100%;font-size:16px;font-family:inherit;color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
-textarea{min-height:80px;resize:vertical}
-input:focus,textarea:focus{outline:3px solid var(--soft);border-color:var(--accent)}
-.choices{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:4px}
-.choices label{display:flex;align-items:center;gap:8px;font-weight:400;margin:0}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:480px){.row{grid-template-columns:1fr}}
-.act{border:1.5px solid var(--line);border-radius:12px;padding:4px 14px 16px;margin:12px 0;background:#FBFCF9}
-.act-head{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
-.act-head h3{font:800 18px "Bricolage Grotesque","Segoe UI",system-ui,sans-serif;color:var(--accent);margin:0}
-.remove{background:none;border:0;color:var(--brick);font-weight:700;font-size:15px;font-family:inherit;cursor:pointer;padding:6px}
-.add{background:#fff;color:var(--accent);border:2px solid var(--accent);border-radius:999px;padding:10px 18px;font-weight:700;font-size:16px;font-family:inherit;cursor:pointer}
-button[type=submit]{font-weight:700;font-size:17px;font-family:inherit;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:14px 24px;cursor:pointer}
-button:focus-visible{outline:3px solid var(--bee);outline-offset:2px}
-.small{font-size:15px;color:var(--muted)}
-.hide{position:absolute;left:-9999px}
-.dup{background:#FFF4D6;border:1.5px solid var(--bee);border-radius:10px;padding:10px 12px;margin-top:12px;font-size:15px}
-.dup b{display:block}
+a{color:#1C6B61}
+.btn{display:inline-block;background:#1C6B61;color:#fff;font-weight:700;text-decoration:none;border-radius:999px;padding:13px 24px;margin:8px 0 16px}
+ul{padding-left:20px}
 </style>
 </head>
 <body>
 <main class="wrap">
-  <a class="back" href="/">← Community Pages</a>
+  <a href="/" style="font-weight:700;text-decoration:none;font-size:15px">← Community Pages</a>
   <h1>Add your event</h1>
-  <p class="lede">Listing is free. We list activities across Greater Manchester that are free, donation-based or £5 or less. We check every entry, and it usually appears on the site within a week. You can add several events in one go.</p>
-
-  <form action="https://formsubmit.co/0d115a3cefd7c6aa0885310df22703d3" method="POST">
-    <input type="hidden" name="_subject" value="New events for Community Pages">
-    <input type="hidden" name="_template" value="table">
-    <input type="hidden" name="_next" value="https://communitypages.org.uk/add/thanks.html">
-    <input type="text" name="_honey" class="hide" tabindex="-1" autocomplete="off" aria-hidden="true">
-
-    <fieldset>
-      <legend>Your group</legend>
-      <label for="group">Group or organisation</label>
-      <input type="text" id="group" name="Group" required>
-      <label for="venue">Venue name and address, with postcode
-        <span class="hint">Where your activities happen. If one is somewhere else, add it to that event below.</span></label>
-      <input type="text" id="venue" name="Venue" required placeholder="e.g. Gorton Library, 27 Garratt Way, M18 8HE">
-      <label for="contact">Phone or email for enquiries <span class="hint">This goes on the website</span></label>
-      <input type="text" id="contact" name="Public contact" required>
-      <label for="web">Website or social media <span class="hint">Optional</span></label>
-      <input type="text" id="web" name="Website">
-    </fieldset>
-
-    <fieldset>
-      <legend>Your events</legend>
-      <div id="acts">
-        <div class="act" data-n="1">
-          <div class="act-head"><h3>Event 1</h3><button type="button" class="remove" hidden>Remove</button></div>
-          <label>Name of the event</label>
-          <input type="text" data-f="Name" name="Event 1 – Name" required placeholder="e.g. Coffee morning">
-          <label>When is it?
-            <span class="hint">The day and how often, or the date. E.g. “Every Tuesday”, “1st Monday of the month”, “Saturday 14 November”.</span></label>
-          <input type="text" data-f="When" name="Event 1 – When" required>
-          <div class="row">
-            <div><label>Start time</label><input type="text" data-f="Start" name="Event 1 – Start" required placeholder="e.g. 10am"></div>
-            <div><label>End time</label><input type="text" data-f="End" name="Event 1 – End" placeholder="e.g. 12pm"></div>
-          </div>
-          <label>Cost</label>
-          <div class="choices">
-            <label><input type="radio" data-f="Cost" name="Event 1 – Cost" value="Free" required> Free</label>
-            <label><input type="radio" data-f="Cost" name="Event 1 – Cost" value="Donation / pay what you can"> Donation</label>
-            <label><input type="radio" data-f="Cost" name="Event 1 – Cost" value="£5 or less"> £5 or less</label>
-          </div>
-          <label>If it costs something, how much? <span class="hint">Optional</span></label>
-          <input type="text" data-f="Price" name="Event 1 – Price">
-          <label>Do people need to book?</label>
-          <div class="choices">
-            <label><input type="radio" data-f="Booking" name="Event 1 – Booking" value="Just turn up" required> Just turn up</label>
-            <label><input type="radio" data-f="Booking" name="Event 1 – Booking" value="Book first"> Book first</label>
-          </div>
-          <label>What happens, and who is it for?</label>
-          <textarea data-f="Description" name="Event 1 – Description" required></textarea>
-          <label>Venue, if different from above <span class="hint">Optional</span></label>
-          <input type="text" data-f="Venue if different" name="Event 1 – Venue if different">
-          <input type="hidden" data-f="Possibly already listed" name="Event 1 – Possibly already listed">
-          <div class="dup" hidden role="status"></div>
-        </div>
-      </div>
-      <button type="button" class="add" id="addAct">+ Add another event</button>
-    </fieldset>
-
-    <fieldset>
-      <legend>About you</legend>
-      <p class="small" style="margin:0">So we can get in touch if anything is unclear. Not shown on the website.</p>
-      <label for="name">Your name</label>
-      <input type="text" id="name" name="Your name" required autocomplete="name">
-      <label for="email">Your email</label>
-      <input type="email" id="email" name="email" required autocomplete="email">
-    </fieldset>
-
-    <p class="small">By sending, you confirm the events are open to the public and are not political campaigns, religious worship or business promotion.</p>
-    <button type="submit">Send to Community Pages</button>
-  </form>
-  <p class="small" style="margin-top:18px">Changing or removing a listing? Email <a href="mailto:hello@communitypages.org.uk">hello@communitypages.org.uk</a>.</p>
+  <p>Listing is free. We list activities across Greater Manchester that are free, donation-based or £5 or less.</p>
+  <a class="btn" href="mailto:hello@communitypages.org.uk?subject=Add%20my%20event%20to%20Community%20Pages&amp;body=Group%20or%20organisation%3A%0AVenue%20name%2C%20address%20and%20postcode%3A%0APhone%20or%20email%20for%20enquiries%20%28shown%20on%20the%20website%29%3A%0AWebsite%20or%20social%20media%3A%0A%0AEVENT%201%0AName%20of%20event%3A%0AWhen%20%28e.g.%20every%20Tuesday%20/%201st%20Monday%20of%20the%20month%20/%20Sat%2014%20Nov%29%3A%0AStart%20and%20end%20time%3A%0ACost%20%28free%2C%20donation%20or%20%C2%A35%20or%20less%29%3A%0ADrop%20in%20or%20book%20first%3A%0AWhat%20happens%20and%20who%20it%27s%20for%3A%0A%0A%28Copy%20the%20EVENT%20section%20for%20more%20events%2C%20or%20attach%20a%20timetable.%29%0A">Email us your event</a>
+  <p>Or email <a href="mailto:hello@communitypages.org.uk">hello@communitypages.org.uk</a> with, for each event:</p>
+  <ul>
+    <li>Name of the event and your group</li>
+    <li>When it happens (and whether it repeats) and the times</li>
+    <li>Venue address with postcode</li>
+    <li>Cost, and whether people can just turn up or need to book</li>
+    <li>A phone number or email for enquiries</li>
+  </ul>
+  <p>A timetable or flyer attached is fine too.</p>
 </main>
-
-<script>
-/* Lets people add more event boxes. Each box's answers are sent as "Event 2 – Name" etc. */
-(function () {
-  var MAX = 10, list = document.getElementById("acts"), addBtn = document.getElementById("addAct");
-  var blank = list.firstElementChild.cloneNode(true);
-
-  function number() {
-    var boxes = list.querySelectorAll(".act");
-    boxes.forEach(function (box, i) {
-      var n = i + 1;
-      box.querySelector("h3").textContent = "Event " + n;
-      box.querySelector(".remove").hidden = boxes.length === 1;
-      box.querySelectorAll("[data-f]").forEach(function (el) {
-        el.name = "Event " + n + " – " + el.getAttribute("data-f");
-      });
-    });
-    addBtn.hidden = boxes.length >= MAX;
-  }
-
-  addBtn.addEventListener("click", function () {
-    var box = blank.cloneNode(true);
-    list.appendChild(box);
-    number();
-    box.querySelector("input").focus();
-  });
-
-  list.addEventListener("click", function (e) {
-    if (e.target.classList.contains("remove")) {
-      e.target.closest(".act").remove();
-      number();
-    }
-  });
-
-  number();
-
-  /* ---- Flag events that look like they are already on the website ---- */
-  var listings = null, loading = null;
-  var DAYS = { MO: "Monday", TU: "Tuesday", WE: "Wednesday", TH: "Thursday", FR: "Friday", SA: "Saturday", SU: "Sunday" };
-  function load() {
-    if (listings) return Promise.resolve(listings);
-    if (!loading) loading = fetch("/").then(function (r) { return r.text(); }).then(function (html) {
-      var m = html.match(/<script type="application\/json" id="events-data">([\s\S]*?)<\/script>/);
-      listings = m ? JSON.parse(m[1]) : [];
-      return listings;
-    }).catch(function () { listings = []; return listings; });
-    return loading;
-  }
-  function postcode(t) { var m = (t || "").match(/[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}/i); return m ? m[0].replace(/\s/g, "").toUpperCase() : ""; }
-  function words(t) {
-    return (t || "").toLowerCase().replace(/\s[–—-]\s.*$/, "").replace(/[^a-z0-9 ]/g, " ").split(/\s+/)
-      .filter(function (w) { return w.length > 2 && ["the", "and", "for", "with", "club", "group"].indexOf(w) < 0; });
-  }
-  function similar(a, b) {
-    var A = words(a), B = words(b);
-    if (!A.length || !B.length) return false;
-    var hit = A.filter(function (w) { return B.indexOf(w) >= 0; }).length;
-    return hit / Math.min(A.length, B.length) >= 0.6;
-  }
-  function when(e) {
-    var r = e.rule, t = e.start ? ", " + e.start + (e.end ? "–" + e.end : "") : "";
-    if (!r) return new Date(e.date + "T12:00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }) + t;
-    var d = (r.byday || []).map(function (x) { return DAYS[x]; }).join(" and ");
-    if (r.freq === "monthly") return "Monthly on " + d + t;
-    return ((r.interval || 1) > 1 ? "Every other " : "Every ") + d + t;
-  }
-  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
-  function check(box) {
-    var name = box.querySelector('[data-f="Name"]').value.trim();
-    var venue = box.querySelector('[data-f="Venue if different"]').value.trim() || document.getElementById("venue").value.trim();
-    var note = box.querySelector(".dup"), flag = box.querySelector('[data-f="Possibly already listed"]');
-    if (name.length < 3 || venue.length < 3) { note.hidden = true; flag.value = ""; return; }
-    load().then(function (L) {
-      var pc = postcode(venue), place = words(venue.split(",")[0]);
-      var found = L.filter(function (e) {
-        if (e.cost === "Paid" || !similar(name, e.title)) return false;
-        if (pc) return postcode(e.venue) === pc;
-        var v = words((e.venue || "").split(",")[0]);
-        return place.some(function (w) { return v.indexOf(w) >= 0; });
-      }).slice(0, 3);
-      if (!found.length) { note.hidden = true; flag.value = ""; return; }
-      note.innerHTML = "<b>This may already be on Community Pages:</b>" + found.map(function (e) {
-        return "“" + esc(e.title) + "” – " + esc(when(e)) + ", " + esc((e.venue || "").split(",")[0]);
-      }).join("<br>") + "<br>If it’s the same event and something has changed, say what in the description. If it’s all still correct, you can remove this event.";
-      note.hidden = false;
-      flag.value = found.map(function (e) { return e.title; }).join("; ");
-    });
-  }
-  list.addEventListener("change", function (e) {
-    var box = e.target.closest(".act");
-    if (box && (e.target.matches('[data-f="Name"]') || e.target.matches('[data-f="Venue if different"]'))) check(box);
-  });
-  document.getElementById("venue").addEventListener("change", function () {
-    list.querySelectorAll(".act").forEach(check);
-  });
-})();
-</script>
 </body>
 </html>
