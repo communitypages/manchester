@@ -4,7 +4,7 @@ Stops without changing anything if the calendar looks wrong (e.g. the feed came 
 """
 import argparse, contextlib, io, json, os, sys, tempfile
 sys.path.insert(0, os.path.dirname(__file__))
-import mcr_sync, seo_head
+import mcr_sync, seo_head, poster_data
 import datetime as dt
 
 MAX_REMOVED_SHARE = 0.15   # refuse if more than 15% of listings would disappear in one go
@@ -42,6 +42,9 @@ d = os.path.dirname(os.path.abspath(a.page))
 open(os.path.join(d, 'sitemap.xml'), 'w').write(
     '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     f'<url><loc>{seo_head.SITE}</loc><lastmod>{a.today}</lastmod><changefreq>weekly</changefreq></url>\n</urlset>\n')
+os.makedirs(os.path.join(d, 'poster'), exist_ok=True)
+json.dump({'updated': a.today, 'items': poster_data.build(json.loads(new[mcr_sync.page_parts(new)[0]:mcr_sync.page_parts(new)[1]]), dt.date.fromisoformat(a.today))},
+          open(os.path.join(d, 'poster', 'listings.json'), 'w'), ensure_ascii=False, separators=(',', ':'))
 open(os.path.join(d, 'llms.txt'), 'w').write(
     seo_head.LLMS.format(site=seo_head.SITE, n=len(items), email=seo_head.EMAIL, date=a.today))
 

@@ -92,6 +92,18 @@ input:focus,select:focus,textarea:focus{outline:3px solid var(--accent-soft);bor
 .p-about{font-size:calc(3.1cqw*var(--ts,1))}
 #printSheet{display:none}
 
+.finder{background:var(--accent-soft);border-radius:12px;padding:14px 16px;margin:0 0 20px}
+.finder h3{font:800 18px var(--display);margin:0 0 2px}
+.finder p{margin:0 0 8px;font-size:15px}
+.results{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px;max-height:320px;overflow:auto}
+.results button{width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font:15px/1.35 var(--body);color:var(--ink);cursor:pointer}
+.results button:hover,.results button:focus-visible{border-color:var(--accent);outline:none}
+.results b{display:block;font-size:16px}
+.results span{color:var(--muted);font-size:14px}
+.picklist{list-style:none;margin:10px 0;padding:0;display:grid;gap:4px;max-height:360px;overflow:auto}
+.picklist label{display:flex;gap:10px;align-items:flex-start;font-weight:400;margin:0;background:#fff;border-radius:8px;padding:8px 10px;cursor:pointer}
+.picklist input{width:auto;margin-top:4px}
+.picklist small{display:block;color:var(--muted)}
 #socialWrap img{width:100%;border-radius:6px;box-shadow:0 10px 30px rgba(21,48,43,.12);display:block}
 [hidden]{display:none!important}
 footer.site{border-top:1px solid var(--line);padding:20px 0 40px;font-size:15px;color:var(--muted)}
@@ -121,6 +133,19 @@ footer.site{border-top:1px solid var(--line);padding:20px 0 40px;font-size:15px;
   <section class="panel" aria-labelledby="formTitle">
     <h2 id="formTitle">Your details</h2>
     <p class="hint">Saved on this device as you type, so you can come back and update it.</p>
+
+    <div class="finder" id="finder">
+      <h3>Already on Community Pages?</h3>
+      <p>Find your venue or group to fill in the poster from your listings.</p>
+      <input id="findQ" type="search" placeholder="e.g. Gorton Library, M18 or coffee morning" aria-label="Find your venue or group" autocomplete="off">
+      <ul class="results" id="findRes" aria-live="polite"></ul>
+      <div id="pickBox" hidden>
+        <p style="margin-top:12px"><b id="pickTitle"></b><br><span class="small">Tick up to 8 activities for your poster.</span></p>
+        <ul class="picklist" id="pickList"></ul>
+        <div class="actions" style="margin-top:6px"><button class="btn" type="button" id="useSel">Fill in my poster</button><button class="btn ghost" type="button" id="pickBack">Back</button></div>
+      </div>
+      <div class="status" id="findMsg" role="status" aria-live="polite"></div>
+    </div>
 
     <fieldset>
       <legend>Your group</legend>
@@ -241,7 +266,7 @@ footer.site{border-top:1px solid var(--line);padding:20px 0 40px;font-size:15px;
     </div>
     <div class="row3">
       <div><label>Cost</label>
-        <select data-k="cost"><option value="free">Free</option><option value="donation">Donation</option><option value="price">Price</option></select></div>
+        <select data-k="cost"><option value="free">Free</option><option value="donation">Donation</option><option value="price">Price</option><option value="ask">Ask</option></select></div>
       <div class="priceBox" hidden><label>Price</label><input data-k="price" inputmode="decimal" placeholder="£2"></div>
       <div><label>Booking</label>
         <select data-k="book"><option value="drop">Just turn up</option><option value="book">Book first</option></select></div>
@@ -317,6 +342,7 @@ function priceNum(p){var m=String(p||"").match(/(\d+(?:\.\d{1,2})?)/g);return m?
 function costText(a){
   if(a.cost==="free")return "Free";
   if(a.cost==="donation")return "Donation / pay what you can";
+  if(a.cost==="ask")return "Ask about cost";
   var p=(a.price||"").trim(); if(!p)return "Small charge";
   return /^\d/.test(p)?"£"+p:p;
 }
@@ -523,6 +549,85 @@ $("clearAll").addEventListener("click",function(){
   var g=document.querySelector('input[name="colour"][value="#1C6B61"]');if(g)g.checked=true;
   try{localStorage.removeItem(KEY)}catch(e){} update();
 });
+
+/* ---------- start from listings already on the site ---------- */
+var LIST=null, picked=null;
+var DAYNAME={MO:"Monday",TU:"Tuesday",WE:"Wednesday",TH:"Thursday",FR:"Friday",SA:"Saturday",SU:"Sunday"};
+function getList(){
+  if(LIST)return Promise.resolve(LIST);
+  return fetch("listings.json",{cache:"no-cache"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){LIST=d.items||[];return LIST});
+}
+function vkey(v){var m=(v||"").match(/[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}/i);return (v||"").split(",")[0].trim().toLowerCase()+"|"+(m?m[0].replace(/\s/g,"").toUpperCase():"")}
+function search(q){
+  q=q.trim().toLowerCase(); var box=$("findRes"); box.innerHTML="";
+  if(q.length<3){return}
+  getList().then(function(L){
+    var words=q.split(/\s+/), by={};
+    L.forEach(function(x){
+      var hay=(x.v+" "+x.t+" "+(x.o||"")).toLowerCase();
+      if(!words.every(function(w){return hay.indexOf(w)>=0}))return;
+      var k=vkey(x.v); (by[k]=by[k]||{v:x.v,items:[]}).items.push(x);
+    });
+    var keys=Object.keys(by).sort(function(a,b){return by[b].items.length-by[a].items.length}).slice(0,15);
+    if(!keys.length){box.innerHTML='<li class="small">Nothing found. Try the venue name, a postcode like M18, or fill in the form below.</li>';return}
+    keys.forEach(function(k){
+      var g=by[k], li=document.createElement("li"), b=document.createElement("button"); b.type="button";
+      var all=L.filter(function(x){return vkey(x.v)===k});
+      b.innerHTML="<b>"+esc(g.v.split(",")[0])+"</b><span>"+esc(g.v)+" · "+all.length+" listing"+(all.length===1?"":"s")+"</span>";
+      b.addEventListener("click",function(){showPick(all)}); li.appendChild(b); box.appendChild(li);
+    });
+  }).catch(function(){box.innerHTML='<li class="small">Couldn’t load the listings just now. Please fill in the form below.</li>'});
+}
+function sortItems(a,b){return (a.r?0:1)-(b.r?0:1)||(a.d||"").localeCompare(b.d||"")||(a.s||"").localeCompare(b.s||"")}
+function itemWhen(x){
+  var a=toActs(x)[0]; return a?whenText(a):"";
+}
+function showPick(items){
+  picked=items.slice().sort(sortItems);
+  $("findRes").innerHTML=""; $("pickBox").hidden=false;
+  $("pickTitle").textContent=picked[0].v.split(",")[0];
+  var ul=$("pickList"); ul.innerHTML="";
+  picked.forEach(function(x,i){
+    var li=document.createElement("li");
+    li.innerHTML='<label><input type="checkbox" '+(i<MAX_ACTS?"checked":"")+' data-i="'+i+'"><span>'+esc(x.t)+'<small>'+esc(itemWhen(x))+'</small></span></label>';
+    ul.appendChild(li);
+  });
+}
+function toActs(x){
+  var base={name:x.t,day:"Tuesday",date:"",start:x.s||"",end:x.e||"",price:"",book:x.b==="Book first"?"book":"drop",note:""};
+  base.cost=x.c==="Free"?"free":x.c==="Pay what you can"?"donation":x.c==="Low cost"?"price":"ask";
+  if(x.c==="Low cost")base.price=(x.p||"").replace("£","");
+  if(!x.r){var o=Object.assign({},base,{freq:"once",date:x.d});return [o]}
+  var r=x.r, out=[];
+  (r.byday||["TU"]).forEach(function(d){
+    if(r.freq==="monthly")(r.pos||[1]).forEach(function(p){out.push(Object.assign({},base,{day:DAYNAME[d],freq:p===-1?"mlast":"m"+Math.min(p,4)}))});
+    else out.push(Object.assign({},base,{day:DAYNAME[d],freq:(r.interval||1)>1?"fortnightly":"weekly"}));
+  });
+  return out;
+}
+function useSelected(){
+  var sel=[].slice.call($("pickList").querySelectorAll("input:checked")).map(function(c){return picked[+c.dataset.i]});
+  if(!sel.length){$("findMsg").textContent="Tick at least one activity.";return}
+  var list=[];sel.forEach(function(x){list=list.concat(toActs(x))});
+  var cut=list.length>MAX_ACTS; list=list.slice(0,MAX_ACTS);
+  acts.innerHTML=""; list.forEach(addAct);
+  var first=sel[0], orgs=sel.map(function(x){return x.o}).filter(Boolean);
+  if(!$("group").value)$("group").value=orgs.length&&orgs.every(function(o){return o===orgs[0]})?orgs[0]:first.v.split(",")[0];
+  $("venue").value=first.v;
+  var k=sel.map(function(x){return x.k}).filter(Boolean)[0]; if(k&&!$("contact").value)$("contact").value=k;
+  var l=sel.map(function(x){return x.l}).filter(Boolean)[0]; if(l&&!$("web").value)$("web").value=l.replace(/^https?:\/\//,"").replace(/\/$/,"");
+  $("pickBox").hidden=true; $("findQ").value="";
+  $("findMsg").textContent="Filled in from "+sel.length+" listing"+(sel.length===1?"":"s")+(cut?" (first 8 activities only)":"")+". Check the details below and change anything that’s out of date.";
+  update(); $("group").scrollIntoView({behavior:"smooth",block:"start"});
+}
+var findTimer=null;
+$("findQ").addEventListener("input",function(){$("pickBox").hidden=true;$("findMsg").textContent="";clearTimeout(findTimer);var v=this.value;findTimer=setTimeout(function(){search(v)},250)});
+$("pickList").addEventListener("change",function(){
+  var n=$("pickList").querySelectorAll("input:checked").length;
+  $("findMsg").textContent=n>MAX_ACTS?"A poster fits up to 8 activities – only the first 8 will be used.":"";
+});
+$("useSel").addEventListener("click",useSelected);
+$("pickBack").addEventListener("click",function(){$("pickBox").hidden=true;search($("findQ").value)});
 
 /* ---------- start ---------- */
 var saved=load();
