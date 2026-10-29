@@ -14,7 +14,7 @@ import re, sys, os, json, html as H, datetime as dt
 
 SITE = 'https://communitypages.org.uk/'
 TITLE = 'Community Pages – free & low-cost local events in Greater Manchester'
-DESC = ('Find free, donation-based and under-£5 community activities across Greater Manchester: '
+DESC = ('Find free, donation-based and £5-or-less community activities across Greater Manchester: '
         'coffee mornings, ESOL, job clubs, walks, stay and play, food banks and more. '
         'Search by area, date and postcode. Updated every Monday.')
 EMAIL = 'hello@communitypages.org.uk'
@@ -37,13 +37,13 @@ HEAD = f'''<!--seo-start-->
 {{"@type":"WebSite","name":"Community Pages","url":"{SITE}","inLanguage":"en-GB","description":"{DESC}"}},
 {{"@type":"Organization","name":"Community Pages","url":"{SITE}","email":"{EMAIL}","areaServed":"Greater Manchester"}}]}}</script>
 <!--seo-end-->'''
-NOSCRIPT = '''<!--seo-noscript--><noscript><h1>Community Pages</h1><p>Free, donation-based and under-£5 local activities and events across Greater Manchester: Manchester, Salford, Trafford, Stockport, Tameside, Oldham, Rochdale, Bury, Bolton and Wigan. Turn on JavaScript to search by date, area and postcode. Contact: hello@communitypages.org.uk</p></noscript>'''
+NOSCRIPT = '''<!--seo-noscript--><noscript><h1>Community Pages</h1><p>Free, donation-based and £5-or-less local activities and events across Greater Manchester: Manchester, Salford, Trafford, Stockport, Tameside, Oldham, Rochdale, Bury, Bolton and Wigan. Turn on JavaScript to search by date, area and postcode. Contact: hello@communitypages.org.uk</p></noscript>'''
 
 DAYS = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
 DAYNAME = dict(zip(DAYS, ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']))
 SCHEMA_DAY = {d: 'https://schema.org/' + DAYNAME[d] for d in DAYS}
 ORD = {1: '1st', 2: '2nd', 3: '3rd', 4: '4th', 5: '5th', -1: 'last'}
-COST_TEXT = {'Free': 'Free', 'Pay what you can': 'Donation / pay what you can', 'Low cost': 'Under £5',
+COST_TEXT = {'Free': 'Free', 'Pay what you can': 'Donation / pay what you can', 'Low cost': '£5 or less',
              'Price not stated': 'Price not stated – check with the organiser'}
 
 
@@ -144,7 +144,7 @@ def static_html(items, today):
         return s + '</li>'
     h = ['<!--seo-list-start--><div class="wrap" id="seo-list">',
          '<h1>Community Pages – free and low-cost events in Greater Manchester</h1>',
-         '<p>Free, donation-based and under-£5 community activities across Greater Manchester, checked and updated every Monday. '
+         '<p>Free, donation-based and £5-or-less community activities across Greater Manchester, checked and updated every Monday. '
          f'List updated {today.strftime("%-d %B %Y")}. {len(items)} events and regular groups. '
          f'Please check with the organiser before you go. Contact: {EMAIL}</p>',
          '<h2>Dated events coming up</h2><ul>']
@@ -184,7 +184,7 @@ def event_ld(ev, nd):
     elif c == 'Pay what you can':
         o['offers'] = {'@type': 'Offer', 'price': '0', 'priceCurrency': 'GBP', 'description': 'Donation / pay what you can', 'url': o['url']}
     elif c == 'Low cost':
-        o['offers'] = {'@type': 'Offer', 'description': 'Under £5', 'priceCurrency': 'GBP', 'url': o['url']}
+        o['offers'] = {'@type': 'Offer', 'description': '£5 or less', 'priceCurrency': 'GBP', 'url': o['url']}
     r = ev.get('rule')
     if r:
         s = {'@type': 'Schedule', 'scheduleTimezone': 'Europe/London', 'startDate': ev['date'],
@@ -233,7 +233,7 @@ def apply(html, today=None):
 
 LLMS = '''# Community Pages
 
-> Free, donation-based and under-£5 community activities and events across Greater Manchester (Manchester, Salford, Trafford, Stockport, Tameside, Oldham, Rochdale, Bury, Bolton and Wigan). Coffee mornings, ESOL classes, job clubs, walking groups, stay and play, food banks, lunch clubs, wellbeing groups, choirs, gardening and more. Built for residents and social prescribing link workers.
+> Free, donation-based and £5-or-less community activities and events across Greater Manchester (Manchester, Salford, Trafford, Stockport, Tameside, Oldham, Rochdale, Bury, Bolton and Wigan). Coffee mornings, ESOL classes, job clubs, walking groups, stay and play, food banks, lunch clubs, wellbeing groups, choirs, gardening and more. Built for residents and social prescribing link workers.
 
 - Updated every Monday from a checked community events calendar.
 - Every event lists its date or how often it runs, time, venue with postcode, area, cost (free, donation, under £5 or price not stated) and whether to drop in or book.
