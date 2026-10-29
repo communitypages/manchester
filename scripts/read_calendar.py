@@ -1,6 +1,6 @@
-"""Read the calendar's private iCal feed and save it in the format mcr_sync.py expects.
-No AI involved. Usage:
-  python3 ical_to_pages.py --url "$CALENDAR_ICAL_URL" --out pages/ --from 2026-10-27 --to 2027-03-27
+"""Step 1 of the daily update: reads the "MCR Free Community Events" Google Calendar and saves a copy
+for build_site.py. Usage:
+  python3 scripts/read_calendar.py --url <calendar iCal address> --out pages/ --from 2026-10-27 --to 2027-03-27
 (--file feed.ics can be used instead of --url for testing.)
 Each repeating event is expanded into its dates, with recurringEventId set, like the Google Calendar API.
 """

@@ -1,4 +1,9 @@
-"""Turn calendar events into app events (calendar is the master)."""
+"""Turns calendar entries into website listings.
+
+Works out each listing's area (from the postcode), category, cost, booking and how often it repeats,
+leaves out obvious duplicates, and flags anything to check (no postcode, unknown area, listing rules).
+Used by build_site.py – you don't run this file yourself.
+"""
 import json, re, collections, datetime as dt
 
 OTHER = 'Other / check venue'
@@ -222,7 +227,7 @@ def rule_flags(events):
     return [e['title'] for e in events if re.search(RULE_CHECK, ' '.join([e['title'], e.get('org') or '', e.get('info') or '']), re.I)]
 
 
-# ---------------- command line ----------------
+# ---------------- reading the calendar copy and the page ----------------
 def load_pages(d):
     import glob, os
     seen = {}
@@ -285,25 +290,3 @@ def cmd_build(pages, app_path, today, window_end, out):
                       'check_rules': rule_flags(out_ev),
                       'no_postcode': [e['title'] + ' | ' + e['venue'] for e in out_ev if not POSTCODE.search(e.get('venue') or '')]},
                      ensure_ascii=False, indent=1))
-
-def cmd_past(pages, today):
-    """List calendar items that are over: one-off events that ended before today, and repeating
-    events whose last date is before today. Pages must cover from at least 2 months ago to 5 months ahead."""
-    today = dt.date.fromisoformat(today)
-    ev = load_pages(pages)
-    last = {}
-    for c in ev:
-        k = c.get('recurringEventId') or c['id']
-        end, all_day = when(c['end'])
-        d = dt.date.fromisoformat(end[:10]) - dt.timedelta(1) if all_day else local(end)[0]
-        last[k] = max(last.get(k, d), d)
-    print(json.dumps(sorted(k for k, d in last.items() if d < today)))
-
-if __name__ == '__main__':
-    import argparse
-    p = argparse.ArgumentParser(); sub = p.add_subparsers(dest='cmd')
-    b = sub.add_parser('build'); b.add_argument('--pages'); b.add_argument('--app'); b.add_argument('--today'); b.add_argument('--window-end'); b.add_argument('--out')
-    q = sub.add_parser('past'); q.add_argument('--pages'); q.add_argument('--today')
-    a = p.parse_args()
-    if a.cmd == 'build': cmd_build(a.pages, a.app, a.today, a.window_end, a.out)
-    elif a.cmd == 'past': cmd_past(a.pages, a.today)

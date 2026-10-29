@@ -42,7 +42,7 @@ jobs:
           END=$(TZ=Europe/London date -d '+150 days' +%F)
           echo "TODAY=$TODAY" >> $GITHUB_ENV
           echo "END=$END" >> $GITHUB_ENV
-          python3 scripts/ical_to_pages.py --url "$URL" --out "$RUNNER_TEMP/pages" --from "$TODAY" --to "$END"
+          python3 scripts/read_calendar.py --url "$URL" --out "$RUNNER_TEMP/pages" --from "$TODAY" --to "$END"
       - name: Rebuild the page
         run: |
           python3 scripts/build_site.py --pages "$RUNNER_TEMP/pages" --today "$TODAY" --window-end "$END" \

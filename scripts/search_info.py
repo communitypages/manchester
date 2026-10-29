@@ -1,6 +1,5 @@
-"""Add SEO and AI-search content to the Community Pages index.html before it goes to GitHub.
-Safe to run more than once. Usage: python3 seo_head.py index.html [repo_folder]
-With repo_folder, also writes robots.txt, sitemap.xml and llms.txt there.
+"""Adds the information Google and AI search tools read to index.html.
+Used by build_site.py – you don't run this file yourself. Safe to run more than once.
 
 What it adds:
 - <head>: title, description, social tags, site info (as before).
@@ -251,17 +250,3 @@ LLMS = '''# Community Pages
 
 Last updated: {date}
 '''
-
-if __name__ == '__main__':
-    p = sys.argv[1]
-    new, items = apply(open(p).read())
-    open(p, 'w').write(new)
-    if len(sys.argv) > 2:
-        d = sys.argv[2]
-        open(os.path.join(d, 'robots.txt'), 'w').write(f'User-agent: *\nAllow: /\nSitemap: {SITE}sitemap.xml\n')
-        open(os.path.join(d, 'sitemap.xml'), 'w').write(
-            '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-            f'<url><loc>{SITE}</loc><lastmod>{dt.date.today().isoformat()}</lastmod><changefreq>weekly</changefreq></url>\n</urlset>\n')
-        open(os.path.join(d, 'llms.txt'), 'w').write(
-            LLMS.format(site=SITE, n=len(items), email=EMAIL, date=dt.date.today().isoformat()))
-    print('SEO added:', len(items), 'events listed')

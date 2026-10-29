@@ -1,10 +1,10 @@
-"""Rebuild index.html from the calendar. Runs on GitHub with no AI.
+"""Step 2 of the daily update: rebuilds index.html (and sitemap.xml, llms.txt) from the calendar copy.
 Usage: python3 scripts/build_site.py --pages pages/ --today 2026-10-27 --window-end 2027-03-27
 Stops without changing anything if the calendar looks wrong (e.g. the feed came back nearly empty).
 """
 import argparse, contextlib, io, json, os, sys, tempfile
 sys.path.insert(0, os.path.dirname(__file__))
-import mcr_sync, seo_head
+import events as mcr_sync, search_info as seo_head
 import datetime as dt
 
 MAX_REMOVED_SHARE = 0.15   # refuse if more than 15% of listings would disappear in one go
