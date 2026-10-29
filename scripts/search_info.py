@@ -12,8 +12,8 @@ What it adds:
 import re, sys, os, json, html as H, datetime as dt
 
 SITE = 'https://communitypages.org.uk/'
-TITLE = 'Community Pages – free & low-cost local events in Greater Manchester'
-DESC = ('Find free, donation-based and £5-or-less community activities across Greater Manchester: '
+TITLE = 'Community Pages – local wellbeing activities £5 and under in Greater Manchester'
+DESC = ('Local wellbeing activities £5 and under across Greater Manchester – free, donation or low cost: '
         'coffee mornings, ESOL, job clubs, walks, stay and play, food banks and more. '
         'Search by area, date and postcode. Updated every day.')
 EMAIL = 'hello@communitypages.org.uk'
@@ -38,7 +38,7 @@ HEAD = f'''<!--seo-start-->
 {{"@type":"WebSite","name":"Community Pages","url":"{SITE}","inLanguage":"en-GB","description":"{DESC}"}},
 {{"@type":"Organization","name":"Community Pages","url":"{SITE}","email":"{EMAIL}","description":"Free, volunteer-run listing of free, donation and £5-or-less community activities in Greater Manchester, for residents and social prescribing link workers.","areaServed":{{"@type":"AdministrativeArea","name":"Greater Manchester"}},"sameAs":["https://www.patreon.com/c/communitypages"]}}]}}</script>
 <!--seo-end-->'''
-NOSCRIPT = '''<!--seo-noscript--><noscript><h1>Community Pages</h1><p>Free, donation-based and £5-or-less local activities and events across Greater Manchester: Manchester, Salford, Trafford, Stockport, Tameside, Oldham, Rochdale, Bury, Bolton and Wigan. Turn on JavaScript to search by date, area and postcode. Contact: hello@communitypages.org.uk</p></noscript>'''
+NOSCRIPT = '''<!--seo-noscript--><noscript><h1>Community Pages</h1><p>Local wellbeing activities £5 and under – free, donation or low cost – across Greater Manchester: Manchester, Salford, Trafford, Stockport, Tameside, Oldham, Rochdale, Bury, Bolton and Wigan. Turn on JavaScript to search by date, area and postcode. Contact: hello@communitypages.org.uk</p></noscript>'''
 
 DAYS = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
 DAYNAME = dict(zip(DAYS, ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']))
@@ -144,7 +144,7 @@ def static_html(items, today):
         if safe_link(ev.get('link')): s += ' <a href="' + e(ev['link']) + '" rel="nofollow noopener">More info</a>'
         return s + '</li>'
     h = ['<!--seo-list-start--><p id="seo-loading">Loading activities…</p><div class="wrap" id="seo-list">',
-         '<h1>Community Pages – free and low-cost events in Greater Manchester</h1>',
+         '<h1>Community Pages – local wellbeing activities £5 and under in Greater Manchester</h1>',
          '<p>Free, donation-based and £5-or-less community activities across Greater Manchester, checked by hand and updated every day. '
          f'List updated {today.strftime("%-d %B %Y")}. {len(items)} events and regular groups. '
          f'Please check with the organiser before you go. Contact: {EMAIL}</p>',
