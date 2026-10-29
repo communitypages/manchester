@@ -1,6 +1,6 @@
 # Community Pages
 
-> Free, donation-based and under-£5 community activities and events across Greater Manchester (Manchester, Salford, Trafford, Stockport, Tameside, Oldham, Rochdale, Bury, Bolton and Wigan). Coffee mornings, ESOL classes, job clubs, walking groups, stay and play, food banks, lunch clubs, wellbeing groups, choirs, gardening and more. Built for residents and social prescribing link workers.
+> Free, donation-based and £5-or-less community activities and events across Greater Manchester (Manchester, Salford, Trafford, Stockport, Tameside, Oldham, Rochdale, Bury, Bolton and Wigan). Coffee mornings, ESOL classes, job clubs, walking groups, stay and play, food banks, lunch clubs, wellbeing groups, choirs, gardening and more. Built for residents and social prescribing link workers.
 
 - Updated every Monday from a checked community events calendar.
 - Every event lists its date or how often it runs, time, venue with postcode, area, cost (free, donation, under £5 or price not stated) and whether to drop in or book.
