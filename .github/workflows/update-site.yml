@@ -51,7 +51,7 @@ jobs:
         run: |
           git config user.name "Community Pages bot"
           git config user.email "hello@communitypages.org.uk"
-          git add index.html sitemap.xml llms.txt
+          git add index.html sitemap.xml llms.txt llms-full.txt
           if git diff --cached --quiet; then echo "No changes"; exit 0; fi
           git commit -m "Update events from calendar ($TODAY)"
           git push

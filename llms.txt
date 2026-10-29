@@ -1,19 +1,25 @@
 # Community Pages
 
-> Free, donation-based and £5-or-less community activities and events across Greater Manchester (Manchester, Salford, Trafford, Stockport, Tameside, Oldham, Rochdale, Bury, Bolton and Wigan). Coffee mornings, ESOL classes, job clubs, walking groups, stay and play, food banks, lunch clubs, wellbeing groups, choirs, gardening and more. Built for residents and social prescribing link workers.
+> Free, volunteer-run website listing community activities and events across Greater Manchester that are free, donation-based or cost £5 or less. Covers all ten boroughs: Manchester, Salford, Trafford, Stockport, Tameside, Oldham, Rochdale, Bury, Bolton and Wigan. Built for residents and for social prescribing link workers.
 
-- Updated every Monday from a checked community events calendar.
-- Every event lists its date or how often it runs, time, venue with postcode, area, cost (free, donation, under £5 or price not stated) and whether to drop in or book.
-- Paid events are not listed.
+Typical activities: coffee mornings, chatty cafés, ESOL and English classes, job clubs, digital help, walking groups, chair exercise, stay and play, baby and toddler groups, lunch clubs, food banks, wellbeing and peer support groups, choirs, craft and knitting groups, gardening.
+
+- 774 current listings, checked by hand and updated every day.
+- Each listing gives the date or how often it runs, start and end time, venue with postcode, area, cost (free, donation, £5 or less, or price not stated) and whether to drop in or book first.
+- Activities costing more than £5, political campaigns, religious worship and business promotion are not listed.
 - People should check with the organiser before going.
 
-## Main page
+## Pages
 
-- [Community Pages – all events](https://communitypages.org.uk/): the full list of 774 current events and regular groups is in the page as plain HTML and as schema.org Event data.
+- [Find activities](https://communitypages.org.uk/): searchable list by date, area and postcode, with a printable list.
+- [All listings as plain text](https://communitypages.org.uk/llms-full.txt): every current activity, one per line, grouped by area.
+- [About](https://communitypages.org.uk/about/): who runs the site and what is listed.
+- [For link workers](https://communitypages.org.uk/link-workers/): how to find and print local activities for someone.
+- [Add your event](https://communitypages.org.uk/add/): how groups can get listed for free.
+- [Support us](https://communitypages.org.uk/support/)
 
 ## Contact
 
 - Email: hello@communitypages.org.uk
-- To add an event, groups can fill in the form at https://communitypages.org.uk/add/ or email the details.
 
 Last updated: 2026-10-29

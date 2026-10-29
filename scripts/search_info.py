@@ -15,7 +15,7 @@ SITE = 'https://communitypages.org.uk/'
 TITLE = 'Community Pages – free & low-cost local events in Greater Manchester'
 DESC = ('Find free, donation-based and £5-or-less community activities across Greater Manchester: '
         'coffee mornings, ESOL, job clubs, walks, stay and play, food banks and more. '
-        'Search by area, date and postcode. Updated every Monday.')
+        'Search by area, date and postcode. Updated every day.')
 EMAIL = 'hello@communitypages.org.uk'
 HEAD = f'''<!--seo-start-->
 <script>document.documentElement.className+=' js'</script>
@@ -36,7 +36,7 @@ HEAD = f'''<!--seo-start-->
 <meta name="twitter:card" content="summary">
 <script type="application/ld+json">{{"@context":"https://schema.org","@graph":[
 {{"@type":"WebSite","name":"Community Pages","url":"{SITE}","inLanguage":"en-GB","description":"{DESC}"}},
-{{"@type":"Organization","name":"Community Pages","url":"{SITE}","email":"{EMAIL}","areaServed":"Greater Manchester"}}]}}</script>
+{{"@type":"Organization","name":"Community Pages","url":"{SITE}","email":"{EMAIL}","description":"Free, volunteer-run listing of free, donation and £5-or-less community activities in Greater Manchester, for residents and social prescribing link workers.","areaServed":{{"@type":"AdministrativeArea","name":"Greater Manchester"}},"sameAs":["https://www.patreon.com/c/communitypages"]}}]}}</script>
 <!--seo-end-->'''
 NOSCRIPT = '''<!--seo-noscript--><noscript><h1>Community Pages</h1><p>Free, donation-based and £5-or-less local activities and events across Greater Manchester: Manchester, Salford, Trafford, Stockport, Tameside, Oldham, Rochdale, Bury, Bolton and Wigan. Turn on JavaScript to search by date, area and postcode. Contact: hello@communitypages.org.uk</p></noscript>'''
 
@@ -145,7 +145,7 @@ def static_html(items, today):
         return s + '</li>'
     h = ['<!--seo-list-start--><p id="seo-loading">Loading activities…</p><div class="wrap" id="seo-list">',
          '<h1>Community Pages – free and low-cost events in Greater Manchester</h1>',
-         '<p>Free, donation-based and £5-or-less community activities across Greater Manchester, checked and updated every Monday. '
+         '<p>Free, donation-based and £5-or-less community activities across Greater Manchester, checked by hand and updated every day. '
          f'List updated {today.strftime("%-d %B %Y")}. {len(items)} events and regular groups. '
          f'Please check with the organiser before you go. Contact: {EMAIL}</p>',
          '<h2>Dated events coming up</h2><ul>']
@@ -234,21 +234,66 @@ def apply(html, today=None):
 
 LLMS = '''# Community Pages
 
-> Free, donation-based and £5-or-less community activities and events across Greater Manchester (Manchester, Salford, Trafford, Stockport, Tameside, Oldham, Rochdale, Bury, Bolton and Wigan). Coffee mornings, ESOL classes, job clubs, walking groups, stay and play, food banks, lunch clubs, wellbeing groups, choirs, gardening and more. Built for residents and social prescribing link workers.
+> Free, volunteer-run website listing community activities and events across Greater Manchester that are free, donation-based or cost £5 or less. Covers all ten boroughs: Manchester, Salford, Trafford, Stockport, Tameside, Oldham, Rochdale, Bury, Bolton and Wigan. Built for residents and for social prescribing link workers.
 
-- Updated every Monday from a checked community events calendar.
-- Every event lists its date or how often it runs, time, venue with postcode, area, cost (free, donation, under £5 or price not stated) and whether to drop in or book.
-- Paid events are not listed.
+Typical activities: coffee mornings, chatty cafés, ESOL and English classes, job clubs, digital help, walking groups, chair exercise, stay and play, baby and toddler groups, lunch clubs, food banks, wellbeing and peer support groups, choirs, craft and knitting groups, gardening.
+
+- {n} current listings, checked by hand and updated every day.
+- Each listing gives the date or how often it runs, start and end time, venue with postcode, area, cost (free, donation, £5 or less, or price not stated) and whether to drop in or book first.
+- Activities costing more than £5, political campaigns, religious worship and business promotion are not listed.
 - People should check with the organiser before going.
 
-## Main page
+## Pages
 
-- [Community Pages – all events]({site}): the full list of {n} current events and regular groups is in the page as plain HTML and as schema.org Event data.
+- [Find activities]({site}): searchable list by date, area and postcode, with a printable list.
+- [All listings as plain text]({site}llms-full.txt): every current activity, one per line, grouped by area.
+- [About]({site}about/): who runs the site and what is listed.
+- [For link workers]({site}link-workers/): how to find and print local activities for someone.
+- [Add your event]({site}add/): how groups can get listed for free.
+- [Support us]({site}support/)
 
 ## Contact
 
 - Email: {email}
-- To add an event, groups can fill in the form at {site}add/ or email the details.
 
 Last updated: {date}
 '''
+
+PAGES = ['', 'about/', 'link-workers/', 'add/', 'support/', 'privacy/']
+
+
+def llms_full(items, today):
+    """Every current listing as plain text, for AI tools."""
+    def line(ev, nd):
+        bits = [when_text(ev, nd), ev.get('venue', '')]
+        bits.append(COST_TEXT.get(ev.get('cost'), ev.get('cost') or 'Price not stated'))
+        if ev.get('booking'): bits.append(ev['booking'])
+        t = '- ' + ev['title'] + ': ' + '; '.join(b for b in bits if b)
+        if ev.get('org'): t += '. Run by ' + ev['org']
+        if ev.get('info'): t += '. ' + clip(ev['info'], 200)
+        if safe_link(ev.get('link')): t += ' ' + ev['link']
+        return t
+    regular = sorted([x for x in items if x[0].get('rule')], key=lambda x: (x[0].get('area', ''), x[0]['title']))
+    oneoff = sorted([x for x in items if not x[0].get('rule')], key=lambda x: (x[1], x[0].get('start', '')))
+    out = ['# Community Pages – all current listings', '',
+           f'> Free, donation and £5-or-less activities across Greater Manchester. {len(items)} listings, updated {today.strftime("%-d %B %Y")}. '
+           f'Source: {SITE} – please check with the organiser before going.', '', '## Regular groups, by area']
+    area = None
+    for ev, nd in regular:
+        if ev.get('area') != area:
+            area = ev.get('area'); out += ['', '### ' + (area or 'Other')]
+        out.append(line(ev, nd))
+    out += ['', '## Dated events coming up']
+    out += [line(ev, nd) for ev, nd in oneoff]
+    return '\n'.join(out) + '\n'
+
+
+def write_extras(folder, items, today):
+    """sitemap.xml, llms.txt and llms-full.txt."""
+    urls = ''.join(f'<url><loc>{SITE}{p}</loc>' + (f'<lastmod>{today.isoformat()}</lastmod><changefreq>daily</changefreq>' if p == '' else '') + '</url>\n'
+                   for p in PAGES)
+    open(os.path.join(folder, 'sitemap.xml'), 'w').write(
+        '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + '</urlset>\n')
+    open(os.path.join(folder, 'llms.txt'), 'w').write(LLMS.format(site=SITE, n=len(items), email=EMAIL, date=today.isoformat()))
+    open(os.path.join(folder, 'llms-full.txt'), 'w').write(llms_full(items, today))
+

@@ -1,4 +1,4 @@
-"""Step 2 of the daily update: rebuilds index.html (and sitemap.xml, llms.txt) from the calendar copy.
+"""Step 2 of the daily update: rebuilds index.html (and sitemap.xml, llms.txt, llms-full.txt) from the calendar copy.
 Usage: python3 scripts/build_site.py --pages pages/ --today 2026-10-27 --window-end 2027-03-27
 Stops without changing anything if the calendar looks wrong (e.g. the feed came back nearly empty).
 """
@@ -39,11 +39,7 @@ if problems and not a.force:
 new, items = seo_head.apply(head + open(tmp).read() + tail, dt.date.fromisoformat(a.today))
 open(a.page, 'w').write(new)
 d = os.path.dirname(os.path.abspath(a.page))
-open(os.path.join(d, 'sitemap.xml'), 'w').write(
-    '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-    f'<url><loc>{seo_head.SITE}</loc><lastmod>{a.today}</lastmod><changefreq>weekly</changefreq></url>\n</urlset>\n')
-open(os.path.join(d, 'llms.txt'), 'w').write(
-    seo_head.LLMS.format(site=seo_head.SITE, n=len(items), email=seo_head.EMAIL, date=a.today))
+seo_head.write_extras(d, items, dt.date.fromisoformat(a.today))
 
 # short report for the GitHub run page
 out = os.environ.get('GITHUB_STEP_SUMMARY')
