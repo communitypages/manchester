@@ -18,6 +18,8 @@ DESC = ('Find free, donation-based and £5-or-less community activities across G
         'Search by area, date and postcode. Updated every Monday.')
 EMAIL = 'hello@communitypages.org.uk'
 HEAD = f'''<!--seo-start-->
+<script>document.documentElement.className+=' js'</script>
+<style>.js #seo-list{{display:none}}#seo-loading{{display:none}}.js #seo-loading{{display:block;max-width:1100px;margin:0 auto;padding:40px 16px;font:17px "Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;color:#56706A}}</style>
 <title>{TITLE}</title>
 <meta name="description" content="{DESC}">
 <link rel="canonical" href="{SITE}">
@@ -141,7 +143,7 @@ def static_html(items, today):
         if ev.get('info'): s += '. ' + e(clip(ev['info'], 240))
         if safe_link(ev.get('link')): s += ' <a href="' + e(ev['link']) + '" rel="nofollow noopener">More info</a>'
         return s + '</li>'
-    h = ['<!--seo-list-start--><div class="wrap" id="seo-list">',
+    h = ['<!--seo-list-start--><p id="seo-loading">Loading activities…</p><div class="wrap" id="seo-list">',
          '<h1>Community Pages – free and low-cost events in Greater Manchester</h1>',
          '<p>Free, donation-based and £5-or-less community activities across Greater Manchester, checked and updated every Monday. '
          f'List updated {today.strftime("%-d %B %Y")}. {len(items)} events and regular groups. '
