@@ -9,11 +9,11 @@
 
 ## Main page
 
-- [Community Pages – all events](https://communitypages.org.uk/): the full list of 783 current events and regular groups is in the page as plain HTML and as schema.org Event data.
+- [Community Pages – all events](https://communitypages.org.uk/): the full list of 774 current events and regular groups is in the page as plain HTML and as schema.org Event data.
 
 ## Contact
 
 - Email: hello@communitypages.org.uk
 - To add an event, groups can fill in the form at https://communitypages.org.uk/add/ or email the details.
 
-Last updated: 2026-10-28
+Last updated: 2026-10-29
