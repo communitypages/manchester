@@ -1231,8 +1231,7 @@ function downloadIcs(ev,day){
 function calHTML(ev,day){
   day=day||nextDay(ev);
   var lbl=ev.rule?" ("+fmtDate(day)+")":"";
-  return '<div class="calrow"><button type="button" class="btn small" data-ics="'+esc(ev.id+"|"+day)+'">Save to my calendar'+esc(lbl)+'</button>'+
-   '<a class="btn small ghost" href="'+esc(googleLink(ev,day))+'" target="_blank" rel="noopener">Google Calendar</a></div>';
+  return '<div class="calrow"><button type="button" class="btn small" data-ics="'+esc(ev.id+"|"+day)+'">Save to my calendar'+esc(lbl)+'</button></div>';
 }
 function detailHTML(ev,day){
   var h='<div class="detail">';
