@@ -1336,7 +1336,7 @@ function shell(){
   
   
   document.getElementById("printbtn").addEventListener("click",printList);
-  document.getElementById("list").addEventListener("click",function(e){var a=e.target.closest(".meta.addr");if(a){var x=a.getAttribute("aria-expanded")==="true";a.textContent=a.getAttribute(x?"data-short":"data-full");a.setAttribute("aria-expanded",String(!x));e.stopPropagation();return;}onListClick(e);});
+  document.getElementById("list").addEventListener("click",function(e){if(e.target.closest("[data-more]")){S.limit=(S.limit||50)+50;render();return;}var a=e.target.closest(".meta.addr");if(a){var x=a.getAttribute("aria-expanded")==="true";a.textContent=a.getAttribute(x?"data-short":"data-full");a.setAttribute("aria-expanded",String(!x));e.stopPropagation();return;}onListClick(e);});
   
 }
 function render(){
@@ -1347,18 +1347,19 @@ function render(){
   if(S.when==="date"&&(!S.date||S.date<iso(today())))S.date=iso(today()); document.getElementById("pickdate").hidden=S.when!=="date";
   var pm=document.getElementById("pcmsg"),hasPc=!!(S.pc||"").trim(),okPc=!!userLL();document.getElementById("near").hidden=!okPc;
   pm.textContent=hasPc&&!okPc?(outward(S.pc).length>=2?"Postcode not recognised – try the first part, e.g. M19 or SK4":""):(okPc?"Distances are approximate, based on postcode area.":"");
-  S.tab="on"; S.free=false; S.drop=false; S.oneoff=false; list.innerHTML = S.tab==="on"?renderOn():renderReg();
+  S.tab="on"; S.free=false; S.drop=false; S.oneoff=false; var sig=[S.q,S.when,S.date,S.area,S.cat,S.pc,S.near].join("|"); if(sig!==S.sig){S.sig=sig;S.limit=50;} list.innerHTML = S.tab==="on"?renderOn():renderReg();
 }
 function renderOn(){
   var r=range(), from=r[0], to=r[1], t=iso(today());
   var pool=EVENTS.filter(function(ev){return matches(ev) && !(S.oneoff && ev.rule)});
-  var html="", total=0;
+  var html="", total=0, shown=0, LIM=S.limit||50;
   for(var d=from; d<=to; d=addDays(d,1)){
     var items=pool.filter(function(ev){return occursOn(ev,d)});
     if(!items.length) continue;
+    if(shown>=LIM){total+=items.length; continue;}
     items.sort(function(a,b){return (a.start||"00:00").localeCompare(b.start||"00:00")||a.title.localeCompare(b.title)});
-    total+=items.length;
     var s=iso(d), tag=s===t?"Today":(s===iso(addDays(today(),1))?"Tomorrow":"");
+    total+=items.length; items=items.slice(0,LIM-shown); shown+=items.length;
     html+='<section class="day"><div class="dayhead"><span class="dnum">'+d.getDate()+'</span><span class="dname">'+["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][d.getDay()]+'</span><span class="dmonth">'+MONLONG[d.getMonth()]+'</span>'+(tag?'<span class="dtag">'+tag+'</span>':'')+'</div>';
     items.forEach(function(ev){
       var key=ev.id+"@"+s, open=!!S.open[key];
@@ -1371,6 +1372,7 @@ function renderOn(){
   }
   var label={today:"today",tomorrow:"tomorrow",weekend:"this weekend",week:"in the next 7 days",month:"in the next 30 days",all:"coming up"}[S.when]; if(S.when==="date"){var pd=parse(S.date);label=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][pd.getDay()]+" "+pd.getDate()+" "+MONLONG[pd.getMonth()];}
   if(!total) return '<p class="empty">Nothing matches '+label+(userLL()?' within '+S.near+(S.near==="1"?' mile':' miles')+' of '+esc(S.pc.toUpperCase()):'')+'. Try a wider date range'+(userLL()?', a bigger distance':'')+' or fewer filters.</p>';
+  if(total>shown) html+='<p style="text-align:center;margin:18px 0"><button type="button" class="btn" data-more="1">Show more ('+(total-shown)+' more)</button></p>';
   return html;
 }
 function renderReg(){
