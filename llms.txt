@@ -4,7 +4,7 @@
 
 Typical activities: coffee mornings, chatty cafés, ESOL and English classes, job clubs, digital help, walking groups, chair exercise, stay and play, baby and toddler groups, lunch clubs, food banks, wellbeing and peer support groups, choirs, craft and knitting groups, gardening.
 
-- 774 current listings, checked by hand and updated every day.
+- 761 current listings, checked by hand and updated every day.
 - Each listing gives the date or how often it runs, start and end time, venue with postcode, area, cost (free, donation, £5 or less, or price not stated) and whether to drop in or book first.
 - Activities costing more than £5, political campaigns, religious worship and business promotion are not listed.
 - People should check with the organiser before going.
@@ -22,4 +22,4 @@ Typical activities: coffee mornings, chatty cafés, ESOL and English classes, jo
 
 - Email: hello@communitypages.org.uk
 
-Last updated: 2026-10-29
+Last updated: 2026-10-30
