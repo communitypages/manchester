@@ -92,6 +92,7 @@ def area_for(loc):
 
 def cat_for(title, desc):
     t = (title + ' ').lower()
+    if re.search(r'chatty ?caf|chatter (and|&) natter', t): return 'Community'   # Chatty Cafe = coffee meet-up
     for c, rx in CATS:
         if re.search(rx, t): return c
     d = (desc or '').lower()
@@ -257,7 +258,8 @@ def cmd_build(pages, app_path, today, window_end, out):
         fresh = series_to_app(insts, window_end)
         if gid in old:
             prev = old[gid]
-            fresh['id'] = prev['id']; fresh['category'] = prev['category']
+            fresh['id'] = prev['id']
+            if not re.search(r'chatty ?caf|chatter (and|&) natter', fresh['title'].lower()): fresh['category'] = prev['category']
             # keep the area already in the app (it may have been set by hand), except where it was
             # 'Other / check venue' or the postcode district is one split between areas (e.g. M16)
             if prev.get('area') and prev['area'] != OTHER and _district(fresh['venue']) not in SPLIT_DISTRICTS:
