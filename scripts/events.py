@@ -90,9 +90,16 @@ def area_for(loc):
         if m.group(1) in AREA_BY_PC: return AREA_BY_PC[m.group(1)]
     return _by_word(loc) or ('City centre & Ardwick' if re.search(r'\bmanchester\b', (loc or '').lower()) else OTHER)
 
+COFFEE = r'chatty ?caf|coffee|cuppa|\bbrew\b|tea (and|&) (chat|natter)|chatter (and|&) natter'
+NOT_COFFEE = r'digital|computer|craft|crochet|knit'
+def is_coffee(title):
+    """Chatty Cafes, coffee mornings and brews go in 'Coffee & chat' (by title only), unless they're mainly a craft or computer session."""
+    t = (title or '').lower()
+    return bool(re.search(COFFEE, t)) and not re.search(NOT_COFFEE, t)
+
 def cat_for(title, desc):
     t = (title + ' ').lower()
-    if re.search(r'chatty ?caf|chatter (and|&) natter', t): return 'Community'   # Chatty Cafe = coffee meet-up
+    if is_coffee(title): return 'Coffee & chat'
     for c, rx in CATS:
         if re.search(rx, t): return c
     d = (desc or '').lower()
@@ -259,7 +266,7 @@ def cmd_build(pages, app_path, today, window_end, out):
         if gid in old:
             prev = old[gid]
             fresh['id'] = prev['id']
-            if not re.search(r'chatty ?caf|chatter (and|&) natter', fresh['title'].lower()): fresh['category'] = prev['category']
+            if not is_coffee(fresh['title']) and prev['category'] != 'Coffee & chat': fresh['category'] = prev['category']
             # keep the area already in the app (it may have been set by hand), except where it was
             # 'Other / check venue' or the postcode district is one split between areas (e.g. M16)
             if prev.get('area') and prev['area'] != OTHER and _district(fresh['venue']) not in SPLIT_DISTRICTS:
