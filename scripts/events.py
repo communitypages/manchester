@@ -140,11 +140,8 @@ def parse_desc(desc):
         il = info.lower()
         out['cost'] = ('Pay what you can' if 'donation' in il or 'pay what' in il or 'pay as you feel' in il
                        else price_band(info) or ('Free' if re.search(r'\bfree\b', il) else 'Price not stated'))
-    if 'booking' not in out:
-        il = info.lower()
-        if re.search(r'book(ing)? (required|essential|first)|sign up|register', il): out['booking'] = 'Book first'
-        elif 'drop in' in il or 'drop-in' in il: out['booking'] = 'Drop in'
-        else: out['booking'] = ''
+    # Booking (drop in / book first) is not shown: we usually don't know it for sure (31 Oct 2026).
+    out.pop('booking', None)
     if info: out['info'] = info
     return out
 
@@ -265,7 +262,7 @@ def cmd_build(pages, app_path, today, window_end, out):
             # 'Other / check venue' or the postcode district is one split between areas (e.g. M16)
             if prev.get('area') and prev['area'] != OTHER and _district(fresh['venue']) not in SPLIT_DISTRICTS:
                 fresh['area'] = prev['area']
-            for k in ('link', 'org', 'note', 'info', 'booking'):
+            for k in ('link', 'org', 'note', 'info'):
                 if not fresh.get(k) and prev.get(k): fresh[k] = prev[k]
             if prev.get('date', '9') < fresh['date'] and 'rule' in fresh: fresh['date'] = prev['date']
             if fresh != prev: updated += 1
