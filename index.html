@@ -1159,7 +1159,7 @@ function tagsHTML(ev,withCat){
   else if(ev.cost==="Low cost") h+='<span class="tag free">£5 or less</span>';   else if(ev.cost==="Paid") h+='<span class="tag">Paid</span>';
   if(ev.booking==="Drop in") h+='<span class="tag">Drop in</span>';
   if(ev.booking==="Book first") h+='<span class="tag book">Book first</span>';
-  if(ev.rule) h+='<span class="tag">'+esc(ev.rule.freq==="weekly"?"Weekly":"Monthly")+'</span>';
+  h+='<span class="tag">'+esc(!ev.rule?"One-off":ev.rule.freq==="monthly"?"Monthly":ev.rule.interval>1?"Every other week":"Weekly")+'</span>';
   if(ev.note) h+='<span class="tag">'+esc(ev.note)+'</span>';
   if(withCat) h+='<span class="tag cat">'+esc(ev.category)+'</span>';
   return h;
@@ -1379,7 +1379,7 @@ function renderReg(){
       html+='<div class="venue"><h3>'+esc(parts[0])+'</h3><div class="addr">'+esc(parts.slice(1).join(",").trim())+'</div>';
       list.forEach(function(ev){
         var key=ev.id+"@reg", open=!!S.open[key];
-        html+='<div class="sess"><div><button class="evtitle" style="font-size:16px" data-open="'+esc(key)+'" aria-expanded="'+open+'">'+esc(ev.title)+'</button><div class="when">'+esc(ruleText(ev.rule))+' · '+esc(timeText(ev))+'</div></div><div class="right"><div class="tags" style="margin-top:0;justify-content:flex-end">'+tagsHTML(ev,false).replace(/<span class="tag">(Weekly|Monthly)<\/span>/,"")+'</div></div>'+(open?'<div style="grid-column:1/-1">'+detailHTML(ev)+'</div>':'')+'</div>';
+        html+='<div class="sess"><div><button class="evtitle" style="font-size:16px" data-open="'+esc(key)+'" aria-expanded="'+open+'">'+esc(ev.title)+'</button><div class="when">'+esc(ruleText(ev.rule))+' · '+esc(timeText(ev))+'</div></div><div class="right"><div class="tags" style="margin-top:0;justify-content:flex-end">'+tagsHTML(ev,false).replace(/<span class="tag">(Weekly|Monthly|Every other week)<\/span>/,"")+'</div></div>'+(open?'<div style="grid-column:1/-1">'+detailHTML(ev)+'</div>':'')+'</div>';
       });
       html+='</div>';
     });
