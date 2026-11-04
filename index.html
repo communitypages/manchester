@@ -65,7 +65,7 @@ header.top{padding-block:28px 12px}
 .hex{width:14px;height:16px;background:var(--bee);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);display:inline-block}
 h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,6vw,46px);line-height:1.02;letter-spacing:-.02em;margin:0;text-wrap:balance}
 .kin{margin:4px 0 0;font-family:var(--display);font-weight:700;font-size:clamp(15px,3vw,19px);color:var(--accent);letter-spacing:-.01em}
-.lede{margin:10px 0 0;color:var(--muted);max-width:60ch}
+.lede{margin:10px 0 0;color:var(--muted);max-width:60ch}.checknote{margin:8px 0 0;font-size:15px;font-weight:700;color:var(--ink,#15302B)}
 .btn{border:0;border-radius:999px;padding:10px 16px;font-weight:700;cursor:pointer;background:var(--accent);color:var(--accent-ink);white-space:nowrap}
 .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
 .btn.danger{background:var(--brick);color:var(--card)}
@@ -114,7 +114,7 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,6vw,46px);lin
 .detail .kv dt{color:var(--muted)}
 .detail .kv dd{margin:0;overflow-wrap:anywhere}
 .addev{margin:6px 0 0;font-size:15px;color:var(--muted)}.addev a{font-weight:700}.addev{margin-top:12px}.addev{display:flex;flex-wrap:wrap;gap:10px}.addev .btn{text-decoration:none;padding:11px 20px;font-size:16px}.addev .btn{color:var(--accent-ink);border:0}.addev .btn.ghost{background:var(--card);color:var(--ink);border:1.5px solid var(--line);padding:9.5px 18.5px}
-.calrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.calrow .btn{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.calrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.calrow .btn{white-space:nowrap}.calrow .btn{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .admin-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
 
 .area{margin-top:26px}
@@ -1374,7 +1374,7 @@ function downloadIcs(ev,day){
 function calHTML(ev,day){
   day=day||nextDay(ev);
   var lbl=ev.rule?" ("+fmtDate(day)+")":"";
-  return '<div class="calrow"><button type="button" class="btn small" data-ics="'+esc(ev.id+"|"+day)+'">Save to my calendar'+esc(lbl)+'</button></div>';
+  return '<div class="calrow"><button type="button" class="btn small" data-ics="'+esc(ev.id+"|"+day)+'">Save to my calendar</button><button type="button" class="btn small" data-share="'+esc(ev.id+"|"+day)+'">Share</button></div>';
 }
 function detailHTML(ev,day){
   var h='<div class="detail">';
@@ -1463,6 +1463,7 @@ function shell(){
   '<p class="eyebrow"><span class="hex" aria-hidden="true"></span>Greater Manchester</p>'+
   '<h1>Community Pages</h1>'+
   '<p class="lede">Local activities £5 and under</p>'+
+  '<p class="checknote">Times can change. Please check with the organiser before you go.</p>'+
   '<p class="addev"><a class="btn" href="/add/">Add your event</a><button type="button" class="btn" id="printbtn">Print this list</button></p>'+
   '</div></div>'+
   '</header></div>'+
@@ -1588,6 +1589,8 @@ function renderReg(){
 function onListClick(e){
   var ic=e.target.closest("[data-ics]");
   if(ic){var pr=ic.getAttribute("data-ics").split("|"),ce=find(pr[0]);if(ce)downloadIcs(ce,pr[1]);return;}
+  var sh=e.target.closest("[data-share]");
+  if(sh){var sp=sh.getAttribute("data-share").split("|"),se=find(sp[0]);if(se)shareEvent(se,sp[1],sh);return;}
   var o=e.target.closest("[data-open]");
   if(o){var k=o.getAttribute("data-open");S.open[k]=!S.open[k];render();return;}
   var ed=e.target.closest("[data-edit]");
@@ -1602,6 +1605,18 @@ function onListClick(e){
   if(y){ var ev=find(y.getAttribute("data-delyes")); y.disabled=true; y.textContent="Deleting…";
     save(EVENTS.filter(function(x){return x!==ev}),function(err){ y.disabled=false; y.textContent="Delete"; y.parentNode.insertAdjacentHTML("beforeend",'<p class="msg">'+esc(err)+'</p>'); }); return; }
   if(e.target.closest("[data-delno]")){render();}
+}
+function shareEvent(ev,day,btn){
+  var when=ev.rule?ruleText(ev.rule)+", "+timeText(ev):fmtDate(ev.date)+", "+timeText(ev);
+  var cost=ev.cost==="Low cost"?"£5 or less":(ev.cost||"");
+  var txt=[shortTitle(ev),when,ev.venue,cost].filter(Boolean).join("\n")+"\nPlease check with the organiser before you go.";
+  var url="https://communitypages.org.uk/";
+  function done(m){var o=btn.textContent;btn.textContent=m;setTimeout(function(){btn.textContent=o},2000);}
+  function copy(){var all=txt+"\nFound on Community Pages: "+url;
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(all).then(function(){done("Copied")},function(){prompt("Copy this:",all)});}
+    else prompt("Copy this:",all);}
+  if(navigator.share){navigator.share({title:shortTitle(ev),text:txt+"\nFound on Community Pages:",url:url}).catch(function(err){if(err&&err.name!=="AbortError")copy();});}
+  else copy();
 }
 function find(id){for(var i=0;i<EVENTS.length;i++) if(EVENTS[i].id===id) return EVENTS[i]; return null;}
 
