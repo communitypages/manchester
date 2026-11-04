@@ -1,0 +1,35 @@
+# Community Pages – communitypages.org.uk
+# Search engines and AI search tools that link people to this site are welcome.
+# Bots that collect content to train AI models are not.
+
+# --- Blocked: AI training crawlers ---
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+User-agent: CCBot
+User-agent: Applebot-Extended
+User-agent: meta-externalagent
+User-agent: FacebookBot
+User-agent: Bytespider
+User-agent: cohere-training-data-crawler
+User-agent: Diffbot
+User-agent: Omgilibot
+User-agent: Timpibot
+User-agent: AI2Bot
+Disallow: /
+
+# --- Allowed: AI search and assistants that send people here ---
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+Allow: /
+
+# --- Everyone else (Google, Bing, etc.) ---
+User-agent: *
+Allow: /
+
+Sitemap: https://communitypages.org.uk/sitemap.xml
