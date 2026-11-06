@@ -15,7 +15,25 @@ p.add_argument('--pages', required=True); p.add_argument('--today', required=Tru
 p.add_argument('--page', default='index.html'); p.add_argument('--force', action='store_true')
 a = p.parse_args()
 
-html = open(a.page).read()
+DATA_TAG = '<script type="application/json" id="events-data">'
+DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(a.page)), 'events.json')
+
+def inline_data(html):
+    """The events live in events.json; put them back into the page while it is rebuilt."""
+    i = html.find(DATA_TAG) + len(DATA_TAG); j = html.find('</script>', i)
+    if html[i:j].strip() == '[]' and os.path.exists(DATA_FILE):
+        html = html[:i] + open(DATA_FILE).read().strip().replace('<', '\\u003c') + html[j:]
+    return html
+
+def split_data(html):
+    """Move the events out of the page into events.json, so the home page stays small and fast."""
+    i = html.find(DATA_TAG) + len(DATA_TAG); j = html.find('</script>', i)
+    data = json.loads(html[i:j])
+    open(DATA_FILE, 'w').write(json.dumps(data, ensure_ascii=False, separators=(',', ':')))
+    return html[:i] + '[]' + html[j:]
+
+html = inline_data(open(a.page).read())
+full = tempfile.mktemp(suffix='.html'); open(full, 'w').write(html)
 b0 = html.find('<body>') + len('<body>'); b1 = html.rfind('</body>')
 head, tail = html[:b0], html[b1:]
 before = len(json.loads(html[mcr_sync.page_parts(html)[0]:mcr_sync.page_parts(html)[1]]))
@@ -23,7 +41,7 @@ before = len(json.loads(html[mcr_sync.page_parts(html)[0]:mcr_sync.page_parts(ht
 tmp = tempfile.mktemp(suffix='.html')
 buf = io.StringIO()
 with contextlib.redirect_stdout(buf):
-    mcr_sync.cmd_build(a.pages, a.page, a.today, a.window_end, tmp)
+    mcr_sync.cmd_build(a.pages, full, a.today, a.window_end, tmp)
 report = json.loads(buf.getvalue())
 
 problems = []
@@ -37,7 +55,7 @@ if problems and not a.force:
     sys.exit(1)
 
 new, items = seo_head.apply(head + open(tmp).read() + tail, dt.date.fromisoformat(a.today))
-open(a.page, 'w').write(new)
+open(a.page, 'w').write(split_data(new))
 d = os.path.dirname(os.path.abspath(a.page))
 extra = landing_pages.build(d, items, dt.date.fromisoformat(a.today))
 seo_head.write_extras(d, items, dt.date.fromisoformat(a.today), extra)

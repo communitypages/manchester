@@ -164,6 +164,18 @@ def static_html(items, today):
     return '\n'.join(h)
 
 
+def home_html(items, today):
+    """Short plain-HTML intro and browse links for search engines and AI tools (the app replaces it on load)."""
+    from landing_pages import browse_links
+    return ('<!--seo-list-start--><p id="seo-loading">Loading…</p><div class="wrap" id="seo-list">'
+            '<h1>Community Pages – local wellbeing activities £5 and under in Greater Manchester</h1>'
+            f'<p>Free, donation-based and £5-or-less community activities across Greater Manchester, checked by hand and updated every day. '
+            f'List updated {today.day} {today.strftime("%B %Y")}. {len(items)} events and regular groups. '
+            'Every listing is also on the area and activity pages below, and as plain text at <a href="/llms-full.txt">llms-full.txt</a>. '
+            f'Please check with the organiser before you go. Contact: {EMAIL}</p>'
+            + browse_links() + '</div><!--seo-list-end-->')
+
+
 def event_ld(ev, nd):
     off = uk_offset(nd)
     start = ev.get('start') if has_time(ev) else None
@@ -216,16 +228,16 @@ def apply(html, today=None):
 
     a = html.find('id="events-data"'); a = html.find('>', a) + 1; b = html.find('</script>', a)
     items = live_events(json.loads(html[a:b]), today)
-    ld = json.dumps({'@context': 'https://schema.org', '@graph': [event_ld(*x) for x in items]},
-                    ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c')
-    events_block = '<!--seo-events-start--><script type="application/ld+json" id="events-ld">' + ld + '</script><!--seo-events-end-->\n'
+    # The home page no longer carries every event (it made the page 1.8 MB and slow on phones).
+    # Full listings with schema.org Event data are on the area and activity pages, and in llms-full.txt.
+    events_block = ''
 
     html = html.replace('</head>', HEAD + '</head>', 1)
     html = html.replace('<body>', '<body>' + NOSCRIPT, 1)
     app = html.find('<div id="app">')
     assert app != -1 and app < html.find('id="events-data"'), 'app container not found'
     app_end = app + len('<div id="app">')
-    html = html[:app_end] + static_html(items, today) + html[app_end:]
+    html = html[:app_end] + home_html(items, today) + html[app_end:]
     html = html.replace('<script type="application/json" id="events-data">', events_block + '<script type="application/json" id="events-data">', 1)
     assert html.count('<!--seo-start-->') == 1 and 'id="app-js"' in html and html.count('<!--seo-list-start-->') == 1
     return html, items
