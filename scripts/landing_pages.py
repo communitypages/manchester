@@ -34,6 +34,9 @@ ACTIVITIES = {
     'Community': ('community', 'Community groups and events', 'community groups, residents\u2019 meetings and local events'),
 }
 GM = 'Greater Manchester'
+# Christmas page (/christmas/): events whose title or details use one of these words, from now until 6 January
+XMAS = re.compile(r'christmas|xmas|festive|santa|\bcarols\b|\bcarol (singing|service|concert)|grotto|panto(mime)?\b|mince pies?|'
+                  r'wreath|yule|winter wonderland|nativity|reindeer|lights? switch[- ]on', re.I)
 
 
 def slug(s): return re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')
@@ -182,4 +185,31 @@ def build(folder, items, today):
         intro = f'{n} {H.escape(words)} across {GM}, all free, donation-based or £5 or less.'
         path = f'/activity/{s}/'
         save(path, page(path, title, desc, f'{heading} in {GM}', intro, listing(mine, show_area=True), nav, heading, today))
+    # Christmas page
+    end = dt.date(today.year + 1 if today.month >= 7 else today.year, 1, 6)
+    mine = [x for x in items if x[1] <= end and (XMAS.search(x[0]['title']) or XMAS.search(x[0].get('info') or ''))]
+    oneoff = sorted([x for x in mine if not x[0].get('rule')], key=lambda x: (x[1], x[0].get('start', ''), x[0]['title']))
+    regular = sorted([x for x in mine if x[0].get('rule')], key=lambda x: (day_key(x[0]), x[0].get('start', ''), x[0]['title']))
+    body = []
+    last = None
+    for ev, nd in oneoff:
+        if nd != last:
+            body.append(('</ul>' if last else '') + f'<h3>{nd.strftime("%A %-d %B")}</h3><ul class="ev">')
+            last = nd
+        body.append(item(ev, nd, True))
+    if last: body.append('</ul>')
+    if regular:
+        body.append('<h2>Regular groups with a Christmas theme</h2><ul class="ev">' + ''.join(item(*x, True) for x in regular) + '</ul>')
+    if not mine:
+        body.append('<p>No Christmas activities are listed at the moment. Running a free or low-cost Christmas event? '
+                    '<a href="/add/">Tell us about it</a>.</p>')
+    n = len(mine)
+    path = '/christmas/'
+    save(path, page(path, f'Free Christmas activities in {GM} – £5 and under | Community Pages',
+                    f'{n} free, donation and £5-or-less Christmas events across {GM}: Santa visits, carols, Christmas meals, '
+                    'wreath making and festive crafts. Checked by hand, updated daily.',
+                    f'Christmas activities in {GM}',
+                    f'{n} free, donation-based and £5-or-less Christmas events across {GM}, from now until 6 January: '
+                    'Santa visits, carols, Christmas meals, wreath making and festive crafts.',
+                    '\n'.join(body), nav, 'Christmas', today))
     return written

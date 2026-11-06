@@ -54,7 +54,7 @@ jobs:
           # If someone else pushes to main while this runs, the push is rejected.
           # In that case, start again from the latest main, rebuild and retry (up to 3 times).
           for attempt in 1 2 3; do
-            git add index.html sitemap.xml llms.txt llms-full.txt area activity
+            git add index.html sitemap.xml llms.txt llms-full.txt area activity christmas
             if git diff --cached --quiet; then echo "No changes"; exit 0; fi
             git commit -m "Update events from calendar ($TODAY)"
             if git push; then exit 0; fi
