@@ -204,7 +204,7 @@ html,body{background:#fff!important;color:#000!important}
 .p-ev div{font-size:8pt;color:#222}
 .p-foot{margin-top:6px;font-size:7.5pt;border-top:1px solid #000;padding-top:3px}
 }
-.welcome{padding:8px 0 32px}.welcome .gobtn{font-size:17px;padding:12px 20px;margin:4px 0 20px}.welcome .links h2{font-size:17px;margin:18px 0 6px;color:var(--ink)}.welcome .links p{margin:0;line-height:1.9}.loading{padding:32px 0;font-size:17px;color:var(--muted)}
+.welcome{padding:8px 0 32px}.welcome .gobtn{font-size:17px;padding:12px 20px;margin:4px 0 20px}.welcome .links h2{font-size:17px;margin:18px 0 6px;color:var(--ink)}.welcome .links p{margin:0;line-height:1.9}.loading{padding:32px 0;font-size:17px;color:var(--muted)}.home .checknote,.home .addev,.home .printnote,.home #when,.home #pickdate,.home #near,.home .lede{display:none!important}.homeintro{display:none}.home .homeintro{display:block;font-size:19px;margin:6px 0 4px;color:var(--ink)}.top h1{cursor:pointer}.gobtn{font-size:17px;padding:11px 22px}.tilehead{font-size:18px;margin:22px 0 10px;color:var(--ink)}.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;padding-bottom:32px}.tile{display:flex;flex-direction:column;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;text-decoration:none;color:var(--ink)}.tile strong{font-size:17px}.tile span{font-size:14px;color:var(--muted)}.tile:hover,.tile:focus{border-color:var(--accent)}
 </style>
 <div id="app"><!--seo-list-start--><p id="seo-loading">Loading…</p><div class="wrap" id="seo-list"><h1>Community Pages – local wellbeing activities £5 and under in Greater Manchester</h1><p>Free, donation-based and £5-or-less community activities across Greater Manchester, checked by hand and updated every day. List updated 6 November 2026. 1017 events and regular groups. Every listing is also on the area and activity pages below, and as plain text at <a href="/llms-full.txt">llms-full.txt</a>. Please check with the organiser before you go. Contact: hello@communitypages.org.uk</p><nav class="links" aria-label="Browse"><h2>Browse by area</h2><p><a href="/area/manchester/">Manchester</a> · <a href="/area/salford/">Salford</a> · <a href="/area/trafford/">Trafford</a> · <a href="/area/stockport/">Stockport</a> · <a href="/area/tameside/">Tameside</a> · <a href="/area/oldham/">Oldham</a> · <a href="/area/rochdale/">Rochdale</a> · <a href="/area/bury/">Bury</a> · <a href="/area/bolton/">Bolton</a> · <a href="/area/wigan/">Wigan</a></p><h2>Browse by activity</h2><p><a href="/activity/coffee-chat/">Coffee mornings and chatty cafés</a> · <a href="/activity/wellbeing-support/">Wellbeing and support groups</a> · <a href="/activity/family-kids/">Family, baby and toddler activities</a> · <a href="/activity/learning-skills/">ESOL, job clubs and learning</a> · <a href="/activity/active-sport/">Exercise, walks and sport</a> · <a href="/activity/outdoors-nature/">Gardening and nature</a> · <a href="/activity/arts-crafts/">Arts, crafts and writing groups</a> · <a href="/activity/music-singing/">Choirs, singing and music</a> · <a href="/activity/food-markets/">Lunch clubs, community meals and food</a> · <a href="/activity/film-talks/">Free films and talks</a> · <a href="/activity/community/">Community groups and events</a></p></nav></div><!--seo-list-end--></div>
 <script type="application/json" id="events-data">[]</script>
@@ -531,7 +531,7 @@ function shell(){
   '<div class="wrap"><header class="top"><div class="brand"><div>'+
   '<p class="eyebrow"><span class="hex" aria-hidden="true"></span>Greater Manchester</p>'+
   '<h1>Community Pages</h1>'+
-  '<p class="lede">Local activities £5 and under</p>'+
+  '<p class="lede">Local activities £5 and under</p>'+'<p class="homeintro">Find free and low-cost groups and activities across Greater Manchester.</p>'+
   '<p class="checknote">Times can change. Please check with the organiser before you go.</p>'+
   '<p class="addev"><a class="btn" href="/add/">Add your event</a><button type="button" class="btn" id="printbtn">🖨️ Print this list</button></p>'+
   '<p class="printnote"><strong>No internet?</strong> Print a list. <a href="/print/">How to print</a></p>'+
@@ -544,7 +544,7 @@ function shell(){
   '</div>'+
   '<div class="row pcrow"><input class="sel pcin" id="pc" type="text" inputmode="text" autocomplete="postal-code" placeholder="Postcode, e.g. M19" aria-label="Your postcode">'+
   '<select class="sel" id="near" aria-label="Distance"><option value="1">Within 1 mile</option><option value="2">Within 2 miles</option><option value="3">Within 3 miles</option><option value="5">Within 5 miles</option><option value="10">Within 10 miles</option></select>'+
-  '<span class="pcmsg" id="pcmsg" aria-live="polite"></span></div>'+
+  '<button type="button" class="btn gobtn" id="gobtn">Search</button><span class="pcmsg" id="pcmsg" aria-live="polite"></span></div>'+
   
   ''+
   '</div></div>'+
@@ -565,7 +565,7 @@ function shell(){
   pk.addEventListener("change",function(e){if(e.target.value){S.date=e.target.value;remember();render()}});
   
   
-  document.getElementById("printbtn").addEventListener("click",function(){loadData(printList)});
+  document.getElementById("printbtn").addEventListener("click",function(){loadData(printList)});document.getElementById("gobtn").addEventListener("click",function(){var qi=document.getElementById("q"),pi=document.getElementById("pc");S.q=qi.value.trim();S.pc=pi.value.trim();S.go=true;remember();render();});document.querySelector(".top h1").addEventListener("click",function(){S.go=false;S.q="";S.pc="";document.getElementById("q").value="";document.getElementById("pc").value="";document.getElementById("qclear").hidden=true;remember();render();});
   document.getElementById("list").addEventListener("click",function(e){if(e.target.closest("[data-go]")){S.go=true;remember();render();return;}if(e.target.closest("[data-more]")){S.go=true;remember();S.limit=(S.limit||50)+50;render();return;}if(e.target.closest("[data-clearq]")){var qi=document.getElementById("q");qi.value="";document.getElementById("qclear").hidden=true;S.q="";remember();render();qi.focus();return;}if(e.target.closest("[data-clearpc]")){S.pc="";document.getElementById("pc").value="";remember();render();return;}var a=e.target.closest(".meta.addr");if(a){var x=a.getAttribute("aria-expanded")==="true";a.textContent=a.getAttribute(x?"data-short":"data-full");a.setAttribute("aria-expanded",String(!x));e.stopPropagation();return;}onListClick(e);});
   
 }
@@ -578,6 +578,7 @@ function render(){
   var pm=document.getElementById("pcmsg"),hasPc=!!(S.pc||"").trim(),okPc=!!userLL();document.getElementById("near").hidden=!okPc;
   pm.textContent=hasPc&&!okPc?(outward(S.pc).length>=2?"Postcode not recognised – try the first part, e.g. M19 or SK4":""):(okPc?"Distances are approximate, based on postcode area.":"");
   S.tab="on"; S.free=false; S.drop=false; S.oneoff=false; var sig=[S.q,S.when,S.date,S.area,S.cat,S.pc,S.near].join("|"); if(sig!==S.sig){S.sig=sig;S.limit=50;} if(searching||hasPc)S.go=true;
+  document.body.classList.toggle("home",!S.go);
   if(!S.go){S.limit=10;if(!LOADED){list.innerHTML='<p class="loading">Loading activities…</p>';loadData();return;}list.innerHTML=renderOn();return;}
   if(!LOADED){list.innerHTML='<p class="loading">Loading activities…</p>';loadData();return;}
   list.innerHTML = searching?renderSearch():renderOn();
