@@ -4,7 +4,7 @@
 
 Typical activities: coffee mornings, chatty cafés, ESOL and English classes, job clubs, digital help, walking groups, chair exercise, stay and play, baby and toddler groups, lunch clubs, food banks, wellbeing and peer support groups, choirs, craft and knitting groups, gardening.
 
-- 954 current listings, checked by hand and updated every day.
+- 960 current listings, checked by hand and updated every day.
 - Each listing gives the date or how often it runs, start and end time, venue with postcode, area, cost (free, donation, £5 or less, or price not stated) and whether it is one-off or regular.
 - Activities costing more than £5, political campaigns, religious worship and business promotion are not listed.
 - People should check with the organiser before going.
@@ -15,6 +15,7 @@ Typical activities: coffee mornings, chatty cafés, ESOL and English classes, jo
 - [All listings as plain text](https://communitypages.org.uk/llms-full.txt): every current activity, one per line, grouped by area.
 - [About](https://communitypages.org.uk/about/): who runs the site and what is listed.
 - [For link workers](https://communitypages.org.uk/link-workers/): how to find and print local activities for someone.
+- [How to print a list](https://communitypages.org.uk/print/): step-by-step guide to printing activities for people who aren't online or for a noticeboard.
 - [Add your event](https://communitypages.org.uk/add/): how groups can get listed for free.
 - [Support us](https://communitypages.org.uk/support/)
 - Pages by borough: [Manchester](https://communitypages.org.uk/area/manchester/), [Salford](https://communitypages.org.uk/area/salford/), [Trafford](https://communitypages.org.uk/area/trafford/), [Stockport](https://communitypages.org.uk/area/stockport/), [Tameside](https://communitypages.org.uk/area/tameside/), [Oldham](https://communitypages.org.uk/area/oldham/), [Rochdale](https://communitypages.org.uk/area/rochdale/), [Bury](https://communitypages.org.uk/area/bury/), [Bolton](https://communitypages.org.uk/area/bolton/), [Wigan](https://communitypages.org.uk/area/wigan/)
@@ -24,4 +25,4 @@ Typical activities: coffee mornings, chatty cafés, ESOL and English classes, jo
 
 - Email: hello@communitypages.org.uk
 
-Last updated: 2026-11-05
+Last updated: 2026-11-06
