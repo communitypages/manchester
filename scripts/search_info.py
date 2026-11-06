@@ -248,6 +248,7 @@ Typical activities: coffee mornings, chatty cafés, ESOL and English classes, jo
 - [All listings as plain text]({site}llms-full.txt): every current activity, one per line, grouped by area.
 - [About]({site}about/): who runs the site and what is listed.
 - [For link workers]({site}link-workers/): how to find and print local activities for someone.
+- [How to print a list]({site}print/): step-by-step guide to printing activities for people who aren't online or for a noticeboard.
 - [Add your event]({site}add/): how groups can get listed for free.
 - [Support us]({site}support/)
 - Pages by borough: {areas}
@@ -260,7 +261,7 @@ Typical activities: coffee mornings, chatty cafés, ESOL and English classes, jo
 Last updated: {date}
 '''
 
-PAGES = ['', 'about/', 'link-workers/', 'add/', 'support/', 'privacy/']
+PAGES = ['', 'about/', 'link-workers/', 'print/', 'add/', 'support/', 'privacy/']
 
 
 def llms_full(items, today):

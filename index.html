@@ -181,6 +181,7 @@ h1{font-size:26px}
 @media (max-width:600px){.pcrow{margin-top:6px}.pcin{width:100%}.pcmsg{grid-column:1/-1}}
 
 .printbtn{margin-left:auto}
+.printnote{margin:10px 0 0;font-size:15px;line-height:1.4;color:var(--muted);max-width:52ch}.printnote strong{color:inherit}
 #printout{display:none}
 @media (max-width:600px){.printbtn{grid-column:1/-1;margin-left:0}}
 @media print{
@@ -1535,7 +1536,8 @@ function shell(){
   '<h1>Community Pages</h1>'+
   '<p class="lede">Local activities £5 and under</p>'+
   '<p class="checknote">Times can change. Please check with the organiser before you go.</p>'+
-  '<p class="addev"><a class="btn" href="/add/">Add your event</a><button type="button" class="btn" id="printbtn">Print this list</button></p>'+
+  '<p class="addev"><a class="btn" href="/add/">Add your event</a><button type="button" class="btn" id="printbtn">🖨️ Print this list</button></p>'+
+  '<p class="printnote"><strong>No internet?</strong> Print a list. <a href="/print/">How to print</a></p>'+
   '</div></div>'+
   '</header></div>'+
   '<div class="filters"><div class="wrap">'+
