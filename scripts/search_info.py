@@ -42,7 +42,7 @@ HEAD = f'''<!--seo-start-->
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script type="application/ld+json">{{"@context":"https://schema.org","@graph":[
 {{"@type":"WebSite","name":"Community Pages","url":"{SITE}","inLanguage":"en-GB","description":"{DESC}"}},
-{{"@type":"Organization","name":"Community Pages","url":"{SITE}","email":"{EMAIL}","description":"Free, volunteer-run listing of free, donation and £5-or-less community activities in Greater Manchester, for residents and social prescribing link workers.","areaServed":{{"@type":"AdministrativeArea","name":"Greater Manchester"}},"sameAs":["https://www.patreon.com/c/communitypages"]}}]}}</script>
+{{"@type":"Organization","name":"Community Pages","url":"{SITE}","email":"{EMAIL}","description":"Free, volunteer-run listing of free, donation and £5-or-less community activities in Greater Manchester, for residents and social prescribing link workers.","areaServed":{{"@type":"AdministrativeArea","name":"Greater Manchester"}}}}]}}</script>
 <!--seo-end-->'''
 NOSCRIPT = '''<!--seo-noscript--><noscript><h1>Community Pages</h1><p>Local wellbeing activities £5 and under – free, donation or low cost – across Greater Manchester: Manchester, Salford, Trafford, Stockport, Tameside, Oldham, Rochdale, Bury, Bolton and Wigan. Turn on JavaScript to search by date, area and postcode. Contact: hello@communitypages.org.uk</p></noscript>'''
 
@@ -268,7 +268,6 @@ Typical activities: coffee mornings, chatty cafés, ESOL and English classes, jo
 - [For link workers]({site}link-workers/): how to find and print local activities for someone.
 - [How to print a list]({site}print/): step-by-step guide to printing activities for people who aren't online or for a noticeboard.
 - [Add your event]({site}add/): how groups can get listed for free.
-- [Support us]({site}support/)
 - Pages by borough: {areas}
 - Pages by type of activity: {acts}
 
@@ -279,7 +278,7 @@ Typical activities: coffee mornings, chatty cafés, ESOL and English classes, jo
 Last updated: {date}
 '''
 
-PAGES = ['', 'about/', 'link-workers/', 'print/', 'add/', 'support/', 'privacy/']
+PAGES = ['', 'about/', 'link-workers/', 'print/', 'add/', 'privacy/']
 
 
 def llms_full(items, today):
