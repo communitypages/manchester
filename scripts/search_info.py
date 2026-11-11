@@ -24,7 +24,7 @@ HEAD = f'''<!--seo-start-->
 <meta name="description" content="{DESC}">
 <link rel="canonical" href="{SITE}">
 <meta name="robots" content="index,follow">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://cloudflareinsights.com; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#1C6B61">
 <meta property="og:type" content="website">
@@ -33,7 +33,13 @@ HEAD = f'''<!--seo-start-->
 <meta property="og:description" content="{DESC}">
 <meta property="og:url" content="{SITE}">
 <meta property="og:locale" content="en_GB">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://communitypages.org.uk/share.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Community Pages: find activities near you. Local groups across Greater Manchester.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script type="application/ld+json">{{"@context":"https://schema.org","@graph":[
 {{"@type":"WebSite","name":"Community Pages","url":"{SITE}","inLanguage":"en-GB","description":"{DESC}"}},
 {{"@type":"Organization","name":"Community Pages","url":"{SITE}","email":"{EMAIL}","description":"Free, volunteer-run listing of free, donation and £5-or-less community activities in Greater Manchester, for residents and social prescribing link workers.","areaServed":{{"@type":"AdministrativeArea","name":"Greater Manchester"}},"sameAs":["https://www.patreon.com/c/communitypages"]}}]}}</script>
