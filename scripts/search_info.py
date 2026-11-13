@@ -267,7 +267,7 @@ Typical activities: coffee mornings, chatty cafés, ESOL and English classes, jo
 - [About]({site}about/): who runs the site and what is listed.
 - [For link workers]({site}link-workers/): how to find and print local activities for someone.
 - [How to print a list]({site}print/): step-by-step guide to printing activities for people who aren't online or for a noticeboard.
-- [Add your event]({site}add/): how groups can get listed for free.
+- [Add an event]({site}add/): how anyone can add a local activity for free.
 - Pages by borough: {areas}
 - Pages by type of activity: {acts}
 

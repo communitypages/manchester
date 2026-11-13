@@ -151,7 +151,7 @@ def page(path, title, desc, h1, intro, body, nav, crumb, today):
 <p><a class="btn" href="/">Search all activities by date and postcode</a></p>
 {body}
 {browse_links(path)}
-<footer><a href="/">Find activities</a> · <a href="/about/">About</a> · <a href="/link-workers/">For link workers</a> · <a href="/add/">Add your event</a> · <a href="/privacy/">Privacy</a> · <a href="mailto:{EMAIL}">{EMAIL}</a></footer>
+<footer><a href="/">Find activities</a> · <a href="/about/">About</a> · <a href="/link-workers/">For link workers</a> · <a href="/add/">Add an event</a> · <a href="/privacy/">Privacy</a> · <a href="mailto:{EMAIL}">{EMAIL}</a></footer>
 </main>
 </body>
 </html>
