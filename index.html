@@ -120,7 +120,7 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,6vw,46px);lin
 .detail .kv dt{color:var(--muted)}
 .detail .kv dd{margin:0;overflow-wrap:anywhere}
 .addev{margin:6px 0 0;font-size:15px;color:var(--muted)}.addev a{font-weight:700}.addev{margin-top:12px}.addev{display:flex;flex-wrap:wrap;gap:10px}.addev .btn{text-decoration:none;padding:11px 20px;font-size:16px}.addev .btn{color:var(--accent-ink);border:0}.addev .btn.ghost{background:var(--card);color:var(--ink);border:1.5px solid var(--line);padding:9.5px 18.5px}
-.calrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.calrow .btn{white-space:nowrap}.calrow .btn{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.calrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.calrow .btn{white-space:nowrap;padding:6px 10px}.calrow .btn{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .admin-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
 
 .area{margin-top:26px}
@@ -449,8 +449,17 @@ function downloadIcs(ev,day){
 function calHTML(ev,day){
   day=day||nextDay(ev);
   var lbl=ev.rule?" ("+fmtDate(day)+")":"";
-  return '<div class="calrow"><button type="button" class="btn small" data-ics="'+esc(ev.id+"|"+day)+'">Save to my calendar</button><button type="button" class="btn small" data-share="'+esc(ev.id+"|"+day)+'">Share</button></div>';
+  return '<div class="calrow"><button type="button" class="btn small" data-ics="'+esc(ev.id+"|"+day)+'">Save to my calendar</button><button type="button" class="btn small" data-share="'+esc(ev.id+"|"+day)+'">Share</button>'+editHTML(ev)+'</div>';
 }
+function editHTML(ev){
+  var when=ev.rule?ruleText(ev.rule)+", "+timeText(ev):fmtDate(ev.date)+", "+timeText(ev);
+  var body="Hello Community Pages,\n\nPlease change this listing:\n\n"+
+    "Activity: "+ev.title+"\nWhen: "+when+"\nWhere: "+(ev.venue||"")+"\nPrice: "+(ev.cost||"Price not stated")+
+    "\n\nWhat needs changing (or say if it has stopped running):\n\n\nYour name and group (optional):\n";
+  var href="mailto:hello@communitypages.org.uk?subject="+encodeURIComponent("Change to listing: "+ev.title)+"&body="+encodeURIComponent(body);
+  return '<a class="btn small ghost" href="'+esc(href)+'" title="Suggest a change to this listing by email">Edit</a>';
+}
+
 function detailHTML(ev,day){
   var h='<div class="detail">';
   if(ev.info) h+='<p>'+esc(ev.info)+'</p>';
