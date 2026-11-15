@@ -170,6 +170,59 @@ def page(path, title, desc, h1, intro, body, nav, crumb, today):
 '''
 
 
+def app_page(folder, path, title, desc, h1, intro, body, only, today):
+    """A copy of the home page (same search box, date, postcode and Search button) that only shows some activities.
+    `only` = regular expressions the page uses to pick its activities: 'text' (title or details) and 'org' (organiser)."""
+    e = H.escape
+    s = open(os.path.join(folder, 'index.html')).read()
+    url = SITE + path.lstrip('/')
+    ld = {'@context': 'https://schema.org', '@graph': [
+        {'@type': 'CollectionPage', 'name': title, 'url': url, 'description': desc, 'inLanguage': 'en-GB',
+         'dateModified': today.isoformat(), 'isPartOf': {'@type': 'WebSite', 'name': 'Community Pages', 'url': SITE}},
+        {'@type': 'BreadcrumbList', 'itemListElement': [
+            {'@type': 'ListItem', 'position': 1, 'name': 'Community Pages', 'item': SITE},
+            {'@type': 'ListItem', 'position': 2, 'name': h1, 'item': url}]}]}
+    a, b = s.index('<!--seo-start-->') + len('<!--seo-start-->'), s.index('<!--seo-end-->')
+    old = s[a:b]
+    keep = old[:old.index('<title>')]          # the small script and style that hide the plain list once the page loads
+    csp = re.search(r'<meta http-equiv="Content-Security-Policy"[^>]*>', old)
+    head = keep + f'''<title>{e(title)}</title>
+<meta name="description" content="{e(desc)}">
+<link rel="canonical" href="{url}">
+<meta name="robots" content="index,follow">
+{csp.group(0) if csp else ''}
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" content="#1C6B61">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Community Pages">
+<meta property="og:title" content="{e(title)}">
+<meta property="og:description" content="{e(desc)}">
+<meta property="og:url" content="{url}">
+<meta property="og:locale" content="en_GB">
+<meta property="og:image" content="https://communitypages.org.uk/share.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Community Pages: find activities near you. Local groups across Greater Manchester.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False).replace('<', '\\u003c')}</script>
+'''
+    s = s[:a] + head + s[b:]
+    # plain list for search engines and for anyone without JavaScript
+    a, b = s.index('<!--seo-list-start-->'), s.index('<!--seo-list-end-->')
+    plain = (f'<!--seo-list-start--><p id="seo-loading">Loading…</p><div class="wrap" id="seo-list"><h1>{e(h1)}</h1><p>{intro}</p>'
+             f'<p>Updated {today.strftime("%-d %B %Y")}. Please check with the organiser before you go.</p>{body}{browse_links(path)}</div>')
+    s = s[:a] + plain + s[b:]
+    # tell the search app which activities to show
+    cfg = json.dumps({'text': only['text'], 'org': only.get('org'), 'h1': e(h1), 'intro': e(only['short'])}, ensure_ascii=False).replace('<', '\\u003c')
+    s = s.replace('<script id="app-js">', f'<script>window.CP_ONLY={cfg};</script><script id="app-js">', 1)
+    # menu: highlight this page instead of the home page
+    s = s.replace('<a class="logo" href="/" aria-current="page">', '<a class="logo" href="/">', 1)
+    s = s.replace(f'<a class="l" href="{path}">', f'<a class="l" href="{path}" aria-current="page">', 1)
+    return s
+
+
 def build(folder, items, today):
     """Writes the area and activity pages. Returns their paths (e.g. 'area/stockport/') for the sitemap."""
     nav = topnav(open(os.path.join(folder, 'about', 'index.html')).read())
@@ -223,13 +276,13 @@ def build(folder, items, today):
                     '<a href="/add/">Tell us about it</a>.</p>')
     n = len(mine)
     path = '/christmas/'
-    save(path, page(path, f'Free Christmas activities in {GM} – £5 and under | Community Pages',
-                    f'{n} free, donation and £5-or-less Christmas events across {GM}: Santa visits, carols, Christmas meals, '
-                    'wreath making and festive crafts. Checked by hand, updated daily.',
-                    f'Christmas activities in {GM}',
-                    f'{n} free, donation-based and £5-or-less Christmas events across {GM}, from now until 6 January: '
-                    'Santa visits, carols, Christmas meals, wreath making and festive crafts.',
-                    '\n'.join(body), nav, 'Christmas', today))
+    save(path, app_page(folder, path, f'Free Christmas activities in {GM} – £5 and under | Community Pages',
+                        f'{n} free, donation and £5-or-less Christmas events across {GM}: Santa visits, carols, Christmas meals, '
+                        'wreath making and festive crafts. Search by date and postcode. Updated daily.',
+                        f'Christmas activities in {GM}',
+                        f'{n} free, donation-based and £5-or-less Christmas events across {GM}, from now until 6 January: '
+                        'Santa visits, carols, Christmas meals, wreath making and festive crafts.',
+                        '\n'.join(body), {'text': XMAS.pattern, 'short': 'Free and low-cost Christmas activities across Greater Manchester.'}, today))
     # 55+ page, grouped by borough
     mine = [x for x in items if is_older(x[0])]
     where = {a: b for b, areas in BOROUGHS.items() for a in areas}
@@ -248,12 +301,12 @@ def build(folder, items, today):
                     '<a href="/add/">Tell us about it</a>.</p>')
     n = len(mine)
     path = '/55-plus/'
-    save(path, page(path, f'55+ activities in {GM} – free and £5 and under | Community Pages',
-                    f'{n} free, donation and £5-or-less activities for people aged 55+ across {GM}: lunch clubs, coffee mornings, '
-                    'chair exercise, singing, digital help and more. Checked by hand, updated daily.',
-                    f'55+ activities in {GM}',
-                    f'{n} free, donation-based and £5-or-less groups for people aged 55 and over across {GM}, including over-50s, 55+ and 65+ '
-                    'groups, Age UK and Good Neighbours activities, and dementia-friendly sessions. Many other groups on the site '
-                    'welcome all ages too. The age shown in each title is the group\u2019s own.',
-                    '\n'.join(body), nav, '55+', today))
+    save(path, app_page(folder, path, f'55+ activities in {GM} – free and £5 and under | Community Pages',
+                        f'{n} free, donation and £5-or-less activities for people aged 55+ across {GM}: lunch clubs, coffee mornings, '
+                        'chair exercise, singing, digital help and more. Search by date and postcode. Updated daily.',
+                        f'55+ activities in {GM}',
+                        f'{n} free, donation-based and £5-or-less groups for people aged 55 and over across {GM}, including over-50s, 55+ and 65+ '
+                        'groups, Age UK and Good Neighbours activities, and dementia-friendly sessions. The age shown in each title is the group\u2019s own.',
+                        '\n'.join(body), {'text': OLDER.pattern, 'org': OLDER_ORGS.pattern,
+                                           'short': 'Free and low-cost groups for people aged 55 and over across Greater Manchester.'}, today))
     return written
