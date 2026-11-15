@@ -37,6 +37,13 @@ GM = 'Greater Manchester'
 # Christmas page (/christmas/): events whose title or details use one of these words, from now until 6 January
 XMAS = re.compile(r'christmas|xmas|festive|santa|\bcarols\b|\bcarol (singing|service|concert)|grotto|panto(mime)?\b|mince pies?|'
                   r'wreath|yule|winter wonderland|nativity|reindeer|lights? switch[- ]on', re.I)
+# ...but not groups that only mention Christmas to say when they close ("back after the Christmas break")
+XMAS_IGNORE = re.compile(r'\b(after|before|over|during|until|till|for|around|between|from) (the )?(christmas|xmas)\b|'
+                         r'\b(christmas|xmas|festive) (break|holidays?|closure|shut ?down|period)\b|\bclosed (for|over) (christmas|xmas)\b', re.I)
+
+
+def is_xmas(ev):
+    return bool(XMAS.search(XMAS_IGNORE.sub(' ', ev['title'])) or XMAS.search(XMAS_IGNORE.sub(' ', ev.get('info') or '')))
 
 
 # 55+ page (/55-plus/): groups for over-50s, 55+, 65+ etc., plus Age UK and Good Neighbours groups
@@ -215,7 +222,7 @@ def app_page(folder, path, title, desc, h1, intro, body, only, today):
              f'<p>Updated {today.strftime("%-d %B %Y")}. Please check with the organiser before you go.</p>{body}{browse_links(path)}</div>')
     s = s[:a] + plain + s[b:]
     # tell the search app which activities to show
-    cfg = json.dumps({'text': only['text'], 'org': only.get('org'), 'h1': e(h1), 'intro': e(only['short'])}, ensure_ascii=False).replace('<', '\\u003c')
+    cfg = json.dumps({'text': only['text'], 'org': only.get('org'), 'ignore': only.get('ignore'), 'h1': e(h1), 'intro': e(only['short'])}, ensure_ascii=False).replace('<', '\\u003c')
     s = s.replace('<script id="app-js">', f'<script>window.CP_ONLY={cfg};</script><script id="app-js">', 1)
     # menu: highlight this page instead of the home page
     s = s.replace('<a class="logo" href="/" aria-current="page">', '<a class="logo" href="/">', 1)
@@ -258,7 +265,7 @@ def build(folder, items, today):
         save(path, page(path, title, desc, f'{heading} in {GM}', intro, listing(mine, show_area=True), nav, heading, today))
     # Christmas page
     end = dt.date(today.year + 1 if today.month >= 7 else today.year, 1, 6)
-    mine = [x for x in items if x[1] <= end and (XMAS.search(x[0]['title']) or XMAS.search(x[0].get('info') or ''))]
+    mine = [x for x in items if x[1] <= end and is_xmas(x[0])]
     oneoff = sorted([x for x in mine if not x[0].get('rule')], key=lambda x: (x[1], x[0].get('start', ''), x[0]['title']))
     regular = sorted([x for x in mine if x[0].get('rule')], key=lambda x: (day_key(x[0]), x[0].get('start', ''), x[0]['title']))
     body = []
@@ -282,7 +289,7 @@ def build(folder, items, today):
                         f'Christmas activities in {GM}',
                         f'{n} free, donation-based and £5-or-less Christmas events across {GM}, from now until 6 January: '
                         'Santa visits, carols, Christmas meals, wreath making and festive crafts.',
-                        '\n'.join(body), {'text': XMAS.pattern, 'short': 'Free and low-cost Christmas activities across Greater Manchester.'}, today))
+                        '\n'.join(body), {'text': XMAS.pattern, 'ignore': XMAS_IGNORE.pattern, 'short': 'Free and low-cost Christmas activities across Greater Manchester.'}, today))
     # 55+ page, grouped by borough
     mine = [x for x in items if is_older(x[0])]
     where = {a: b for b, areas in BOROUGHS.items() for a in areas}
