@@ -4,7 +4,7 @@ Stops without changing anything if the calendar looks wrong (e.g. the feed came 
 """
 import argparse, contextlib, io, json, os, sys, tempfile
 sys.path.insert(0, os.path.dirname(__file__))
-import events as mcr_sync, search_info as seo_head, landing_pages
+import events as mcr_sync, search_info as seo_head, landing_pages, geocode
 import datetime as dt
 
 MAX_REMOVED_SHARE = 0.15   # refuse if more than 15% of listings would disappear in one go
@@ -29,6 +29,7 @@ def split_data(html):
     """Move the events out of the page into events.json, so the home page stays small and fast."""
     i = html.find(DATA_TAG) + len(DATA_TAG); j = html.find('</script>', i)
     data = json.loads(html[i:j])
+    geocode.add_locations(data, os.path.dirname(DATA_FILE))
     open(DATA_FILE, 'w').write(json.dumps(data, ensure_ascii=False, separators=(',', ':')))
     return html[:i] + '[]' + html[j:]
 
