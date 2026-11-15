@@ -39,6 +39,18 @@ XMAS = re.compile(r'christmas|xmas|festive|santa|\bcarols\b|\bcarol (singing|ser
                   r'wreath|yule|winter wonderland|nativity|reindeer|lights? switch[- ]on', re.I)
 
 
+# 55+ page (/55-plus/): groups for over-50s, 55+, 65+ etc., plus Age UK and Good Neighbours groups
+OLDER = re.compile(r'\b(50|55|60|65|70)\s?\+|\bover[- ]?(45|50|55|60|65|70)s?\b|\b(45|50|55|60|65)\s?(and|&) over\b|'
+                   r'\bolder (people|person|adults?|men|women|residents|lgbt\w*)\b|\bpensioners?\b|\bretire(d|es|ment)\b|'
+                   r'\bsenior citizens?\b|\bsilver\b|\blater life\b|\bageing\b|\bage friendly\b|\bdementia\b|\bmemory caf', re.I)
+OLDER_ORGS = re.compile(r'\bage uk\b|good neighbours|pensioners', re.I)
+
+
+def is_older(ev):
+    return bool(OLDER.search(ev['title']) or OLDER.search(ev.get('info') or '') or OLDER_ORGS.search(ev.get('org') or '')
+                or OLDER_ORGS.search(ev['title']))
+
+
 def slug(s): return re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')
 
 
@@ -218,4 +230,30 @@ def build(folder, items, today):
                     f'{n} free, donation-based and £5-or-less Christmas events across {GM}, from now until 6 January: '
                     'Santa visits, carols, Christmas meals, wreath making and festive crafts.',
                     '\n'.join(body), nav, 'Christmas', today))
+    # 55+ page, grouped by borough
+    mine = [x for x in items if is_older(x[0])]
+    where = {a: b for b, areas in BOROUGHS.items() for a in areas}
+    body, jump = [], []
+    for borough in BOROUGHS:
+        here = [x for x in mine if where.get(x[0].get('area')) == borough]
+        if not here: continue
+        regular = sorted([x for x in here if x[0].get('rule')], key=lambda x: (day_key(x[0]), x[0].get('start', ''), x[0]['title']))
+        oneoff = sorted([x for x in here if not x[0].get('rule')], key=lambda x: (x[1], x[0].get('start', ''), x[0]['title']))
+        jump.append(f'<a href="#{slug(borough)}">{H.escape(borough)} ({len(here)})</a>')
+        body.append(f'<h2 id="{slug(borough)}">{H.escape(borough)}</h2><ul class="ev">' + ''.join(item(*x, True) for x in regular + oneoff) + '</ul>')
+    if jump:
+        body.insert(0, '<p class="links"><strong>Jump to:</strong> ' + ' · '.join(jump) + '</p>')
+    else:
+        body.append('<p>Nothing is listed here at the moment. Know a free or low-cost group for people 55+? '
+                    '<a href="/add/">Tell us about it</a>.</p>')
+    n = len(mine)
+    path = '/55-plus/'
+    save(path, page(path, f'55+ activities in {GM} – free and £5 and under | Community Pages',
+                    f'{n} free, donation and £5-or-less activities for people aged 55+ across {GM}: lunch clubs, coffee mornings, '
+                    'chair exercise, singing, digital help and more. Checked by hand, updated daily.',
+                    f'55+ activities in {GM}',
+                    f'{n} free, donation-based and £5-or-less groups for people aged 55 and over across {GM}, including over-50s, 55+ and 65+ '
+                    'groups, Age UK and Good Neighbours activities, and dementia-friendly sessions. Many other groups on the site '
+                    'welcome all ages too. The age shown in each title is the group\u2019s own.',
+                    '\n'.join(body), nav, '55+', today))
     return written
