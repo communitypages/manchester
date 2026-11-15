@@ -46,7 +46,7 @@ def is_xmas(ev):
     return bool(XMAS.search(XMAS_IGNORE.sub(' ', ev['title'])) or XMAS.search(XMAS_IGNORE.sub(' ', ev.get('info') or '')))
 
 
-# 55+ page (/55-plus/): groups for over-50s, 55+, 65+ etc., plus Age UK and Good Neighbours groups
+# 50+ page (/50-plus/): groups for over-50s, 55+, 65+ etc., plus Age UK and Good Neighbours groups
 OLDER = re.compile(r'\b(50|55|60|65|70)\s?\+|\bover[- ]?(45|50|55|60|65|70)s?\b|\b(45|50|55|60|65)\s?(and|&) over\b|'
                    r'\bolder (people|person|adults?|men|women|residents|lgbt\w*)\b|\bpensioners?\b|\bretire(d|es|ment)\b|'
                    r'\bsenior citizens?\b|\bsilver\b|\blater life\b|\bageing\b|\bage friendly\b|\bdementia\b|\bmemory caf', re.I)
@@ -290,7 +290,7 @@ def build(folder, items, today):
                         f'{n} free, donation-based and £5-or-less Christmas events across {GM}, from now until 6 January: '
                         'Santa visits, carols, Christmas meals, wreath making and festive crafts.',
                         '\n'.join(body), {'text': XMAS.pattern, 'ignore': XMAS_IGNORE.pattern, 'short': 'Free and low-cost Christmas activities across Greater Manchester.'}, today))
-    # 55+ page, grouped by borough
+    # 50+ page, grouped by borough
     mine = [x for x in items if is_older(x[0])]
     where = {a: b for b, areas in BOROUGHS.items() for a in areas}
     body, jump = [], []
@@ -304,16 +304,16 @@ def build(folder, items, today):
     if jump:
         body.insert(0, '<p class="links"><strong>Jump to:</strong> ' + ' · '.join(jump) + '</p>')
     else:
-        body.append('<p>Nothing is listed here at the moment. Know a free or low-cost group for people 55+? '
+        body.append('<p>Nothing is listed here at the moment. Know a free or low-cost group for people 50+? '
                     '<a href="/add/">Tell us about it</a>.</p>')
     n = len(mine)
-    path = '/55-plus/'
-    save(path, app_page(folder, path, f'55+ activities in {GM} – free and £5 and under | Community Pages',
-                        f'{n} free, donation and £5-or-less activities for people aged 55+ across {GM}: lunch clubs, coffee mornings, '
+    path = '/50-plus/'
+    save(path, app_page(folder, path, f'50+ activities in {GM} – free and £5 and under | Community Pages',
+                        f'{n} free, donation and £5-or-less activities for people aged 50+ across {GM}: lunch clubs, coffee mornings, '
                         'chair exercise, singing, digital help and more. Search by date and postcode. Updated daily.',
-                        f'55+ activities in {GM}',
-                        f'{n} free, donation-based and £5-or-less groups for people aged 55 and over across {GM}, including over-50s, 55+ and 65+ '
+                        f'50+ activities in {GM}',
+                        f'{n} free, donation-based and £5-or-less groups for people aged 50 and over across {GM}, including over-50s, 55+ and 65+ '
                         'groups, Age UK and Good Neighbours activities, and dementia-friendly sessions. The age shown in each title is the group\u2019s own.',
                         '\n'.join(body), {'text': OLDER.pattern, 'org': OLDER_ORGS.pattern,
-                                           'short': 'Free and low-cost groups for people aged 55 and over across Greater Manchester.'}, today))
+                                           'short': 'Free and low-cost groups for people aged 50 and over across Greater Manchester.'}, today))
     return written
