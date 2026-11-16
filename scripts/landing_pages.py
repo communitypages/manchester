@@ -222,7 +222,7 @@ def app_page(folder, path, title, desc, h1, intro, body, only, today):
              f'<p>Updated {today.strftime("%-d %B %Y")}. Please check with the organiser before you go.</p>{body}{browse_links(path)}</div>')
     s = s[:a] + plain + s[b:]
     # tell the search app which activities to show
-    cfg = json.dumps({'text': only['text'], 'org': only.get('org'), 'ignore': only.get('ignore'), 'h1': e(h1), 'intro': e(only['short'])}, ensure_ascii=False).replace('<', '\\u003c')
+    cfg = json.dumps({'text': only.get('text'), 'org': only.get('org'), 'ignore': only.get('ignore'), 'areas': only.get('areas'), 'cat': only.get('cat'), 'h1': e(h1), 'intro': e(only['short'])}, ensure_ascii=False).replace('<', '\\u003c')
     s = s.replace('<script id="app-js">', f'<script>window.CP_ONLY={cfg};</script><script id="app-js">', 1)
     # menu: highlight this page instead of the home page
     s = s.replace('<a class="logo" href="/" aria-current="page">', '<a class="logo" href="/">', 1)
@@ -252,8 +252,9 @@ def build(folder, items, today):
         intro = (f'{n} free, donation-based and £5-or-less activities and groups in {H.escape(where)}.{H.escape(parts)} '
                  'Good for anyone looking for something to do nearby, and for social prescribing link workers.')
         path = f'/area/{slug(borough)}/'
-        save(path, page(path, title, desc, f'Free and low-cost things to do in {borough}', intro,
-                        listing(mine, show_area=len(areas) > 1), nav, borough, today))
+        save(path, app_page(folder, path, title, desc, f'Things to do in {borough}', intro,
+                            listing(mine, show_area=len(areas) > 1),
+                            {'areas': areas, 'short': f'Free and low-cost groups and activities in {where}.'}, today))
 
     for cat, (s, heading, words) in ACTIVITIES.items():
         mine = sorted([x for x in items if x[0].get('category') == cat], key=lambda x: x[0].get('area', ''))
@@ -262,7 +263,8 @@ def build(folder, items, today):
         desc = f'{n} {words} across {GM}. All free, donation or £5 or less. Checked by hand, updated daily.'
         intro = f'{n} {H.escape(words)} across {GM}, all free, donation-based or £5 or less.'
         path = f'/activity/{s}/'
-        save(path, page(path, title, desc, f'{heading} in {GM}', intro, listing(mine, show_area=True), nav, heading, today))
+        save(path, app_page(folder, path, title, desc, heading, intro, listing(mine, show_area=True),
+                            {'cat': cat, 'short': f'Free and low-cost {words} across {GM}.'}, today))
     # Christmas page
     end = dt.date(today.year + 1 if today.month >= 7 else today.year, 1, 6)
     mine = [x for x in items if x[1] <= end and is_xmas(x[0])]
