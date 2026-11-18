@@ -58,6 +58,25 @@ def is_older(ev):
                 or OLDER_ORGS.search(ev['title']))
 
 
+# Kids page (/kids/): everything in the "Family & kids" category, plus other activities that are clearly for
+# babies, children or teenagers (or welcome them), e.g. Bookstart, teen book clubs, youth groups for ages 13-25
+KIDS = re.compile(r'\bbab(y|ies)\b|\btoddlers?\b|\btots\b|\bunder[- ]?(5|five)s\b|\bkids\b|stay (and|&) play|\bplay ?groups?\b|\bstory ?time|'
+                  r'\bbookstart\b|\bteens?\b|\bteenagers?\b|\byouth (club|group|voice)|\bjuniors?\b|\bhalf[- ]term\b|family[- ]friendly|'
+                  r'\b(for|with) (their |your )?(children|kids)\b|\bchildren (aged|under|and (parents|carers|families|young people))|\bchildren welcome|'
+                  r'\bages? ([4-9]|1[0-5]) ?(-|–|to) ?\d\d?\b|\(([4-9]|1[0-5]) ?(-|–) ?\d\d?\)', re.I)
+# words that only count in the activity's name (too broad in the details, e.g. "support for families")
+KIDS_TITLE = re.compile(r'\bchild(ren)?\b|\bfamil(y|ies)\b|\bmums?\b|\bdads?\b|\bparents? (and|&) (baby|babies|toddlers?|child|children|kids)\b|'
+                        r'\brhyme ?time\b(?! \(poetry)|\bteens?\b', re.I)
+KIDS_IGNORE = re.compile(r"family history|\bno (children|kids)\b|adults? only|over[- ]18s? only|street children|young people's mental health charity", re.I)
+KIDS_CAT = 'Family & kids'
+
+
+def is_kids(ev):
+    if ev.get('category') == KIDS_CAT: return True
+    t, i = KIDS_IGNORE.sub(' ', ev['title']), KIDS_IGNORE.sub(' ', ev.get('info') or '')
+    return bool(KIDS.search(t + ' ' + i) or KIDS_TITLE.search(t))
+
+
 def slug(s): return re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')
 
 
@@ -222,7 +241,7 @@ def app_page(folder, path, title, desc, h1, intro, body, only, today):
              f'<p>Updated {today.strftime("%-d %B %Y")}. Please check with the organiser before you go.</p>{body}{browse_links(path)}</div>')
     s = s[:a] + plain + s[b:]
     # tell the search app which activities to show
-    cfg = json.dumps({'text': only.get('text'), 'org': only.get('org'), 'ignore': only.get('ignore'), 'areas': only.get('areas'), 'cat': only.get('cat'), 'h1': e(h1), 'intro': e(only['short'])}, ensure_ascii=False).replace('<', '\\u003c')
+    cfg = json.dumps({'text': only.get('text'), 'org': only.get('org'), 'ignore': only.get('ignore'), 'areas': only.get('areas'), 'cat': only.get('cat'), 'title': only.get('title'), 'h1': e(h1), 'intro': e(only['short'])}, ensure_ascii=False).replace('<', '\\u003c')
     s = s.replace('<script id="app-js">', f'<script>window.CP_ONLY={cfg};</script><script id="app-js">', 1)
     # menu: highlight this page instead of the home page
     s = s.replace('<a class="logo" href="/" aria-current="page">', '<a class="logo" href="/">', 1)
@@ -318,4 +337,29 @@ def build(folder, items, today):
                         'groups, Age UK and Good Neighbours activities, and dementia-friendly sessions. The age shown in each title is the group\u2019s own.',
                         '\n'.join(body), {'text': OLDER.pattern, 'org': OLDER_ORGS.pattern,
                                            'short': 'Free and low-cost groups for people aged 50 and over across Greater Manchester.'}, today))
+    # Kids page, grouped by borough
+    mine = [x for x in items if is_kids(x[0])]
+    body, jump = [], []
+    for borough in BOROUGHS:
+        here = [x for x in mine if where.get(x[0].get('area')) == borough]
+        if not here: continue
+        regular = sorted([x for x in here if x[0].get('rule')], key=lambda x: (day_key(x[0]), x[0].get('start', ''), x[0]['title']))
+        oneoff = sorted([x for x in here if not x[0].get('rule')], key=lambda x: (x[1], x[0].get('start', ''), x[0]['title']))
+        jump.append(f'<a href="#{slug(borough)}">{H.escape(borough)} ({len(here)})</a>')
+        body.append(f'<h2 id="{slug(borough)}">{H.escape(borough)}</h2><ul class="ev">' + ''.join(item(*x, True) for x in regular + oneoff) + '</ul>')
+    if jump:
+        body.insert(0, '<p class="links"><strong>Jump to:</strong> ' + ' · '.join(jump) + '</p>')
+    else:
+        body.append('<p>Nothing is listed here at the moment. Know a free or low-cost group for children or families? '
+                    '<a href="/add/">Tell us about it</a>.</p>')
+    n = len(mine)
+    path = '/kids/'
+    save(path, app_page(folder, path, f'Free things to do with kids in {GM} – £5 and under | Community Pages',
+                        f'{n} free, donation and £5-or-less activities for babies, children and teenagers across {GM}: stay and play, '
+                        'baby and toddler groups, storytimes, Bookstart, youth groups and family events. Search by date and postcode. Updated daily.',
+                        f'Kids and family activities in {GM}',
+                        f'{n} free, donation-based and £5-or-less activities for babies, children, teenagers and their families across {GM}: '
+                        'stay and play, baby and toddler groups, storytimes, Bookstart Bear Club, youth groups and family events.',
+                        '\n'.join(body), {'cat': KIDS_CAT, 'text': KIDS.pattern, 'title': KIDS_TITLE.pattern, 'ignore': KIDS_IGNORE.pattern,
+                                           'short': 'Free and low-cost activities for babies, children, teenagers and families across Greater Manchester.'}, today))
     return written
