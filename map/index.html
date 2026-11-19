@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://unpkg.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://*.tile.openstreetmap.org https://unpkg.com; connect-src 'self' https://communitypages.org.uk https://cloudflareinsights.com; base-uri 'none'; form-action 'none'; object-src 'none'">
+<title>Map of venues – Community Pages</title>
+<meta name="description" content="Map of the community centres, libraries and other venues across Greater Manchester with activities £5 and under on Community Pages.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--teal:#1b6b5f;--teal-d:#124c43;--cream:#f8f5ee;--yellow:#f2c14e;--ink:#17312c;--muted:#5a6b67;--line:#dcd6c8}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;color:var(--ink);background:var(--cream);font-size:17px;line-height:1.45}
+a{color:var(--teal)}
+header{background:var(--teal);color:#fff;padding:18px 20px 16px}
+header .wrap,main{max-width:1100px;margin:0 auto}
+header a.home{color:#fff;text-decoration:none;font-weight:700;font-size:1rem;opacity:.9}
+h1{margin:6px 0 4px;font-size:1.9rem;line-height:1.15}
+header p{margin:0;opacity:.92}
+main{padding:16px 20px 40px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--teal);background:#fff;color:var(--teal);border-radius:999px;padding:6px 14px;font:inherit;font-size:.95rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px}
+.chip[aria-pressed="true"]{background:var(--teal);color:#fff}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.pc{display:flex;gap:6px;margin-left:auto}
+.pc input{font:inherit;padding:7px 10px;border:2px solid var(--line);border-radius:8px;width:150px;text-transform:uppercase}
+.pc button{font:inherit;font-weight:700;background:var(--yellow);border:0;border-radius:8px;padding:7px 14px;cursor:pointer;color:var(--ink)}
+#status{color:var(--muted);font-size:.95rem;margin:0 0 8px}
+#map{height:62vh;min-height:380px;border-radius:12px;border:1px solid var(--line);background:#e8e4da}
+.leaflet-popup-content{font-family:inherit;font-size:15px;line-height:1.4;margin:12px 14px}
+.leaflet-popup-content h3{margin:0 0 2px;font-size:1.05rem}
+.leaflet-popup-content .addr{color:var(--muted);margin:0 0 6px}
+.leaflet-popup-content ul{margin:0 0 6px;padding-left:18px}
+.leaflet-popup-content .tag{display:inline-block;font-size:.8rem;font-weight:700;border-radius:6px;padding:1px 7px;color:#fff;margin-bottom:6px}
+h2{font-size:1.3rem;margin:26px 0 8px}
+.list h3{font-size:1.05rem;margin:18px 0 6px;color:var(--teal-d)}
+.list ul{list-style:none;margin:0;padding:0}
+.list li{background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:6px}
+.list li button{all:unset;cursor:pointer;font-weight:700;color:var(--teal)}
+.list li button:hover{text-decoration:underline}
+.list .meta{color:var(--muted);font-size:.92rem}
+.note{color:var(--muted);font-size:.92rem}
+@media (max-width:640px){.pc{margin-left:0;width:100%}.pc input{flex:1}h1{font-size:1.5rem}}
+@media print{#map,.controls{display:none}header{background:none;color:var(--ink)}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <a class="home" href="/">← Community Pages</a>
+  <h1>Map of venues</h1>
+  <p>Community centres and other places in Greater Manchester with activities £5 and under. Tap a pin to see what's on there.</p>
+</div></header>
+<main>
+  <div class="controls">
+    <div class="chips" id="chips" role="group" aria-label="Show venue types"></div>
+    <form class="pc" id="pcform" role="search">
+      <input id="pc" placeholder="Your postcode" aria-label="Your postcode" autocomplete="postal-code">
+      <button type="submit">Go</button>
+    </form>
+  </div>
+  <p id="status" aria-live="polite">Loading venues…</p>
+  <div id="map" role="region" aria-label="Map of venues"></div>
+  <p class="note">Times can change. Please check with the organiser before you go. For days and times, search for the venue on the <a href="/">Find activities</a> page.</p>
+  <h2 id="listhead">Venues by area</h2>
+  <div class="list" id="list"></div>
+</main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function(){
+  var DATA = location.hostname.endsWith('communitypages.org.uk') ? '/events.json' : 'https://communitypages.org.uk/events.json';
+  var PCBASE = location.hostname.endsWith('communitypages.org.uk') ? '/pc/' : 'https://communitypages.org.uk/pc/';
+  var TYPES = [
+    {k:'centre', label:'Community centres', color:'#1b6b5f'},
+    {k:'library', label:'Libraries', color:'#3b5fa8'},
+    {k:'faith', label:'Churches & faith halls', color:'#8a4fa0'},
+    {k:'outdoor', label:'Parks & outdoors', color:'#3f8f3a'},
+    {k:'other', label:'Other venues', color:'#c27a12'}
+  ];
+  var TBY = {}; TYPES.forEach(function(t){TBY[t.k]=t});
+  var on = {centre:true, library:false, faith:false, outdoor:false, other:false};
+
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function nameOf(v){var p=v.split(','); return (p[0].length<6 && p[1]) ? (p[0]+','+p[1]).trim() : p[0].trim()}
+  function typeOf(v){
+    var n = v.split(',').slice(0,2).join(',').toLowerCase();
+    if (/librar/.test(n)) return 'library';
+    if (/church|chapel|parish|cathedral|mosque|masjid|gurdwara|temple|synagogue|methodist|baptist|\burc\b|quaker|friends meeting/.test(n)) return 'faith';
+    if (/communit|neighbourhood|resource cent|village hall|public hall|civic hall|family hub|wellbeing cent|\bhub\b|\bcentre\b|\bcenter\b/.test(n) &&
+        !/leisure|sport|archive|event cent|arts cent|shopping|medical|health (cent|hub)|town hall|bridgewater|local studies|visitor cent|garden cent|swimming|aquatic|stadium|museum|gallery|theatre|city centre|cinema/.test(n)) return 'centre';
+    if (/\bpark\b|\bwoods?\b|meadow|garden|allotment|reservoir|nature|clough|\bvalley\b|\bfarm\b|\bgreen\b|canal|towpath|\bcommon\b|\blake\b|country park|\bmoss\b/.test(n)) return 'outdoor';
+    return 'other';
+  }
+  function shortTitle(t){return t.replace(/\s+[–—]\s+.*$/,'').trim()}
+
+  var map = L.map('map',{scrollWheelZoom:false}).setView([53.48,-2.24],10);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+  map.on('focus',function(){map.scrollWheelZoom.enable()});
+  var layer = L.layerGroup().addTo(map);
+  var venues = [], youMarker = null;
+
+  fetch(DATA,{cache:'no-cache'}).then(function(r){return r.json()}).then(function(ev){
+    var V = {};
+    ev.forEach(function(e){
+      if (!e.ll || !e.venue) return;
+      var k = e.ll[0].toFixed(4)+','+e.ll[1].toFixed(4)+'|'+nameOf(e.venue).toLowerCase();
+      var x = V[k] || (V[k] = {venue:e.venue, name:nameOf(e.venue), area:e.area||'', ll:e.ll, titles:{}, n:0});
+      x.titles[shortTitle(e.title)] = 1; x.n++;
+    });
+    venues = Object.keys(V).map(function(k){var x=V[k]; x.titles=Object.keys(x.titles).sort(); x.type=typeOf(x.venue); return x});
+    venues.forEach(function(x){
+      var t = TBY[x.type];
+      var shown = x.titles.slice(0,8).map(function(s){return '<li>'+esc(s)+'</li>'}).join('');
+      var more = x.titles.length>8 ? '<p>and '+(x.titles.length-8)+' more</p>' : '';
+      var dir = 'https://www.google.com/maps/dir/?api=1&destination='+x.ll[0]+','+x.ll[1];
+      x.marker = L.circleMarker(x.ll,{radius:8,weight:2,color:'#fff',fillColor:t.color,fillOpacity:.95})
+        .bindPopup('<span class="tag" style="background:'+t.color+'">'+esc(t.label.replace(/s$/,'').replace(/ie$/,'y'))+'</span>'+
+          '<h3>'+esc(x.name)+'</h3><p class="addr">'+esc(x.venue)+'</p>'+
+          '<strong>'+x.titles.length+' activit'+(x.titles.length==1?'y':'ies')+':</strong><ul>'+shown+'</ul>'+more+
+          '<a href="'+dir+'" target="_blank" rel="noopener">Directions</a>',{maxWidth:300});
+    });
+    buildChips(); draw();
+  }).catch(function(){document.getElementById('status').textContent='Sorry, the venues could not be loaded. Please try again later.'});
+
+  function buildChips(){
+    var box = document.getElementById('chips'); box.innerHTML='';
+    TYPES.forEach(function(t){
+      var c = venues.filter(function(x){return x.type==t.k}).length;
+      var b = document.createElement('button'); b.type='button'; b.className='chip'; b.setAttribute('aria-pressed', on[t.k]);
+      b.innerHTML='<span class="dot" style="background:'+t.color+'"></span>'+esc(t.label)+' ('+c+')';
+      b.onclick=function(){on[t.k]=!on[t.k]; b.setAttribute('aria-pressed',on[t.k]); draw()};
+      box.appendChild(b);
+    });
+    var all = document.createElement('button'); all.type='button'; all.className='chip'; all.textContent='Show all';
+    all.onclick=function(){TYPES.forEach(function(t){on[t.k]=true}); buildChips(); draw()};
+    box.appendChild(all);
+  }
+
+  function draw(){
+    layer.clearLayers();
+    var vis = venues.filter(function(x){return on[x.type]});
+    vis.forEach(function(x){x.marker.addTo(layer)});
+    var acts = vis.reduce(function(s,x){return s+x.titles.length},0);
+    document.getElementById('status').textContent = vis.length+' venue'+(vis.length==1?'':'s')+' shown, with '+acts+' activities.';
+    var byArea = {};
+    vis.forEach(function(x){(byArea[x.area]=byArea[x.area]||[]).push(x)});
+    var html = Object.keys(byArea).sort().map(function(a){
+      return '<h3>'+esc(a||'Other')+'</h3><ul>'+byArea[a].sort(function(p,q){return p.name.localeCompare(q.name)}).map(function(x){
+        return '<li><button type="button" data-i="'+venues.indexOf(x)+'">'+esc(x.name)+'</button><div class="meta">'+esc(x.venue)+' · '+x.titles.length+' activit'+(x.titles.length==1?'y':'ies')+'</div></li>'}).join('')+'</ul>';
+    }).join('');
+    var list = document.getElementById('list'); list.innerHTML = html || '<p class="note">Choose a venue type above.</p>';
+    list.querySelectorAll('button[data-i]').forEach(function(b){b.onclick=function(){var x=venues[+b.dataset.i]; map.setView(x.ll,15); x.marker.openPopup(); document.getElementById('map').scrollIntoView({behavior:'smooth',block:'center'})}});
+  }
+
+  document.getElementById('pcform').addEventListener('submit',function(e){
+    e.preventDefault();
+    var raw = document.getElementById('pc').value.toUpperCase().replace(/\s+/g,'');
+    var m = raw.match(/^([A-Z]{1,2}\d{1,2}[A-Z]?)(\d[A-Z]{2})$/);
+    var st = document.getElementById('status');
+    if (!m) { st.textContent='Please enter a full postcode, like M16 0LN.'; return; }
+    fetch(PCBASE+m[1]+'.json').then(function(r){if(!r.ok) throw 0; return r.json()}).then(function(d){
+      var ll = d[m[2]]; if (!ll) throw 0;
+      if (youMarker) map.removeLayer(youMarker);
+      youMarker = L.circleMarker(ll,{radius:9,weight:3,color:'#17312c',fillColor:'#f2c14e',fillOpacity:1}).addTo(map).bindTooltip('You',{permanent:true,direction:'top'});
+      map.setView(ll,14);
+    }).catch(function(){st.textContent='Sorry, that postcode wasn\'t found. Only Greater Manchester postcodes work.'});
+  });
+})();
+</script>
+</body>
+</html>
