@@ -50,8 +50,8 @@ DAYS = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
 DAYNAME = dict(zip(DAYS, ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']))
 SCHEMA_DAY = {d: 'https://schema.org/' + DAYNAME[d] for d in DAYS}
 ORD = {1: '1st', 2: '2nd', 3: '3rd', 4: '4th', 5: '5th', -1: 'last'}
-COST_TEXT = {'Free': 'Free', 'Pay what you can': 'Donation / pay what you can', 'Low cost': '£5 or less',
-             'Price not stated': 'Price not stated – check with the organiser'}
+COST_TEXT = {'Free': 'Free', 'Pay what you can': 'Donation / pay what you can', 'Low cost': '£5 and under',
+             'Price not stated': '£5 and under'}
 
 
 # ---------- dates (same rules as the app) ----------
@@ -142,7 +142,7 @@ def static_html(items, today):
     def li(ev, nd):
         bits = [e(when_text(ev, nd)), e(ev.get('venue', ''))]
         if ev.get('area'): bits.append(e(ev['area']))
-        bits.append(e(COST_TEXT.get(ev.get('cost'), ev.get('cost') or 'Price not stated')))
+        bits.append(e(COST_TEXT.get(ev.get('cost'), ev.get('cost') or '£5 and under')))
         if ev.get('booking'): bits.append(e(ev['booking']))
         s = '<li><strong>' + e(ev['title']) + '</strong> – ' + ' · '.join(bits)
         if ev.get('org'): s += ' · Run by ' + e(ev['org'])
@@ -201,8 +201,8 @@ def event_ld(ev, nd):
         o['offers'] = {'@type': 'Offer', 'price': '0', 'priceCurrency': 'GBP'}
     elif c == 'Pay what you can':
         o['offers'] = {'@type': 'Offer', 'price': '0', 'priceCurrency': 'GBP', 'description': 'Donation / pay what you can'}
-    elif c == 'Low cost':
-        o['offers'] = {'@type': 'Offer', 'description': '£5 or less', 'priceCurrency': 'GBP'}
+    elif c in ('Low cost', 'Price not stated'):
+        o['offers'] = {'@type': 'Offer', 'description': '£5 and under', 'priceCurrency': 'GBP'}
     r = ev.get('rule')
     if r:
         s = {'@type': 'Schedule', 'scheduleTimezone': 'Europe/London', 'startDate': ev['date'],
@@ -256,7 +256,7 @@ LLMS = '''# Community Pages
 Typical activities: coffee mornings, chatty cafés, ESOL and English classes, job clubs, digital help, walking groups, chair exercise, stay and play, baby and toddler groups, lunch clubs, food banks, wellbeing and peer support groups, choirs, craft and knitting groups, gardening.
 
 - {n} current listings, checked by hand and updated every day.
-- Each listing gives the date or how often it runs, start and end time, venue with postcode, area, cost (free, donation, £5 or less, or price not stated) and whether it is one-off or regular.
+- Each listing gives the date or how often it runs, start and end time, venue with postcode, area, cost (free, donation, or £5 and under) and whether it is one-off or regular.
 - Activities costing more than £5, political campaigns, religious worship and business promotion are not listed.
 - People should check with the organiser before going.
 
@@ -285,7 +285,7 @@ def llms_full(items, today):
     """Every current listing as plain text, for AI tools."""
     def line(ev, nd):
         bits = [when_text(ev, nd), ev.get('venue', '')]
-        bits.append(COST_TEXT.get(ev.get('cost'), ev.get('cost') or 'Price not stated'))
+        bits.append(COST_TEXT.get(ev.get('cost'), ev.get('cost') or '£5 and under'))
         if ev.get('booking'): bits.append(ev['booking'])
         t = '- ' + ev['title'] + ': ' + '; '.join(b for b in bits if b)
         if ev.get('org'): t += '. Run by ' + ev['org']

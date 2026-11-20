@@ -122,7 +122,7 @@ def item(ev, nd, show_area):
     e = H.escape
     meta = [when_text(ev, nd), ev.get('venue', '')]
     if show_area and ev.get('area'): meta.append(ev['area'])
-    meta.append(COST_TEXT.get(ev.get('cost'), ev.get('cost') or 'Price not stated'))
+    meta.append(COST_TEXT.get(ev.get('cost'), ev.get('cost') or '£5 and under'))
     s = f'<li><div class="t">{e(ev["title"])}</div><div class="m">{" · ".join(e(x) for x in meta if x)}'
     if ev.get('org'): s += ' · Run by ' + e(ev['org'])
     s += '</div>'
