@@ -54,7 +54,6 @@ h2{font-size:1.3rem;margin:26px 0 8px}
 </div></header>
 <main>
   <div class="controls">
-    <div class="chips" id="chips" role="group" aria-label="Show venue types"></div>
     <form class="pc" id="pcform" role="search">
       <input id="pc" placeholder="Your postcode" aria-label="Your postcode" autocomplete="postal-code">
       <button type="submit">Go</button>
@@ -79,7 +78,7 @@ h2{font-size:1.3rem;margin:26px 0 8px}
     {k:'other', label:'Other venues', color:'#c27a12'}
   ];
   var TBY = {}; TYPES.forEach(function(t){TBY[t.k]=t});
-  var on = {centre:true, library:false, faith:false, outdoor:false, other:false};
+  var on = {centre:true, library:true, faith:true, outdoor:true, other:true};
 
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function nameOf(v){var p=v.split(','); return (p[0].length<6 && p[1]) ? (p[0]+','+p[1]).trim() : p[0].trim()}
@@ -120,7 +119,7 @@ h2{font-size:1.3rem;margin:26px 0 8px}
           '<strong>'+x.titles.length+' activit'+(x.titles.length==1?'y':'ies')+':</strong><ul>'+shown+'</ul>'+more+
           '<a href="'+dir+'" target="_blank" rel="noopener">Directions</a>',{maxWidth:300});
     });
-    buildChips(); draw();
+    draw();
   }).catch(function(){document.getElementById('status').textContent='Sorry, the venues could not be loaded. Please try again later.'});
 
   function buildChips(){
