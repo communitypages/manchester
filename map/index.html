@@ -113,9 +113,8 @@ h2{font-size:1.3rem;margin:26px 0 8px}
       var shown = x.titles.slice(0,8).map(function(s){return '<li>'+esc(s)+'</li>'}).join('');
       var more = x.titles.length>8 ? '<p>and '+(x.titles.length-8)+' more</p>' : '';
       var dir = 'https://www.google.com/maps/dir/?api=1&destination='+x.ll[0]+','+x.ll[1];
-      x.marker = L.circleMarker(x.ll,{radius:8,weight:2,color:'#fff',fillColor:t.color,fillOpacity:.95})
-        .bindPopup('<span class="tag" style="background:'+t.color+'">'+esc(t.label.replace(/s$/,'').replace(/ie$/,'y'))+'</span>'+
-          '<h3>'+esc(x.name)+'</h3><p class="addr">'+esc(x.venue)+'</p>'+
+      x.marker = L.circleMarker(x.ll,{radius:8,weight:2,color:'#fff',fillColor:'#1b6b5f',fillOpacity:.95})
+        .bindPopup('<h3>'+esc(x.name)+'</h3><p class="addr">'+esc(x.venue)+'</p>'+
           '<strong>'+x.titles.length+' activit'+(x.titles.length==1?'y':'ies')+':</strong><ul>'+shown+'</ul>'+more+
           '<a href="'+dir+'" target="_blank" rel="noopener">Directions</a>',{maxWidth:300});
     });
