@@ -1,4 +1,4 @@
-# Rebuilds the website from the "MCR Free Community Events" Google Calendar every morning at 9am.
+# Rebuilds the website from the "MCR Free Community Events" Google Calendar every day at 5pm.
 # No AI involved. Reads the calendar through the repository secret CALENDAR_ICAL_URL
 # (Google Calendar > Settings > the calendar > "Secret address in iCal format"). The calendar itself is private.
 name: Update site from calendar

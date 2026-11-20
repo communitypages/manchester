@@ -69,9 +69,14 @@ KIDS_TITLE = re.compile(r'\bchild(ren)?\b|\bfamil(y|ies)\b|\bmums?\b|\bdads?\b|\
                         r'\brhyme ?time\b(?! \(poetry)|\bteens?\b', re.I)
 KIDS_IGNORE = re.compile(r"family history|\bno (children|kids)\b|adults? only|over[- ]18s? only|street children|young people's mental health charity", re.I)
 KIDS_CAT = 'Family & kids'
+# Clearly not for children, even if the category says 'Family & kids' (e.g. the venue is a youth centre):
+# 18+ or adult-only groups, over-50s/55s/65s groups, courses for ages 19 and up, training for professionals
+NOT_KIDS = re.compile(r'\b(ages? )?18 ?\+|\bover[- ]?(18|[5-9]\d)s?\b(?! ?months)|\b[5-9]\d ?\+|\badult wellbeing\b|\bages? (19|[2-9]\d) ?(-|–|to)|'
+                      r'\b(youth|social) workers\b|\bfor (youth workers|professionals|practitioners)\b', re.I)
 
 
 def is_kids(ev):
+    if NOT_KIDS.search(ev['title'] + ' ' + (ev.get('info') or '')): return False
     if ev.get('category') == KIDS_CAT: return True
     t, i = KIDS_IGNORE.sub(' ', ev['title']), KIDS_IGNORE.sub(' ', ev.get('info') or '')
     return bool(KIDS.search(t + ' ' + i) or KIDS_TITLE.search(t))

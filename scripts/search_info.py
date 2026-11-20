@@ -278,7 +278,7 @@ Typical activities: coffee mornings, chatty cafés, ESOL and English classes, jo
 Last updated: {date}
 '''
 
-PAGES = ['', 'about/', 'link-workers/', 'print/', 'add/', 'privacy/']
+PAGES = ['', 'about/', 'link-workers/', 'print/', 'add/', 'privacy/', 'map/']
 
 
 def llms_full(items, today):

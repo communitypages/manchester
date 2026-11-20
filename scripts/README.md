@@ -1,6 +1,6 @@
 # How the website updates itself
 
-Every morning (about 9am) GitHub runs `.github/workflows/update-site.yml`. No AI is involved.
+Every day at 5pm (UK winter time; 6pm in summer) GitHub runs `.github/workflows/update-site.yml`. No AI is involved.
 
 1. **`read_calendar.py`** reads the private "MCR Free Community Events" Google Calendar (via the CALENDAR_ICAL_URL secret).
 2. **`build_site.py`** rebuilds `index.html` from it, using:
@@ -14,5 +14,5 @@ at once. GitHub then emails you. To publish anyway: Actions → "Update site fro
 
 **Results of each run:** GitHub → Actions → "Update site from calendar" → the run → summary (added, removed, things to check).
 
-**To add or change events:** edit the Google Calendar. Don't edit `index.html` by hand – it is rebuilt every morning
+**To add or change events:** edit the Google Calendar. Don't edit `index.html` by hand – it is rebuilt every day
 (except the page design and menu, which are kept).
