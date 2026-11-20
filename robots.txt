@@ -16,6 +16,7 @@ User-agent: Diffbot
 User-agent: Omgilibot
 User-agent: Timpibot
 User-agent: AI2Bot
+User-agent: Google-Extended
 Disallow: /
 
 # --- Allowed: AI search and assistants that send people here ---
@@ -25,7 +26,6 @@ User-agent: Claude-SearchBot
 User-agent: Claude-User
 User-agent: PerplexityBot
 User-agent: Perplexity-User
-User-agent: Google-Extended
 Allow: /
 
 # --- Everyone else (Google, Bing, etc.) ---

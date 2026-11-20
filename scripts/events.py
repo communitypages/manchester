@@ -128,6 +128,15 @@ def parse_desc(desc):
     if links:
         out['link'] = links[-1].rstrip('.,)')
         d = d.replace(links[-1], '').strip()
+        # the link becomes a button, so drop a label left hanging at the end ("Book:", "Facebook group:")
+        lab = re.search(r'(^|(?<=[.!?)])\s|\n)\s*([^.!?:\n]{1,45}):\s*$', d)
+        if lab:
+            if re.fullmatch(r'(book(ing)?( here| now)?|tickets?|sign ?up|register|more info(rmation)?|info|details|website|link|'
+                            r'(view )?full details( and agenda)?|facebook( group| event| page)?|instagram|meetup|eventbrite)', lab.group(2).strip(), re.I):
+                d = d[:lab.start(2)].strip()
+            else:
+                d = d[:-1].rstrip() if d.endswith(':') else d.rstrip()[:-1]
+            if d and d[-1] not in '.!?)' and not re.search(r'https?://\S+$', d): d += '.'
     parts = [p.strip() for p in re.split(r'(?<=\.)\s+', d) if p.strip()]
     def costof(p):
         pl = p.lower().rstrip('.')
