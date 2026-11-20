@@ -5,7 +5,7 @@ name: Update site from calendar
 
 on:
   schedule:
-    - cron: '0 9 * * *'    # every day at 9am UTC (9am UK time in winter, 10am in summer)
+    - cron: '0 17 * * *'   # every day at 5pm UTC (5pm UK time in winter, 6pm in summer)
   push:
     branches: [main]
     paths: ['.github/workflows/update-site.yml', 'scripts/**']
