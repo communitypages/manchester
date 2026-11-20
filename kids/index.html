@@ -239,8 +239,8 @@ var MONLONG=["January","February","March","April","May","June","July","August","
 var WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
 var S={tab:"on",q:"",when:"week",area:"",cat:"",free:false,drop:false,oneoff:false,open:{},pc:"",near:"2"};
-try{var saved=JSON.parse(sessionStorage.getItem("mcr-ui")||"null");if(saved){for(var k in saved)S[k]=saved[k];S.open={};}}catch(e){}S.area="";
-function remember(){try{sessionStorage.setItem("mcr-ui",JSON.stringify({tab:S.tab,q:S.q,when:S.when,date:S.date,area:S.area,cat:S.cat,free:S.free,drop:S.drop,oneoff:S.oneoff,pc:S.pc,near:S.near,go:S.go}));}catch(e){}}
+try{var saved=JSON.parse(sessionStorage.getItem("mcr-ui")||"null");if(saved){for(var k in saved)S[k]=saved[k];S.open={};}}catch(e){}S.area="";var HOMEWHEN=S.when;if(window.CP_ONLY&&window.CP_ONLY.when){S.when=window.CP_ONLY.when;}
+function remember(){try{sessionStorage.setItem("mcr-ui",JSON.stringify({tab:S.tab,q:S.q,when:(window.CP_ONLY&&window.CP_ONLY.when)?HOMEWHEN:S.when,date:S.date,area:S.area,cat:S.cat,free:S.free,drop:S.drop,oneoff:S.oneoff,pc:S.pc,near:S.near,go:S.go}));}catch(e){}}
 
 var canEdit=false, art=null, readOnly=false;
 
@@ -318,6 +318,11 @@ function occursOnDay(ev,d){
   return true;
 }
 function range(){
+  var r=range0(), O=window.CP_ONLY;
+  if(O&&O.until){var u=parse(O.until); if(r[1]>u) r[1]=u;}
+  return r;
+}
+function range0(){
   var t=today(), dow=t.getDay();
   switch(S.when){
     case "today": return [t,t];
