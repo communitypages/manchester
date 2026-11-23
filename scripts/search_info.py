@@ -96,6 +96,9 @@ def clip(text, n):
     """Shorten text to about n characters at a word boundary, with an ellipsis."""
     text = text or ''
     if len(text) <= n: return text
+    # end at a full sentence if one finishes in the last part of the space, so text isn't cut off mid-sentence
+    ends = [m.end() for m in re.finditer(r'[.!?](?=\s)', text[:n + 1])]
+    if ends and ends[-1] >= n * 0.4: return text[:ends[-1]]
     cut = text[:n].rsplit(' ', 1)[0].rstrip(' ,;:–-(')
     return cut + '…'
 
@@ -266,7 +269,7 @@ Typical activities: coffee mornings, chatty cafés, ESOL and English classes, jo
 - [All listings as plain text]({site}llms-full.txt): every current activity, one per line, grouped by area.
 - [About]({site}about/): who runs the site and what is listed.
 - [For link workers]({site}link-workers/): how to find and print local activities for someone.
-- [How to use]({site}print/): how to search, save activities to a calendar, share them, and print a list for people who aren't online or for a noticeboard.
+- [How to use]({site}how-to-use/): how to search, save activities to a calendar, share them, and print a list for people who aren't online or for a noticeboard.
 - [Add an event]({site}add/): how anyone can add a local activity for free.
 - Pages by borough: {areas}
 - Pages by type of activity: {acts}
@@ -278,7 +281,7 @@ Typical activities: coffee mornings, chatty cafés, ESOL and English classes, jo
 Last updated: {date}
 '''
 
-PAGES = ['', 'about/', 'link-workers/', 'print/', 'add/', 'privacy/', 'map/']
+PAGES = ['', 'about/', 'link-workers/', 'how-to-use/', 'add/', 'privacy/', 'map/']
 
 
 def llms_full(items, today):
@@ -289,7 +292,7 @@ def llms_full(items, today):
         if ev.get('booking'): bits.append(ev['booking'])
         t = '- ' + ev['title'] + ': ' + '; '.join(b for b in bits if b)
         if ev.get('org'): t += '. Run by ' + ev['org']
-        if ev.get('info'): t += '. ' + clip(ev['info'], 200)
+        if ev.get('info'): t += '. ' + clip(ev['info'], 400)
         if safe_link(ev.get('link')): t += ' ' + ev['link']
         return t
     regular = sorted([x for x in items if x[0].get('rule')], key=lambda x: (x[0].get('area', ''), x[0]['title']))

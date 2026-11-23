@@ -33,6 +33,22 @@ def split_data(html):
     open(DATA_FILE, 'w').write(json.dumps(data, ensure_ascii=False, separators=(',', ':')))
     return html[:i] + '[]' + html[j:]
 
+HOME_TAG = '<script type="application/json" id="home-data">'
+
+def home_data(html, items, today, days=4, per_day=12):
+    """Put the first activities of the next few days into the home page itself, so the home list shows
+    straight away (and doesn't jump) while the full list loads. Only a few dozen listings, to keep the page small."""
+    i = html.find(HOME_TAG)
+    if i < 0: return html
+    i += len(HOME_TAG); j = html.find('</script>', i)
+    pick = {}
+    for n in range(days):
+        d = today + dt.timedelta(n)
+        on = sorted((ev for ev, _ in items if seo_head.occurs(ev, d)), key=lambda ev: (ev.get('start') or '00:00', ev['title']))
+        for ev in on[:per_day]: pick[ev['id']] = ev
+    js = json.dumps(list(pick.values()), ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c')
+    return html[:i] + js + html[j:]
+
 html = inline_data(open(a.page).read())
 full = tempfile.mktemp(suffix='.html'); open(full, 'w').write(html)
 b0 = html.find('<body>') + len('<body>'); b1 = html.rfind('</body>')
@@ -56,7 +72,7 @@ if problems and not a.force:
     sys.exit(1)
 
 new, items = seo_head.apply(head + open(tmp).read() + tail, dt.date.fromisoformat(a.today))
-open(a.page, 'w').write(split_data(new))
+open(a.page, 'w').write(home_data(split_data(new), items, dt.date.fromisoformat(a.today)))
 d = os.path.dirname(os.path.abspath(a.page))
 extra = landing_pages.build(d, items, dt.date.fromisoformat(a.today))
 seo_head.write_extras(d, items, dt.date.fromisoformat(a.today), extra)

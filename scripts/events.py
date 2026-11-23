@@ -108,7 +108,7 @@ def cat_for(title, desc):
     return 'Community'
 
 COSTS = [('pay what you can', 'Pay what you can'), ('pay as you feel', 'Pay what you can'), ('donation', 'Pay what you can'),
-         ('price not stated', 'Price not stated'), ('low cost', 'Low cost'), ('free', 'Free'), ('paid', 'Paid'), ('£', 'Paid')]
+         ('price not stated', 'Price not stated'), ('cost not stated', 'Price not stated'), ('low cost', 'Low cost'), ('free', 'Free'), ('paid', 'Paid'), ('£', 'Paid')]
 LOW_COST_LIMIT = 5.0  # events whose highest price is this many pounds or less count as 'Low cost' (up to £5 is ok)
 
 def price_band(text):
@@ -117,6 +117,94 @@ def price_band(text):
     pence = [int(p) / 100 for p in re.findall(r'\b(\d{1,2})p\b', text or '')]
     if not amounts and not pence: return None
     return 'Low cost' if max(amounts + pence) <= LOW_COST_LIMIT else 'Paid'
+
+SCHEDULE = re.compile(r'\b(of the month|every (other )?(day|week|month|mon|tue|wed|thu|fri|sat|sun)\w*|weekly|fortnightly|monthly|one-off|term time)\b', re.I)
+
+def is_schedule(text):
+    """True for text that says when something runs ("2nd Saturday of the month", "Weekly"), so it isn't taken as the organiser."""
+    return bool(SCHEDULE.search(text or ''))
+
+
+# ---------------- dates in the details that have already passed ----------------
+_MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+_DAYW = r'(?:(?:Mon|Tue|Tues|Wed|Thu|Thur|Thurs|Fri|Sat|Sun)(?:day|sday|nesday|rsday|urday)?\b\.?,?\s+)?'
+_NUM = r'\d{1,2}(?:st|nd|rd|th)?'
+_MON = r'(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?'
+_ONE = _DAYW + _NUM + r'(?:\s*(?:,|and|&)\s*' + _DAYW + _NUM + r')*\s+' + _MON + r'(?:\s+20\d\d)?\b'
+DATE_LIST = re.compile(r'(?<![\d:£])' + _ONE + r'(?:\s*(?:,|and|&)\s*' + _ONE + r')*')
+_ITEM = re.compile(_DAYW + r'(\d{1,2})(?:st|nd|rd|th)?')
+_GROUP = re.compile(_DAYW + _NUM + r'(?:\s*(?:,|and|&)\s*' + _DAYW + _NUM + r')*\s+(' + _MON + r')(?:\s+(20\d\d))?')
+
+def _dates_in(text, today):
+    """[(start, end, [(day number, month word, date)])] for each list of dates in the text."""
+    out = []
+    for m in DATE_LIST.finditer(text):
+        items = []
+        for g in _GROUP.finditer(m.group(0)):
+            mon = g.group(1); mi = _MONTHS.index(mon[:3].lower()) + 1
+            for it in _ITEM.finditer(g.group(0)[:g.start(1) - g.start(0)]):
+                try:
+                    y = int(g.group(2)) if g.group(2) else today.year
+                    d = dt.date(y, mi, int(it.group(1)))
+                    if not g.group(2):   # no year given: past dates people mention are recent; the rest are coming up
+                        if (today - d).days > 75: d = d.replace(year=y + 1)
+                        elif (d - today).days > 340: d = d.replace(year=y - 1)
+                except ValueError:
+                    continue
+                items.append((int(it.group(1)), mon, d))
+        # lists run in date order, so a date earlier than the one before it is next year ("..., 28 Aug, 25 Sep")
+        for k in range(1, len(items)):
+            while items[k][2] < items[k - 1][2]:
+                items[k] = (items[k][0], items[k][1], items[k][2].replace(year=items[k][2].year + 1))
+        if items: out.append((m.start(), m.end(), items))
+    return out
+
+def _say(items):
+    """'6 Oct', '17 and 24 Nov', '18 Nov and 9 Dec'."""
+    groups = []
+    for n, mon, _ in items:
+        if groups and groups[-1][0] == mon: groups[-1][1].append(n)
+        else: groups.append((mon, [n]))
+    def days(ns): return ns[0] if len(ns) == 1 else ', '.join(map(str, ns[:-1])) + ' and ' + str(ns[-1])
+    if len(groups) == 1: return f'{days(groups[0][1])} {groups[0][0]}'
+    parts = [f'{n} {mon}' for n, mon, _ in items]
+    return ', '.join(parts[:-1]) + ' and ' + parts[-1]
+
+def drop_past_dates(info, today):
+    """Take dates that have passed out of the details text: "(6 Oct, 3 Nov, 1 Dec)" becomes "(1 Dec)" after 3 Nov.
+    A short sentence whose dates have all passed ("Replaces the Tue 17 and 24 Nov sessions.") is left out,
+    unless it also holds contact details or a link."""
+    if not info: return info
+    keep = []
+    def past_bracket(m):
+        f = _dates_in(m.group(0), today)
+        keep = re.search(r'\b(from|since|start|started|until|till|check)\b', m.group(0), re.I)
+        return '' if f and not keep and all(d < today for _, _, its in f for _, _, d in its) else m.group(0)
+    info = re.sub(r'\s*\([^()]*\)', past_bracket, info)
+    for sent in re.split(r'(?<=[.!?])\s+', info):
+        found = _dates_in(sent, today)
+        if not found or re.search(r'\b(from|since|start|started|until|till|check|ran|runs?)\b', sent, re.I):
+            keep.append(sent); continue
+        if all(d < today for _, _, its in found for _, _, d in its) and len(sent) < 110 and not re.search(r'\b(from|since|start|started|until|till|check)\b|@|https?://|www\.|\d{4}\s?\d{3}\s?\d{3,4}|\d{5}\s?\d{6}', sent):
+            continue
+        for a, b, its in reversed(found):
+            left = [x for x in its if x[2] >= today]
+            if len(left) == len(its): continue
+            before, after = sent[:a], sent[b:]
+            # leave alone: date ranges ("12 Nov – 17 Dec", "from 7 Oct") and dates with times after them ("22 Oct 1–3pm")
+            if re.search(r'(from|since|between|starts?|started|–|-|to)\s*$', before, re.I) or re.match(r'\s*(–|-|to\b|until\b|\d)', after):
+                continue
+            if not left and re.match(r'\s*:', after):
+                # a programme entry ("3 Nov: Mrs Doubtfire;"): drop the whole entry
+                m = re.match(r'\s*:[^;]*;?\s*', after); after = after[m.end():]
+            sent = before + (_say(left) if left else '') + after
+        sent = re.sub(r'\(\s*[,;]?\s*\)', '', sent)
+        sent = re.sub(r':\s*,\s*(then\s+)?', ': ', sent)
+        sent = re.sub(r'\b(on|Dates:|dates)\s*([.;])', r'\2', sent)
+        sent = re.sub(r'\s+([,;.)])', r'\1', re.sub(r'\s{2,}', ' ', sent)).strip()
+        if sent and sent not in '.;,': keep.append(sent)
+    return ' '.join(keep).strip()
+
 
 def parse_desc(desc):
     out = {}
@@ -127,7 +215,11 @@ def parse_desc(desc):
     links = re.findall(r'https?://\S+', d)
     if links:
         out['link'] = links[-1].rstrip('.,)')
-        d = d.replace(links[-1], '').strip()
+        d = d.replace(links[-1], '\x00', 1)
+        # a label that pointed at the link, with more text after it, now points at the link button
+        d = re.sub(r':\s*\x00\s*(?=\S)', ' (see link). ', d)
+        d = d.replace(links[-1], '').replace('\x00', '').strip()
+        d = re.sub(r'\.\s*\(see link\)', ' (see link)', d)
         # the link becomes a button, so drop a label left hanging at the end ("Book:", "Facebook group:")
         lab = re.search(r'(^|(?<=[.!?)])\s|\n)\s*([^.!?:\n]{1,45}):\s*$', d)
         if lab:
@@ -145,13 +237,19 @@ def parse_desc(desc):
                 return (price_band(p) or 'Paid') if k == '£' else v
         return None
     if parts and costof(parts[0]) is None and len(parts) > 1 and costof(parts[1]):
-        out['org'] = parts.pop(0).rstrip('.')
-    if parts and costof(parts[0]):
+        if is_schedule(parts[0]):
+            # "2nd Saturday of the month. Free." is when it runs, not who runs it
+            out['cost'] = costof(parts.pop(1))
+            if len(parts[0]) < 40: parts.pop(0)   # the site already shows when it runs
+        else:
+            out['org'] = parts.pop(0).rstrip('.')
+    if 'cost' not in out and parts and costof(parts[0]):
         out['cost'] = costof(parts.pop(0))
     if parts and parts[0].lower().rstrip('.') in ('drop in', 'book first', 'booking required'):
         b = parts.pop(0).lower().rstrip('.'); out['booking'] = 'Drop in' if b == 'drop in' else 'Book first'
     # drop leftover sentences that only repeat the price or booking ("Free. Free.")
-    parts = [p for p in parts if p.lower().rstrip('.') not in ('free', 'drop in', 'book first', 'price not stated')]
+    parts = [p for p in parts if p.lower().rstrip('.') not in ('free', 'drop in', 'book first', 'price not stated', 'cost not stated',
+                                                             'booking not stated', 'not stated')]
     info = ' '.join(parts).strip()
     if 'cost' not in out:
         il = info.lower()
@@ -281,12 +379,15 @@ def cmd_build(pages, app_path, today, window_end, out):
             if prev.get('area') and prev['area'] != OTHER and _district(fresh['venue']) not in SPLIT_DISTRICTS:
                 fresh['area'] = prev['area']
             for k in ('link', 'org', 'note', 'info'):
-                if not fresh.get(k) and prev.get(k): fresh[k] = prev[k]
+                if not fresh.get(k) and prev.get(k) and not (k == 'org' and is_schedule(prev[k])): fresh[k] = prev[k]
             if prev.get('date', '9') < fresh['date'] and 'rule' in fresh: fresh['date'] = prev['date']
             if fresh != prev: updated += 1
         else:
             fresh['id'] = 'g' + __import__('hashlib').md5(gid.encode()).hexdigest()[:8]
             added.append(fresh)
+        if fresh.get('info'):
+            fresh['info'] = drop_past_dates(fresh['info'], today)
+            if not fresh['info']: del fresh['info']
         out_ev.append(fresh)
     # leave obvious duplicates out of the app, and report them so the calendar can be tidied
     dups = find_duplicates(out_ev)

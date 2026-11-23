@@ -126,7 +126,7 @@ def item(ev, nd, show_area):
     s = f'<li><div class="t">{e(ev["title"])}</div><div class="m">{" · ".join(e(x) for x in meta if x)}'
     if ev.get('org'): s += ' · Run by ' + e(ev['org'])
     s += '</div>'
-    if ev.get('info'): s += f'<div class="i">{e(clip(ev["info"], 220))}</div>'
+    if ev.get('info'): s += f'<div class="i">{e(clip(ev["info"], 320))}</div>'
     if safe_link(ev.get('link')): s += f' <a href="{e(ev["link"])}" rel="nofollow noopener">More info</a>'
     return s + '</li>'
 
@@ -185,7 +185,7 @@ def page(path, title, desc, h1, intro, body, nav, crumb, today):
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" onload="this.onload=null;this.rel=\'stylesheet\'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap"></noscript>
 <style>{STYLE}</style>
 </head>
-<body>
+<body><!--email_off-->
 {nav}
 <main class="wrap">
 <h1>{e(h1)}</h1>
@@ -196,7 +196,7 @@ def page(path, title, desc, h1, intro, body, nav, crumb, today):
 {browse_links(path)}
 <footer><a href="/">Find activities</a> · <a href="/about/">About</a> · <a href="/link-workers/">For link workers</a> · <a href="/add/">Add an event</a> · <a href="/privacy/">Privacy</a> · <a href="mailto:{EMAIL}">{EMAIL}</a></footer>
 </main>
-</body>
+<!--/email_off--></body>
 </html>
 '''
 
@@ -206,6 +206,7 @@ def app_page(folder, path, title, desc, h1, intro, body, only, today):
     `only` = regular expressions the page uses to pick its activities: 'text' (title or details) and 'org' (organiser)."""
     e = H.escape
     s = open(os.path.join(folder, 'index.html')).read()
+    s = re.sub(r'(<script type="application/json" id="home-data">).*?(</script>)', r'\1[]\2', s, count=1, flags=re.S)
     url = SITE + path.lstrip('/')
     ld = {'@context': 'https://schema.org', '@graph': [
         {'@type': 'CollectionPage', 'name': title, 'url': url, 'description': desc, 'inLanguage': 'en-GB',
