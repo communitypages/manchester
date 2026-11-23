@@ -1,0 +1,9 @@
+# Licensed partner websites for the activities list (communitypages.org.uk/embed/)
+# The list only shows on websites named here. Anywhere else it shows a short "Go to Community Pages" note.
+# Write one web address per line, without https:// or www. Covers that site and its sub-sites
+# (e.g. "example.org.uk" also covers "tenants.example.org.uk").
+# To take a partner off, delete their line (or put # in front of it).
+# Lines starting with # are notes and are ignored.
+#
+# Example:
+# examplehousing.org.uk     # Example Housing, licence from Dec 2026

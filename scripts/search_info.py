@@ -281,7 +281,7 @@ Typical activities: coffee mornings, chatty cafés, ESOL and English classes, jo
 Last updated: {date}
 '''
 
-PAGES = ['', 'about/', 'link-workers/', 'how-to-use/', 'add/', 'privacy/', 'map/']
+PAGES = ['', 'about/', 'link-workers/', 'how-to-use/', 'add/', 'privacy/', 'map/', 'terms/']
 
 
 def llms_full(items, today):
@@ -299,7 +299,8 @@ def llms_full(items, today):
     oneoff = sorted([x for x in items if not x[0].get('rule')], key=lambda x: (x[1], x[0].get('start', '')))
     out = ['# Community Pages – all current listings', '',
            f'> Free, donation and £5-or-less activities across Greater Manchester. {len(items)} listings, updated {today.strftime("%-d %B %Y")}. '
-           f'Source: {SITE} – please check with the organiser before going.', '', '## Regular groups, by area']
+           f'Source: {SITE} – please check with the organiser before going. '
+           f'Please link to Community Pages rather than copying these listings in bulk; see {SITE}terms/.', '', '## Regular groups, by area']
     area = None
     for ev, nd in regular:
         if ev.get('area') != area:

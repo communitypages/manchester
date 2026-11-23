@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Local activities – Community Pages</title>
+<meta name="robots" content="noindex,follow">
+<link rel="canonical" href="https://communitypages.org.uk/">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap">
+<!--
+  Embeddable list of activities for partner websites. No header, menu or footer.
+  Reads /events.json (rebuilt every day from the calendar), so it is always up to date. Don't edit by hand per partner.
+  Settings in the address (all optional, can be combined):
+    area=Salford              a borough (Manchester, Salford, Trafford ...) or one of the site's areas (e.g. Chorlton & Whalley Range).
+                              Several: area=Salford,Trafford
+    category=Coffee+mornings  a type of activity (e.g. Coffee mornings, Family & kids, family-kids, Choirs). Several: comma-separated
+    days=14                   how many days ahead to show (1 to 60, default 14)
+    limit=40                  most activities to show before the "See more" button (5 to 200, default 40)
+    title=0                   hide the small heading at the top
+  Only licensed websites can show it: add their web address to /embed/partners.txt.
+-->
+<style>
+:root{--paper:#F3F5EF;--card:#FFFFFF;--ink:#15302B;--muted:#56706A;--line:#D6DED5;--accent:#1C6B61;--accent-soft:#DCEBE6;--bee:#E3B52C;--bee-ink:#2A1F00;
+  --display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;--body:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 var(--body)}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:12px 14px 16px}
+.head{font:800 20px/1.2 var(--display);margin:4px 0 2px}
+.sub{color:var(--muted);font-size:14px;margin:0 0 6px}
+.day{margin-top:14px}
+.dayhead{display:flex;align-items:baseline;gap:8px;padding-block:4px;border-bottom:2px solid var(--ink)}
+.dnum{font:800 26px/1 var(--display);font-variant-numeric:tabular-nums}
+.dname{font-weight:700}
+.ev{display:grid;grid-template-columns:62px 1fr;gap:10px;padding-block:12px;border-bottom:1px solid var(--line)}
+.time{font-variant-numeric:tabular-nums;font-weight:700;line-height:1.3;font-size:15px}
+.time small{display:block;font-weight:400;color:var(--muted)}
+.t{font:700 17px/1.25 var(--display);margin:0;overflow-wrap:anywhere}
+.meta{color:var(--muted);font-size:14px;margin-top:2px}
+.info{font-size:14px;margin-top:4px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.tag{font-size:12.5px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--accent-soft);color:var(--ink)}
+.tag.free{background:var(--bee);color:var(--bee-ink)}
+.tag.cat{background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:400}
+.more{font-size:14px;font-weight:700}
+.msg{padding:28px 0;text-align:center;color:var(--muted)}
+.btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;text-decoration:none;border-radius:999px;padding:9px 18px;margin-top:14px;font-size:15px}
+.powered{margin-top:16px;padding-top:10px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);text-align:center}
+.powered a{font-weight:700}
+@media (min-width:520px){.ev{grid-template-columns:78px 1fr}}
+</style>
+</head>
+<body>
+<main class="wrap" id="app" aria-live="polite">
+<p class="msg">Loading activities…</p>
+</main>
+<script>
+(function(){
+var SITE="https://communitypages.org.uk/";
+var BOROUGHS={
+  "Manchester":["City centre & Ardwick","Hulme & Moss Side","Chorlton & Whalley Range","Fallowfield, Rusholme & Levenshulme","Gorton, Longsight & Openshaw","Didsbury & Withington","Wythenshawe","North Manchester"],
+  "Salford":["Salford"],
+  "Trafford":["Stretford & Old Trafford","Urmston & Flixton","Sale & Timperley","Altrincham & Hale","Partington"],
+  "Stockport":["Stockport & Marple"],"Tameside":["Tameside"],"Oldham":["Oldham"],"Rochdale":["Rochdale"],"Bury":["Bury"],"Bolton":["Bolton"],"Wigan":["Wigan"]};
+/* category -> [web address, heading, words people use] (same as the /activity/ pages) */
+var CATS={
+  "Coffee & chat":["coffee-chat","Coffee mornings and chatty cafés","coffee mornings, coffee morning, chatty cafés, chatty cafe, social drop-ins, coffee, chat, cuppa"],
+  "Wellbeing & support":["wellbeing-support","Wellbeing and support groups","wellbeing, peer support, support groups, social groups"],
+  "Family & kids":["family-kids","Family, baby and toddler activities","family, kids, children, baby, toddler, stay and play, storytimes"],
+  "Learning & skills":["learning-skills","ESOL, job clubs and learning","ESOL, English classes, job clubs, digital help, advice, learning"],
+  "Active & sport":["active-sport","Exercise, walks and sport","exercise, walking groups, walks, chair exercise, yoga, tai chi, dance, sport"],
+  "Outdoors & nature":["outdoors-nature","Gardening and nature","gardening, allotments, nature walks, nature, outdoors"],
+  "Arts, crafts & writing":["arts-crafts","Arts, crafts and writing groups","arts, crafts, knit and natter, art classes, book clubs, writing groups"],
+  "Music & singing":["music-singing","Choirs, singing and music","choirs, choir, singing, music"],
+  "Food & markets":["food-markets","Lunch clubs, community meals and food","lunch clubs, community meals, food, food banks, pantries"],
+  "Film & talks":["film-talks","Free films and talks","films, cinema, talks, lectures"],
+  "Community":["community","Community groups and events","community groups, residents meetings, local events"]};
+var DAYS=["SU","MO","TU","WE","TH","FR","SA"], DN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+    MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function norm(s){return String(s||"").toLowerCase().replace(/&/g," and ").replace(/[’']/g,"").replace(/[^a-z0-9]+/g," ").trim()
+  .split(" ").map(function(w){return w.length>3&&/s$/.test(w)&&!/ss$/.test(w)?w.slice(0,-1):w}).join(" ")}
+function slug(s){return String(s).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")}
+function list(v){return (v||"").split(",").map(function(x){return x.trim()}).filter(Boolean)}
+
+var q=new URLSearchParams(location.search);
+var days=Math.min(60,Math.max(1,parseInt(q.get("days"),10)||14));
+var showTitle=q.get("title")!=="0";
+var limit=Math.min(200,Math.max(5,parseInt(q.get("limit"),10)||40));
+
+/* area=... -> set of site areas, plus the words to show */
+var areaSet=null, areaLabels=[], bad=[];
+list(q.get("area")).forEach(function(a){
+  var n=norm(a), hit=null;
+  Object.keys(BOROUGHS).forEach(function(b){ if(norm(b)===n||slug(b)===slug(a)) hit=[b,BOROUGHS[b]]; });
+  if(!hit) Object.keys(BOROUGHS).forEach(function(b){ BOROUGHS[b].forEach(function(x){ if(norm(x)===n||slug(x)===slug(a)) hit=[x,[x]]; }); });
+  if(!hit) Object.keys(BOROUGHS).forEach(function(b){ BOROUGHS[b].forEach(function(x){ if(!hit&&n.length>3&&norm(x).split(" and ").concat(norm(x).split(" ")).indexOf(n)>=0) hit=[x,[x]]; }); });
+  if(hit){ areaSet=areaSet||{}; hit[1].forEach(function(x){areaSet[x]=1}); areaLabels.push(hit[0]); } else bad.push("area “"+a+"”");
+});
+/* category=... -> set of categories */
+var catSet=null, catLabels=[];
+list(q.get("category")).forEach(function(c){
+  var n=norm(c), hit=null;
+  Object.keys(CATS).forEach(function(k){
+    var v=CATS[k], names=[k,v[0].replace(/-/g," "),v[1]].concat(v[2].split(","));
+    if(names.some(function(x){return norm(x)===n})) hit=hit||k;
+  });
+  if(hit){ catSet=catSet||{}; catSet[hit]=1; catLabels.push(CATS[hit][1]); } else bad.push("category “"+c+"”");
+});
+
+/* dates – same rules as the main site */
+function iso(d){return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
+function addDays(d,n){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);return x}
+function occurs(ev,d){
+  var s=iso(d), r=ev.rule;
+  if(!r) return ev.date<=s && s<=(ev.endDate||ev.date);
+  if(s<ev.date||(r.until&&s>r.until)) return false;
+  if((r.byday||[]).indexOf(DAYS[d.getDay()])<0) return false;
+  if((r.interval||1)>1){
+    var d0=new Date(ev.date+"T12:00:00"), m0=addDays(d0,-((d0.getDay()+6)%7)), m1=addDays(d,-((d.getDay()+6)%7));
+    if(Math.round((m1-m0)/864e5/7)%r.interval) return false;
+  }
+  if(r.freq==="monthly"){
+    var nth=Math.floor((d.getDate()-1)/7)+1, last=addDays(d,7).getMonth()!==d.getMonth();
+    return (r.pos||[1]).some(function(p){return p===nth||(p===-1&&last)});
+  }
+  return true;
+}
+function costTag(c){
+  if(c==="Free") return '<span class="tag free">Free</span>';
+  if(c==="Pay what you can") return '<span class="tag free">Donation</span>';
+  return '<span class="tag free">£5 and under</span>';
+}
+function freqText(ev){return !ev.rule?"One-off":ev.rule.freq==="monthly"?"Monthly":ev.rule.interval>1?"Every other week":"Weekly"}
+function clip(s,n){s=String(s||"");return s.length>n?s.slice(0,n).replace(/\s+\S*$/,"")+"…":s}
+function safeLink(u){return typeof u==="string"&&/^https?:\/\/[^\s"<>]+$/.test(u)?u:""}
+
+function siteLink(){
+  // the matching page on the main site, if there is one
+  if(areaLabels.length===1&&!catSet&&BOROUGHS[areaLabels[0]]) return SITE+"area/"+slug(areaLabels[0])+"/";
+  if(catLabels.length===1&&!areaSet) for(var k in catSet) return SITE+"activity/"+CATS[k][0]+"/";
+  return SITE;
+}
+
+function render(all){
+  var app=document.getElementById("app"), t=new Date(), h="";
+  var evs=all.filter(function(e){
+    return e.cost!=="Paid" && (!areaSet||areaSet[e.area]) && (!catSet||catSet[e.category]);
+  });
+  if(showTitle){
+    var what=catLabels.length?catLabels.join(", "):"Local activities";
+    var where=areaLabels.length?" in "+areaLabels.join(", "):" across Greater Manchester";
+    h+='<h1 class="head">'+esc(what+where)+'</h1><p class="sub">Free, donation and £5-and-under activities. Please check with the organiser before you go.</p>';
+  }
+  if(bad.length) h+='<p class="sub">We couldn’t find '+esc(bad.join(" or "))+', so it isn’t being used to filter this list.</p>';
+  var count=0;
+  for(var i=0;i<days&&count<limit;i++){
+    var d=addDays(t,i);
+    var on=evs.filter(function(e){return occurs(e,d)}).sort(function(a,b){return (a.start||"00:00").localeCompare(b.start||"00:00")||a.title.localeCompare(b.title)});
+    if(!on.length) continue;
+    h+='<section class="day"><div class="dayhead"><span class="dnum">'+d.getDate()+'</span><span class="dname">'+MN[d.getMonth()]+' · '+(i===0?"Today":i===1?"Tomorrow":DN[d.getDay()])+'</span></div>';
+    on.slice(0,limit-count).forEach(function(e){
+      count++;
+      var time=e.start?esc(e.start)+(e.end?'<small>to '+esc(e.end)+'</small>':''):'<small>All day</small>';
+      var link=safeLink(e.link);
+      h+='<article class="ev"><div class="time">'+time+'</div><div><h2 class="t">'+esc(e.title)+'</h2>'
+        +'<div class="meta">'+esc(e.venue)+(areaLabels.length===1&&BOROUGHS[areaLabels[0]]&&BOROUGHS[areaLabels[0]].length===1?'':' · '+esc(e.area))+(e.org?' · Run by '+esc(e.org):'')+'</div>'
+        +(e.info?'<div class="info">'+esc(clip(e.info,220))+'</div>':'')
+        +'<div class="tags">'+costTag(e.cost)+'<span class="tag">'+freqText(e)+'</span><span class="tag cat">'+esc(e.category)+'</span></div>'
+        +(link?'<div><a class="more" href="'+esc(link)+'" target="_blank" rel="nofollow noopener">More info</a></div>':'')
+        +'</div></article>';
+    });
+    h+='</section>';
+  }
+  if(!count) h+='<p class="msg">Nothing listed for the next '+days+' days. <a href="'+SITE+'" target="_blank" rel="noopener">Search all activities</a>.</p>';
+  else h+='<p style="text-align:center"><a class="btn" href="'+esc(siteLink())+'" target="_blank" rel="noopener">See more activities</a></p>';
+  h+='<p class="powered">Powered by <a href="'+SITE+'" target="_blank" rel="noopener">Community Pages</a></p>';
+  app.innerHTML=h;
+  sendHeight();
+}
+/* tell the partner's page how tall the list is, so it can resize the frame (optional) */
+function sendHeight(){try{parent.postMessage({communityPagesHeight:document.documentElement.scrollHeight},"*")}catch(e){}}
+window.addEventListener("resize",sendHeight);
+
+/* ---------- licence check ----------
+   The list only shows inside websites named in /embed/partners.txt (one web address per line).
+   It always shows on Community Pages itself, and when opened on its own (not inside another site). */
+function parentHost(){
+  try{ if(window.top===window.self) return null; }catch(e){}
+  var o="";
+  try{ if(location.ancestorOrigins&&location.ancestorOrigins.length) o=location.ancestorOrigins[location.ancestorOrigins.length-1]; }catch(e){}
+  if(!o) o=document.referrer||"";
+  try{ return new URL(o).hostname.toLowerCase().replace(/^www\./,""); }catch(e){ return ""; }
+}
+function licensed(host,txt){
+  if(host===null||host==="communitypages.org.uk"||host==="localhost"||host==="127.0.0.1") return true;
+  if(!host) return false;
+  return txt.split(/\r?\n/).some(function(line){
+    var d=line.replace(/#.*/,"").trim().toLowerCase().replace(/^https?:\/\//,"").replace(/^www\./,"").replace(/[\/:].*$/,"");
+    return d&&(host===d||host.slice(-(d.length+1))==="."+d);
+  });
+}
+function notLicensed(){
+  document.getElementById("app").innerHTML='<div class="msg"><p style="font:800 20px/1.2 var(--display);color:var(--ink);margin:0 0 6px">Find free and low-cost local activities</p>'
+    +'<p style="margin:0 0 4px">Coffee mornings, walking groups, craft clubs and more across Greater Manchester, all £5 or less.</p>'
+    +'<a class="btn" href="'+SITE+'" target="_blank" rel="noopener">Go to Community Pages</a>'
+    +'<p style="font-size:13px;margin-top:14px">Want this list on your website? <a href="'+SITE+'for-partners/" target="_blank" rel="noopener">Find out how</a>.</p></div>';
+  sendHeight();
+}
+var host=parentHost();
+(licensed(host,"")?Promise.resolve(true):fetch("/embed/partners.txt",{cache:"no-cache"}).then(function(r){return r.ok?r.text():""}).then(function(t){return licensed(host,t)},function(){return false}))
+.then(function(ok){ if(!ok){ notLicensed(); return; }
+fetch("/events.json",{cache:"no-cache"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(render).catch(function(){
+  document.getElementById("app").innerHTML='<p class="msg">Activities couldn’t load just now. <a href="'+SITE+'" target="_blank" rel="noopener">See them on Community Pages</a>.</p><p class="powered">Powered by <a href="'+SITE+'" target="_blank" rel="noopener">Community Pages</a></p>';
+  sendHeight();
+});
+});
+})();
+</script>
+</body>
+</html>
