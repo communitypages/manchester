@@ -271,6 +271,7 @@ Typical activities: coffee mornings, chatty cafés, ESOL and English classes, jo
 - [For link workers]({site}link-workers/): how to find and print local activities for someone.
 - [How to use]({site}how-to-use/): how to search, save activities to a calendar, share them, and print a list for people who aren't online or for a noticeboard.
 - [Add an event]({site}add/): how anyone can add a local activity for free.
+- [Support us]({site}support/): how to support Community Pages, including our Crowdfunder.
 - Pages by borough: {areas}
 - Pages by type of activity: {acts}
 
@@ -281,7 +282,7 @@ Typical activities: coffee mornings, chatty cafés, ESOL and English classes, jo
 Last updated: {date}
 '''
 
-PAGES = ['', 'about/', 'link-workers/', 'how-to-use/', 'add/', 'privacy/', 'map/', 'terms/']
+PAGES = ['', 'about/', 'support/', 'link-workers/', 'how-to-use/', 'add/', 'privacy/', 'map/', 'terms/']
 
 
 def llms_full(items, today):
