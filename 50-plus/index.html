@@ -117,6 +117,7 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,6vw,46px);lin
 .detail .kv{display:grid;grid-template-columns:90px 1fr;gap:4px 10px;margin-bottom:8px}
 .detail .kv dt{color:var(--muted)}
 .detail .kv dd{margin:0;overflow-wrap:anywhere}
+.maplink{color:inherit;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
 .addev{margin:6px 0 0;font-size:15px;color:var(--muted)}.addev a{font-weight:700}.addev{margin-top:12px}.addev{display:flex;flex-wrap:wrap;gap:10px}.addev .btn{text-decoration:none;padding:11px 20px;font-size:16px}.addev .btn{color:var(--accent-ink);border:0}.addev .btn.ghost{background:var(--card);color:var(--ink);border:1.5px solid var(--line);padding:9.5px 18.5px}
 .calrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.calrow .btn{white-space:nowrap;padding:6px 10px}.calrow .btn{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .admin-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
@@ -238,7 +239,7 @@ var MONLONG=["January","February","March","April","May","June","July","August","
 var WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
 var S={tab:"on",q:"",when:"week",area:"",cat:"",free:false,drop:false,oneoff:false,open:{},pc:"",near:"2"};
-try{var saved=JSON.parse(sessionStorage.getItem("mcr-ui")||"null");if(saved){for(var k in saved)S[k]=saved[k];S.open={};}}catch(e){}S.area="";var HOMEWHEN=S.when;if(window.CP_ONLY&&window.CP_ONLY.when){S.when=window.CP_ONLY.when;}
+try{var saved=JSON.parse(sessionStorage.getItem("mcr-ui")||"null");if(saved){for(var k in saved)S[k]=saved[k];S.open={};}}catch(e){}S.area="";var HOMEWHEN=S.when;try{var UP=new URLSearchParams(location.search);if(UP.get("q")&&!window.CP_ONLY){S.q=UP.get("q");S.when=UP.get("when")||"all";S.go=true;S.pc="";HOMEWHEN=S.when;history.replaceState(null,"",location.pathname);}}catch(e){}if(window.CP_ONLY&&window.CP_ONLY.when){S.when=window.CP_ONLY.when;}
 function remember(){try{sessionStorage.setItem("mcr-ui",JSON.stringify({tab:S.tab,q:S.q,when:(window.CP_ONLY&&window.CP_ONLY.when)?HOMEWHEN:S.when,date:S.date,area:S.area,cat:S.cat,free:S.free,drop:S.drop,oneoff:S.oneoff,pc:S.pc,near:S.near,go:S.go}));}catch(e){}}
 
 var canEdit=false, art=null, readOnly=false;
@@ -472,14 +473,16 @@ function editHTML(ev){
     "Activity: "+ev.title+"\nWhen: "+when+"\nWhere: "+(ev.venue||"")+"\nPrice: "+(ev.cost||"£5 and under")+
     "\n\nWhat needs changing (or say if it has stopped running):\n\n\nYour name and group (optional):\n";
   var href="mailto:hello@communitypages.org.uk?subject="+encodeURIComponent("Change to listing: "+ev.title)+"&body="+encodeURIComponent(body);
-  return '<a class="btn small ghost" href="'+esc(href)+'" title="Suggest a change to this listing by email">Edit</a>';
+  return '<a class="btn small" href="'+esc(href)+'" title="Suggest a change to this listing by email">Edit</a>';
 }
 
+function mapURL(v){v=(v||"").replace(/\([^)]*\)/g,"").replace(/\s+/g," ").trim();return (!v||/^see details$/i.test(v))?"":"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(v);}
+function mapA(v,text,cls){var u=mapURL(v);return u?'<a class="'+cls+'" href="'+esc(u)+'" target="_blank" rel="noopener" title="Open in Google Maps">'+text+'</a>':text;}
 function detailHTML(ev,day){
   var h='<div class="detail">';
   if(ev.info) h+='<p>'+esc(ev.info)+'</p>';
   h+='<dl class="kv">';
-  h+='<dt>Where</dt><dd>'+esc(ev.venue)+'</dd>';
+  h+='<dt>Where</dt><dd>'+mapA(ev.venue,esc(ev.venue),"maplink")+'</dd>';
   h+='<dt>When</dt><dd>'+(ev.rule?esc(ruleText(ev.rule))+", "+esc(timeText(ev))+(ev.rule.until?" (listed until "+esc(fmtDate(ev.rule.until))+")":""):esc(fmtDate(ev.date))+(ev.endDate&&ev.endDate!==ev.date?" to "+esc(fmtDate(ev.endDate)):"")+", "+esc(timeText(ev)))+'</dd>';
   if(ev.endGuess) h+='<dt></dt><dd class="note">Finish time not given, so it\'s a guess.</dd>';
   h+='<dt>Price</dt><dd>'+esc(ev.cost==="Low cost"?"£5 and under":(ev.cost||"£5 and under"))+'</dd>';
@@ -631,7 +634,7 @@ function renderOn(){
       var key=ev.id+"@"+s, open=!!S.open[key];
       html+='<article class="ev"><div class="time">'+(ev.start?esc(ev.start)+(ev.end?'<small>to '+esc(ev.end)+'</small>':''):'All day')+'</div><div>'+
       '<button class="evtitle" data-open="'+esc(key)+'" aria-expanded="'+open+'">'+esc(shortTitle(ev))+'</button>'+
-      '<button type="button" class="meta addr" aria-expanded="false" data-full="'+esc(ev.venue||"")+'" data-short="'+esc(metaShort(ev)+(distText(ev)?" · "+distText(ev):""))+'">'+esc(metaShort(ev)+(distText(ev)?" · "+distText(ev):""))+'</button>'+
+      (mapURL(ev.venue)?'<div class="meta">'+mapA(ev.venue,esc(metaShort(ev)),"maplink")+(distText(ev)?' · '+esc(distText(ev)):'')+'</div>':'<button type="button" class="meta addr" aria-expanded="false" data-full="'+esc(ev.venue||"")+'" data-short="'+esc(metaShort(ev)+(distText(ev)?" · "+distText(ev):""))+'">'+esc(metaShort(ev)+(distText(ev)?" · "+distText(ev):""))+'</button>')+
       '<div class="tags">'+tagsHTML(ev,true)+'</div>'+(open?detailHTML(ev,s):'')+'</div></article>';
     });
     html+='</section>';
@@ -661,7 +664,7 @@ function renderSearch(){
     html+='<article class="ev sres"><div>'+
     '<button class="evtitle" data-open="'+esc(key)+'" aria-expanded="'+open+'">'+esc(shortTitle(ev))+'</button>'+
     '<div class="swhen">'+esc(when)+'</div>'+
-    '<button type="button" class="meta addr" aria-expanded="false" data-full="'+esc(ev.venue||"")+'" data-short="'+esc(metaShort(ev)+(distText(ev)?" · "+distText(ev):""))+'">'+esc(metaShort(ev)+(distText(ev)?" · "+distText(ev):""))+'</button>'+
+    (mapURL(ev.venue)?'<div class="meta">'+mapA(ev.venue,esc(metaShort(ev)),"maplink")+(distText(ev)?' · '+esc(distText(ev)):'')+'</div>':'<button type="button" class="meta addr" aria-expanded="false" data-full="'+esc(ev.venue||"")+'" data-short="'+esc(metaShort(ev)+(distText(ev)?" · "+distText(ev):""))+'">'+esc(metaShort(ev)+(distText(ev)?" · "+distText(ev):""))+'</button>')+
     (ev.org?'<div class="meta">Run by '+esc(ev.org)+'</div>':'')+
     '<div class="tags">'+tagsHTML(ev,true)+'</div>'+(open?detailHTML(ev,s):'')+'</div></article>';
   });
@@ -681,7 +684,7 @@ function renderReg(){
     Object.keys(by[a]).sort().forEach(function(v){
       var list=by[a][v].sort(function(x,y){return dayIdx(x)-dayIdx(y)||(x.start||"").localeCompare(y.start||"")});
       var parts=v.split(",");
-      html+='<div class="venue"><h3>'+esc(parts[0])+'</h3><div class="addr">'+esc(parts.slice(1).join(",").trim())+'</div>';
+      html+='<div class="venue"><h3>'+esc(parts[0])+'</h3><div class="addr">'+mapA(v,esc(parts.slice(1).join(",").trim()),"maplink")+'</div>';
       list.forEach(function(ev){
         var key=ev.id+"@reg", open=!!S.open[key];
         html+='<div class="sess"><div><button class="evtitle" style="font-size:16px" data-open="'+esc(key)+'" aria-expanded="'+open+'">'+esc(ev.title)+'</button><div class="when">'+esc(ruleText(ev.rule))+' · '+esc(timeText(ev))+'</div></div><div class="right"><div class="tags" style="margin-top:0;justify-content:flex-end">'+tagsHTML(ev,false).replace(/<span class="tag">(Weekly|Monthly|Every other week)<\/span>/,"")+'</div></div>'+(open?'<div style="grid-column:1/-1">'+detailHTML(ev)+'</div>':'')+'</div>';
