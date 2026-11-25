@@ -26,13 +26,14 @@ main{padding:16px 20px 40px}
 .dot{width:12px;height:12px;border-radius:50%;display:inline-block;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
 .pc{display:flex;gap:6px;margin-left:auto}
 .pc input{font:inherit;padding:7px 10px;border:2px solid var(--line);border-radius:8px;width:150px;text-transform:uppercase}
+.pc #findme{background:var(--teal);color:#fff}
 .pc button{font:inherit;font-weight:700;background:var(--yellow);border:0;border-radius:8px;padding:7px 14px;cursor:pointer;color:var(--ink)}
 #status{color:var(--muted);font-size:.95rem;margin:0 0 8px}
-#map{height:62vh;min-height:380px;border-radius:12px;border:1px solid var(--line);background:#e8e4da}
+#map{position:relative;z-index:0;height:62vh;min-height:380px;border-radius:12px;border:1px solid var(--line);background:#e8e4da}
 .leaflet-popup-content{font-family:inherit;font-size:15px;line-height:1.4;margin:12px 14px}
 .leaflet-popup-content h3{margin:0 0 2px;font-size:1.05rem}
 .leaflet-popup-content .addr{color:var(--muted);margin:0 0 6px}
-.leaflet-popup-content ul{margin:0 0 6px;padding-left:18px}
+.leaflet-popup-content ul{margin:0 0 8px;padding-left:18px;max-height:220px;overflow-y:auto}.leaflet-popup-content li{margin:0 0 4px}.leaflet-popup-content li small{color:var(--muted)}.leaflet-popup-content .addr a{color:inherit}.leaflet-popup-content .seeall{font-weight:700}
 .leaflet-popup-content .tag{display:inline-block;font-size:.8rem;font-weight:700;border-radius:6px;padding:1px 7px;color:#fff;margin-bottom:6px}
 h2{font-size:1.3rem;margin:26px 0 8px}
 .list h3{font-size:1.05rem;margin:18px 0 6px;color:var(--teal-d)}
@@ -57,6 +58,7 @@ h2{font-size:1.3rem;margin:26px 0 8px}
     <form class="pc" id="pcform" role="search">
       <input id="pc" placeholder="Your postcode" aria-label="Your postcode" autocomplete="postal-code">
       <button type="submit">Go</button>
+      <button type="button" id="findme" hidden>Find me</button>
     </form>
   </div>
   <p id="status" aria-live="polite">Loading venues…</p>
@@ -92,6 +94,13 @@ h2{font-size:1.3rem;margin:26px 0 8px}
     if (/\bpark\b|\bwoods?\b|meadow|garden|allotment|reservoir|nature|clough|\bvalley\b|\bfarm\b|\bgreen\b|canal|towpath|\bcommon\b|\blake\b|country park|\bmoss\b/.test(n)) return 'outdoor';
     return 'other';
   }
+  var DN={MO:'Mon',TU:'Tue',WE:'Wed',TH:'Thu',FR:'Fri',SA:'Sat',SU:'Sun'}, MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function whenOf(e){
+    var t = e.start ? ' '+e.start : '', r = e.rule;
+    if (r) { var d=(r.byday||[]).map(function(x){return DN[x]||x}).join(' & ');
+      return (r.freq=='monthly' ? 'Monthly, '+d : r.interval==2 ? 'Every other '+d : 'Every '+d)+t; }
+    var p=(e.date||'').split('-'); return p.length==3 ? (+p[2])+' '+MN[+p[1]-1]+t : '';
+  }
   function shortTitle(t){return t.replace(/\s+[–—]\s+.*$/,'').trim()}
 
   var map = L.map('map',{scrollWheelZoom:false}).setView([53.48,-2.24],10);
@@ -106,18 +115,19 @@ h2{font-size:1.3rem;margin:26px 0 8px}
       if (!e.ll || !e.venue) return;
       var k = e.ll[0].toFixed(4)+','+e.ll[1].toFixed(4)+'|'+nameOf(e.venue).toLowerCase();
       var x = V[k] || (V[k] = {venue:e.venue, name:nameOf(e.venue), area:e.area||'', ll:e.ll, titles:{}, n:0});
-      x.titles[shortTitle(e.title)] = 1; x.n++;
+      var tt=shortTitle(e.title), nm=nameOf(e.venue), m=tt.match(/^(.*\S)\s+[-–—]\s+(.+)$/); if(m && nm.toLowerCase().indexOf(m[2].toLowerCase())>=0) tt=m[1];
+      x.titles[tt+'\u0001'+whenOf(e)] = 1; x.n++;
     });
     venues = Object.keys(V).map(function(k){var x=V[k]; x.titles=Object.keys(x.titles).sort(); x.type=typeOf(x.venue); return x});
     venues.forEach(function(x){
       var t = TBY[x.type];
-      var shown = x.titles.slice(0,8).map(function(s){return '<li>'+esc(s)+'</li>'}).join('');
-      var more = x.titles.length>8 ? '<p>and '+(x.titles.length-8)+' more</p>' : '';
-      var dir = 'https://www.google.com/maps/dir/?api=1&destination='+x.ll[0]+','+x.ll[1];
+      var shown = x.titles.map(function(s){var q=s.split('\u0001');return '<li>'+esc(q[0])+(q[1]?' <small>· '+esc(q[1])+'</small>':'')+'</li>'}).join('');
+      var gmap = 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(x.venue.replace(/\([^)]*\)/g,'').trim());
+      var list = '/?q='+encodeURIComponent(x.name)+'&when=all';
       x.marker = L.circleMarker(x.ll,{radius:8,weight:2,color:'#fff',fillColor:'#1b6b5f',fillOpacity:.95})
-        .bindPopup('<h3>'+esc(x.name)+'</h3><p class="addr">'+esc(x.venue)+'</p>'+
-          '<strong>'+x.titles.length+' activit'+(x.titles.length==1?'y':'ies')+':</strong><ul>'+shown+'</ul>'+more+
-          '<a href="'+dir+'" target="_blank" rel="noopener">Directions</a>',{maxWidth:300});
+        .bindPopup('<h3>'+esc(x.name)+'</h3><p class="addr"><a href="'+esc(gmap)+'" target="_blank" rel="noopener">'+esc(x.venue)+'</a></p>'+
+          '<strong>'+x.titles.length+' activit'+(x.titles.length==1?'y':'ies')+':</strong><ul>'+shown+'</ul>'+
+          '<a class="seeall" href="'+esc(list)+'">See full details of '+(x.titles.length==1?'this activity':'these activities')+'</a>',{maxWidth:300});
     });
     draw();
   }).catch(function(){document.getElementById('status').textContent='Sorry, the venues could not be loaded. Please try again later.'});
@@ -152,6 +162,27 @@ h2{font-size:1.3rem;margin:26px 0 8px}
     list.querySelectorAll('button[data-i]').forEach(function(b){b.onclick=function(){var x=venues[+b.dataset.i]; map.setView(x.ll,15); x.marker.openPopup(); document.getElementById('map').scrollIntoView({behavior:'smooth',block:'center'})}});
   }
 
+  function showYou(ll){
+    if (youMarker) map.removeLayer(youMarker);
+    youMarker = L.circleMarker(ll,{radius:9,weight:3,color:'#17312c',fillColor:'#f2c14e',fillOpacity:1}).addTo(map).bindTooltip('You',{permanent:true,direction:'top'});
+    map.setView(ll,14);
+  }
+  var fm = document.getElementById('findme');
+  if (navigator.geolocation) {
+    fm.hidden = false;
+    fm.onclick = function(){
+      var st = document.getElementById('status'), old = fm.textContent;
+      fm.textContent = 'Finding you…'; fm.disabled = true;
+      navigator.geolocation.getCurrentPosition(function(pos){
+        fm.textContent = old; fm.disabled = false;
+        showYou([pos.coords.latitude, pos.coords.longitude]);
+        document.getElementById('map').scrollIntoView({behavior:'smooth',block:'center'});
+      }, function(){
+        fm.textContent = old; fm.disabled = false;
+        st.textContent = 'Sorry, we couldn\'t find where you are. Check location is switched on, or type your postcode instead.';
+      }, {enableHighAccuracy:false, timeout:10000, maximumAge:300000});
+    };
+  }
   document.getElementById('pcform').addEventListener('submit',function(e){
     e.preventDefault();
     var raw = document.getElementById('pc').value.toUpperCase().replace(/\s+/g,'');
@@ -160,9 +191,7 @@ h2{font-size:1.3rem;margin:26px 0 8px}
     if (!m) { st.textContent='Please enter a full postcode, like M16 0LN.'; return; }
     fetch(PCBASE+m[1]+'.json').then(function(r){if(!r.ok) throw 0; return r.json()}).then(function(d){
       var ll = d[m[2]]; if (!ll) throw 0;
-      if (youMarker) map.removeLayer(youMarker);
-      youMarker = L.circleMarker(ll,{radius:9,weight:3,color:'#17312c',fillColor:'#f2c14e',fillOpacity:1}).addTo(map).bindTooltip('You',{permanent:true,direction:'top'});
-      map.setView(ll,14);
+      showYou(ll);
     }).catch(function(){st.textContent='Sorry, that postcode wasn\'t found. Only Greater Manchester postcodes work.'});
   });
 })();
