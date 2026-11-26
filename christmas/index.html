@@ -187,7 +187,7 @@ h1{font-size:26px}
 
 .printbtn{margin-left:auto}
 .printnote{margin:10px 0 0;font-size:15px;line-height:1.4;color:var(--muted);max-width:52ch}.printnote strong{color:inherit}
-#printout{display:none}
+#printout{display:none}.printrow{margin:10px 0 0}.printrow .printbtn{margin-left:0}
 @media (max-width:600px){.printbtn{grid-column:1/-1;margin-left:0}}
 @media print{
 @page{size:A4;margin:10mm}
@@ -563,7 +563,7 @@ function pItem(ev,extra){
   return '<div class="p-ev"><span class="t">'+(ev.start?esc(ev.start)+(ev.end?'–'+esc(ev.end):''):'All day')+'</span> <b>'+esc(shortTitle(ev))+'</b><div>'+esc(bits.filter(Boolean).join(" · "))+'</div></div>';
 }
 function pSort(a,b){return (a.start||"00:00").localeCompare(b.start||"00:00")||a.title.localeCompare(b.title)}
-function printList(){
+function printList(noPrint){
   var r=range(), from=r[0], to=r[1], pool=EVENTS.filter(matches), total=0;
   var DN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
   var weekly={}, seen={}, oneoffs=[];
@@ -600,8 +600,9 @@ function printList(){
    '<div class="p-head"><h1>Community Pages</h1><svg class="p-qr" role="img" aria-label="QR code for communitypages.org.uk" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 31 31" class="segno"><path class="qrline" stroke="#000" d="M1 1.5h7m2 0h1m1 0h3m3 0h1m1 0h2m1 0h7m-29 1h1m5 0h1m1 0h4m1 0h1m2 0h3m1 0h1m1 0h1m5 0h1m-29 1h1m1 0h3m1 0h1m1 0h2m3 0h4m1 0h1m1 0h1m1 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m2 0h1m1 0h4m2 0h1m1 0h1m2 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m3 0h3m3 0h2m1 0h1m2 0h1m1 0h3m1 0h1m-29 1h1m5 0h1m4 0h1m2 0h2m2 0h3m1 0h1m5 0h1m-29 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-20 1h1m1 0h3m2 0h4m-19 1h3m1 0h2m4 0h1m3 0h4m7 0h2m-21 1h1m1 0h2m2 0h1m2 0h4m1 0h2m1 0h1m3 0h1m-28 1h1m1 0h2m1 0h4m1 0h3m1 0h4m3 0h1m1 0h1m1 0h2m-26 1h4m4 0h1m1 0h1m1 0h3m1 0h1m1 0h1m7 0h1m-29 1h5m1 0h1m4 0h1m2 0h4m3 0h1m1 0h1m2 0h3m-27 1h2m1 0h1m1 0h1m1 0h1m2 0h1m1 0h2m2 0h2m2 0h2m1 0h4m-23 1h2m2 0h1m1 0h1m3 0h2m1 0h3m1 0h3m1 0h2m-29 1h1m2 0h2m2 0h1m1 0h4m2 0h1m3 0h1m1 0h2m1 0h2m-26 1h1m1 0h2m1 0h2m2 0h2m1 0h1m1 0h4m2 0h2m2 0h2m2 0h1m-27 1h3m2 0h2m4 0h1m2 0h1m3 0h1m2 0h1m1 0h1m-26 1h1m3 0h3m1 0h3m4 0h2m5 0h4m-24 1h3m3 0h1m5 0h1m2 0h6m2 0h3m-27 1h1m1 0h5m1 0h3m1 0h2m2 0h11m-20 1h3m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m3 0h2m2 0h1m-29 1h7m2 0h1m2 0h1m1 0h1m1 0h2m1 0h2m1 0h1m1 0h1m1 0h2m-28 1h1m5 0h1m1 0h2m1 0h2m3 0h1m3 0h1m3 0h1m3 0h1m-29 1h1m1 0h3m1 0h1m4 0h3m4 0h1m1 0h7m-27 1h1m1 0h3m1 0h1m1 0h2m2 0h3m1 0h1m2 0h1m4 0h4m-28 1h1m1 0h3m1 0h1m1 0h1m1 0h2m1 0h6m1 0h1m2 0h1m2 0h1m1 0h1m-29 1h1m5 0h1m1 0h1m1 0h1m2 0h1m2 0h1m1 0h3m1 0h1m1 0h2m1 0h1m-28 1h7m2 0h1m1 0h2m2 0h1m2 0h6m3 0h1"/></svg><span class="p-contact">communitypages.org.uk<br>hello@communitypages.org.uk<br><small>Scan for the full list</small></span><p><b>'+esc(f.join(" · "))+'</b> · '+total+' activities · free, donation or £5 or less</p></div>'+
    (total?'<div class="p-cols">'+body+'</div>':'<p>Nothing matches these filters.</p>')+
    '<div class="p-foot">Printed '+t.getDate()+' '+MONLONG[t.getMonth()]+' '+t.getFullYear()+'. Details can change – check with the organiser before going. More activities and full details: <b>communitypages.org.uk</b> · Questions or changes: <b>hello@communitypages.org.uk</b></div>';
-  try{window.print();}catch(e){}
+  if(!noPrint){try{window.print();}catch(e){}}
 }
+window.addEventListener("beforeprint",function(){try{if(LOADED)printList(true);}catch(e){}});
 /* ---------- views ---------- */
 var app=document.getElementById("app");
 function shell(){
@@ -641,7 +642,7 @@ function shell(){
   
   
   document.getElementById("gobtn").addEventListener("click",function(){var qi=document.getElementById("q"),pi=document.getElementById("pc");S.q=qi.value.trim();S.pc=pi.value.trim();S.go=true;remember();render();});document.querySelector(".top h1").addEventListener("click",function(){S.go=false;S.q="";S.pc="";document.getElementById("q").value="";document.getElementById("pc").value="";document.getElementById("qclear").hidden=true;remember();render();});
-  document.getElementById("list").addEventListener("click",function(e){if(e.target.closest("[data-go]")){S.go=true;remember();render();return;}if(e.target.closest("[data-more]")){S.go=true;remember();S.limit=(S.limit||50)+50;render();return;}if(e.target.closest("[data-clearq]")){var qi=document.getElementById("q");qi.value="";document.getElementById("qclear").hidden=true;S.q="";remember();render();qi.focus();return;}if(e.target.closest("[data-clearpc]")){S.pc="";document.getElementById("pc").value="";remember();render();return;}var a=e.target.closest(".meta.addr");if(a){var x=a.getAttribute("aria-expanded")==="true";a.textContent=a.getAttribute(x?"data-short":"data-full");a.setAttribute("aria-expanded",String(!x));e.stopPropagation();return;}onListClick(e);});
+  document.getElementById("list").addEventListener("click",function(e){if(e.target.closest("[data-print]")){printList();return;}if(e.target.closest("[data-go]")){S.go=true;remember();render();return;}if(e.target.closest("[data-more]")){S.go=true;remember();S.limit=(S.limit||50)+50;render();return;}if(e.target.closest("[data-clearq]")){var qi=document.getElementById("q");qi.value="";document.getElementById("qclear").hidden=true;S.q="";remember();render();qi.focus();return;}if(e.target.closest("[data-clearpc]")){S.pc="";document.getElementById("pc").value="";remember();render();return;}var a=e.target.closest(".meta.addr");if(a){var x=a.getAttribute("aria-expanded")==="true";a.textContent=a.getAttribute(x?"data-short":"data-full");a.setAttribute("aria-expanded",String(!x));e.stopPropagation();return;}onListClick(e);});
   
 }
 function render(){
@@ -654,7 +655,7 @@ function render(){
   var pmText=hasPc&&!okPc?(outward(S.pc).length>=2?"Postcode not recognised – try the first part, e.g. M19 or SK4":""):(okPc?(exactLL()?"Distances are in a straight line from your postcode, not by road.":"Distances are rough, from the middle of the postcode area. Add your full postcode for more accurate distances."):"");
   S.tab="on"; S.free=false; S.drop=false; S.oneoff=false; var sig=[S.q,S.when,S.date,S.area,S.cat,S.pc,S.near].join("|"); if(sig!==S.sig){S.sig=sig;S.limit=50;} if(searching||hasPc)S.go=true;
   document.body.classList.toggle("home",!S.go);
-  var top=S.go?'<div class="restop"><p class="checknote">Times can change. Please check with the organiser before you go.</p><p class="printnote"><strong>No internet?</strong> Print a list. <a href="/how-to-use/">How to use</a></p>'+(pmText?'<span class="pcmsg" aria-live="polite">'+esc(pmText)+'</span>':'')+'</div>':'';
+  var top=S.go?'<div class="restop"><p class="checknote">Times can change. Please check with the organiser before you go.</p><p class="printrow"><button type="button" class="btn printbtn" data-print="1">🖨️ Print this list</button></p>'+(pmText?'<span class="pcmsg" aria-live="polite">'+esc(pmText)+'</span>':'')+'</div>':'';
   if(!S.go){S.limit=10;if(!LOADED){if(homeData()){list.innerHTML=withHome(renderOn);}else list.innerHTML='<p class="loading">Loading activities…</p>';loadData();return;}list.innerHTML=renderOn();return;}
   if(!LOADED){list.innerHTML=top+'<p class="loading">Loading activities…</p>';loadData();return;}
   list.innerHTML = top+(searching?renderSearch():renderOn());
