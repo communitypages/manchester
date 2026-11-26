@@ -209,6 +209,15 @@ def drop_past_dates(info, today):
 def parse_desc(desc):
     out = {}
     d = (desc or '').strip()
+    # "Checked: 9 Nov 2026 (email)" – when the group last confirmed by email; shown as "Checked Nov 2026"
+    m = re.search(r'(?im)^\s*checked:\s*(\d{1,2}\s+[a-z]{3,9}\s+\d{4})[^\n]*$', d)
+    if m:
+        for fmt in ('%d %b %Y', '%d %B %Y'):
+            try:
+                out['checked'] = dt.datetime.strptime(m.group(1), fmt).date().isoformat(); break
+            except ValueError:
+                pass
+        d = (d[:m.start()] + d[m.end():]).strip()
     if re.search(r'(end|finish) time (is a guess|not given)', d, re.I):
         out['endGuess'] = True
         d = re.sub(r'\(?(End|Finish) time (is a guess|not given[^.)]*)\.?\)?', '', d, flags=re.I).strip()
