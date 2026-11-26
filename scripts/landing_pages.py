@@ -216,10 +216,10 @@ def page(path, title, desc, h1, intro, body, nav, crumb, today):
 
 # Share picture (shown when a link is shared on WhatsApp, Facebook etc.): its own one for some pages, otherwise share.png
 SHARE_IMAGES = {
-    '/women/': ('share-women.png', 'Community Pages: women\u2019s groups near you. Free and \u00a35 and under across Greater Manchester.'),
+    '/women/': ('share-women.png', 'Community Pages: women\u2019s activities near you. Free and \u00a35 and under across Greater Manchester.'),
     '/50-plus/': ('share-50-plus.png', 'Community Pages: 50+ activities near you. Free and \u00a35 and under across Greater Manchester.'),
     '/christmas/': ('share-christmas.png', 'Community Pages: Christmas activities near you. Free and \u00a35 and under across Greater Manchester.'),
-    '/kids/': ('share-kids.png', 'Community Pages: things to do with kids near you. Free and \u00a35 and under across Greater Manchester.'),
+    '/kids/': ('share-kids.png', 'Community Pages: kids activities near you. Free and \u00a35 and under across Greater Manchester.'),
 }
 
 
