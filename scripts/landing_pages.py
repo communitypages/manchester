@@ -82,7 +82,7 @@ def is_kids(ev):
     return bool(KIDS.search(t + ' ' + i) or KIDS_TITLE.search(t))
 
 
-# Women's page (/women/): women-only and ladies' groups, girls' groups, menopause cafés, and (by name only) mums' and pregnancy groups
+# Women and girls page (/women/): women-only and ladies' groups, girls' groups, menopause cafés, and (by name only) mums' and pregnancy groups
 WOMEN = re.compile(r"\bwom[ae]n'?s?\b|\bladies\b|\bgirls?'?s?\b|\bwomanleigh\b|\bmenopaus\w*|\bsisterhood\b", re.I)
 # words that only count in the activity's name (too broad in the details, e.g. "for parents and carers")
 WOMEN_TITLE = re.compile(r"\bmums?\b|\bmothers?'?s?\b|\bpregnan\w*", re.I)
@@ -93,6 +93,22 @@ WOMEN_IGNORE = re.compile(r"\b(men|boys) (and|&) (wom[ae]n|ladies|girls)\b|\b(wo
 def is_women(ev):
     t, i = WOMEN_IGNORE.sub(' ', ev['title']), WOMEN_IGNORE.sub(' ', ev.get('info') or '')
     return bool(WOMEN.search(t + ' ' + i) or WOMEN_TITLE.search(t))
+
+
+# Women and girls page: which listings are girls' groups (shown under "Girls"), by name only.
+# Older women's clubs called "The Girl's Club" or "Golden Girls" stay with the women's listings.
+GIRLS = re.compile(r"\bgirls?'?s?\b|\bguides\b|\bbrownies\b|\brainbows\b|\bGFS\b", re.I)
+NOT_GIRLS = re.compile(r"over.?50|\b(50|55|65)\+|age uk|golden girls|\bladies\b|girl'?s club book", re.I)
+# listings for women AND girls together show under both buttons
+BOTH = re.compile(r"\bwom[ae]n'?s? (&|and) girls\b", re.I)
+
+
+def girls_kind(ev):
+    """'both', 'girls' or 'women' for a listing on the Women and girls page."""
+    t = ev['title']
+    if BOTH.search(t): return 'both'
+    if GIRLS.search(t) and not NOT_GIRLS.search(t + ' ' + (ev.get('info') or '')): return 'girls'
+    return 'women'
 
 
 def slug(s): return re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')
@@ -216,7 +232,7 @@ def page(path, title, desc, h1, intro, body, nav, crumb, today):
 
 # Share picture (shown when a link is shared on WhatsApp, Facebook etc.): its own one for some pages, otherwise share.png
 SHARE_IMAGES = {
-    '/women/': ('share-women.png', 'Community Pages: women\u2019s activities near you. Free and \u00a35 and under across Greater Manchester.'),
+    '/women/': ('share-women.png', 'Community Pages: women\u2019s and girls\u2019 activities under \u00a35, near you across Greater Manchester.'),
     '/50-plus/': ('share-50-plus.png', 'Community Pages: 50+ activities near you. Free and \u00a35 and under across Greater Manchester.'),
     '/christmas/': ('share-christmas.png', 'Community Pages: Christmas activities near you. Free and \u00a35 and under across Greater Manchester.'),
     '/kids/': ('share-kids.png', 'Community Pages: kids activities near you. Free and \u00a35 and under across Greater Manchester.'),
@@ -273,7 +289,7 @@ def app_page(folder, path, title, desc, h1, intro, body, only, today):
              f'<p>Updated {today.strftime("%-d %B %Y")}. Please check with the organiser before you go.</p>{body}{browse_links(path)}</div>')
     s = s[:a] + plain + s[b:]
     # tell the search app which activities to show
-    cfg = json.dumps({'text': only.get('text'), 'org': only.get('org'), 'ignore': only.get('ignore'), 'areas': only.get('areas'), 'cat': only.get('cat'), 'title': only.get('title'), 'when': only.get('when'), 'until': only.get('until'), 'h1': e(h1), 'intro': e(only['short'])}, ensure_ascii=False).replace('<', '\\u003c')
+    cfg = json.dumps({'text': only.get('text'), 'org': only.get('org'), 'ignore': only.get('ignore'), 'areas': only.get('areas'), 'cat': only.get('cat'), 'title': only.get('title'), 'when': only.get('when'), 'until': only.get('until'), 'split': only.get('split'), 'h1': e(h1), 'intro': e(only['short'])}, ensure_ascii=False).replace('<', '\\u003c')
     s = s.replace('<script id="app-js">', f'<script>window.CP_ONLY={cfg};</script><script id="app-js">', 1)
     # menu: highlight this page instead of the home page
     s = s.replace('<a class="logo" href="/" aria-current="page">', '<a class="logo" href="/">', 1)
@@ -394,30 +410,38 @@ def build(folder, items, today):
                         'stay and play, baby and toddler groups, storytimes, Bookstart Bear Club, youth groups and family events.',
                         '\n'.join(body), {'cat': KIDS_CAT, 'text': KIDS.pattern, 'title': KIDS_TITLE.pattern, 'ignore': KIDS_IGNORE.pattern,
                                            'short': 'Free and low-cost activities for babies, children, teenagers and families across Greater Manchester.'}, today))
-    # Women's page, grouped by borough
+    # Women and girls page: women's listings grouped by borough, then girls' groups in their own section
     mine = [x for x in items if is_women(x[0])]
+    girls = [x for x in mine if girls_kind(x[0]) != 'women']
+    womens = [x for x in mine if girls_kind(x[0]) != 'girls']
     body, jump = [], []
     for borough in BOROUGHS:
-        here = [x for x in mine if where.get(x[0].get('area')) == borough]
+        here = [x for x in womens if where.get(x[0].get('area')) == borough]
         if not here: continue
         regular = sorted([x for x in here if x[0].get('rule')], key=lambda x: (day_key(x[0]), x[0].get('start', ''), x[0]['title']))
         oneoff = sorted([x for x in here if not x[0].get('rule')], key=lambda x: (x[1], x[0].get('start', ''), x[0]['title']))
         jump.append(f'<a href="#{slug(borough)}">{H.escape(borough)} ({len(here)})</a>')
         body.append(f'<h2 id="{slug(borough)}">{H.escape(borough)}</h2><ul class="ev">' + ''.join(item(*x, True) for x in regular + oneoff) + '</ul>')
+    if girls:
+        regular = sorted([x for x in girls if x[0].get('rule')], key=lambda x: (day_key(x[0]), x[0].get('start', ''), x[0]['title']))
+        oneoff = sorted([x for x in girls if not x[0].get('rule')], key=lambda x: (x[1], x[0].get('start', ''), x[0]['title']))
+        jump.insert(0, f'<a href="#girls">Girls’ groups ({len(girls)})</a>')
+        body.insert(0, '<h2 id="girls">Girls’ groups</h2><ul class="ev">' + ''.join(item(*x, True) for x in regular + oneoff) + '</ul>')
     if jump:
         body.insert(0, '<p class="links"><strong>Jump to:</strong> ' + ' · '.join(jump) + '</p>')
     else:
-        body.append('<p>Nothing is listed here at the moment. Know a free or low-cost group for women? '
+        body.append('<p>Nothing is listed here at the moment. Know a free or low-cost group for women or girls? '
                     '<a href="/add/">Tell us about it</a>.</p>')
     n = len(mine)
     path = '/women/'
-    save(path, app_page(folder, path, f'Women\u2019s groups and activities in {GM} – free and £5 and under | Community Pages',
-                        f'{n} free, donation and £5-or-less activities for women across {GM}: women\u2019s groups, ladies\u2019 exercise and walking '
-                        'football, craft groups, choirs, menopause cafés and mums\u2019 walks. Search by date and postcode. Updated daily.',
-                        f'Women\u2019s activities in {GM}',
-                        f'{n} free, donation-based and £5-or-less groups and activities for women and girls across {GM}: women\u2019s and ladies\u2019 groups, '
-                        'women-only exercise, craft groups, choirs, menopause cafés, and walking groups for mums and pregnant women. '
+    save(path, app_page(folder, path, f'Women’s and girls’ groups and activities in {GM} – free and £5 and under | Community Pages',
+                        f'{n} free, donation and £5-or-less activities for women and girls across {GM}: women’s groups, girls’ groups, '
+                        'ladies’ exercise, craft groups, choirs, menopause cafés and mums’ walks. Search by date and postcode. Updated daily.',
+                        'Women and girls',
+                        f'{n} free, donation-based and £5-or-less groups and activities for women and girls across {GM}: women’s and ladies’ groups, '
+                        'girls’ groups and youth clubs, women-only exercise, craft groups, choirs, menopause cafés, and walking groups for mums and pregnant women. '
                         'Some groups have an age range, shown in the title.',
                         '\n'.join(body), {'text': WOMEN.pattern, 'title': WOMEN_TITLE.pattern, 'ignore': WOMEN_IGNORE.pattern,
-                                           'short': 'Free and low-cost groups and activities for women across Greater Manchester.'}, today))
+                                           'split': {'girls': GIRLS.pattern, 'notGirls': NOT_GIRLS.pattern, 'both': BOTH.pattern},
+                                           'short': 'Free and low-cost groups and activities for women and girls across Greater Manchester.'}, today))
     return written
