@@ -82,6 +82,19 @@ def is_kids(ev):
     return bool(KIDS.search(t + ' ' + i) or KIDS_TITLE.search(t))
 
 
+# Women's page (/women/): women-only and ladies' groups, girls' groups, menopause cafés, and (by name only) mums' and pregnancy groups
+WOMEN = re.compile(r"\bwom[ae]n'?s?\b|\bladies\b|\bgirls?'?s?\b|\bwomanleigh\b|\bmenopaus\w*|\bsisterhood\b", re.I)
+# words that only count in the activity's name (too broad in the details, e.g. "for parents and carers")
+WOMEN_TITLE = re.compile(r"\bmums?\b|\bmothers?'?s?\b|\bpregnan\w*", re.I)
+# mixed groups that mention women, e.g. "open to men and women"
+WOMEN_IGNORE = re.compile(r"\b(men|boys) (and|&) (wom[ae]n|ladies|girls)\b|\b(wom[ae]n|ladies|girls) (and|&) (men|boys)\b", re.I)
+
+
+def is_women(ev):
+    t, i = WOMEN_IGNORE.sub(' ', ev['title']), WOMEN_IGNORE.sub(' ', ev.get('info') or '')
+    return bool(WOMEN.search(t + ' ' + i) or WOMEN_TITLE.search(t))
+
+
 def slug(s): return re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')
 
 
@@ -368,4 +381,30 @@ def build(folder, items, today):
                         'stay and play, baby and toddler groups, storytimes, Bookstart Bear Club, youth groups and family events.',
                         '\n'.join(body), {'cat': KIDS_CAT, 'text': KIDS.pattern, 'title': KIDS_TITLE.pattern, 'ignore': KIDS_IGNORE.pattern,
                                            'short': 'Free and low-cost activities for babies, children, teenagers and families across Greater Manchester.'}, today))
+    # Women's page, grouped by borough
+    mine = [x for x in items if is_women(x[0])]
+    body, jump = [], []
+    for borough in BOROUGHS:
+        here = [x for x in mine if where.get(x[0].get('area')) == borough]
+        if not here: continue
+        regular = sorted([x for x in here if x[0].get('rule')], key=lambda x: (day_key(x[0]), x[0].get('start', ''), x[0]['title']))
+        oneoff = sorted([x for x in here if not x[0].get('rule')], key=lambda x: (x[1], x[0].get('start', ''), x[0]['title']))
+        jump.append(f'<a href="#{slug(borough)}">{H.escape(borough)} ({len(here)})</a>')
+        body.append(f'<h2 id="{slug(borough)}">{H.escape(borough)}</h2><ul class="ev">' + ''.join(item(*x, True) for x in regular + oneoff) + '</ul>')
+    if jump:
+        body.insert(0, '<p class="links"><strong>Jump to:</strong> ' + ' · '.join(jump) + '</p>')
+    else:
+        body.append('<p>Nothing is listed here at the moment. Know a free or low-cost group for women? '
+                    '<a href="/add/">Tell us about it</a>.</p>')
+    n = len(mine)
+    path = '/women/'
+    save(path, app_page(folder, path, f'Women\u2019s groups and activities in {GM} – free and £5 and under | Community Pages',
+                        f'{n} free, donation and £5-or-less activities for women across {GM}: women\u2019s groups, ladies\u2019 exercise and walking '
+                        'football, craft groups, choirs, menopause cafés and mums\u2019 walks. Search by date and postcode. Updated daily.',
+                        f'Women\u2019s activities in {GM}',
+                        f'{n} free, donation-based and £5-or-less groups and activities for women and girls across {GM}: women\u2019s and ladies\u2019 groups, '
+                        'women-only exercise, craft groups, choirs, menopause cafés, and walking groups for mums and pregnant women. '
+                        'Some groups have an age range, shown in the title.',
+                        '\n'.join(body), {'text': WOMEN.pattern, 'title': WOMEN_TITLE.pattern, 'ignore': WOMEN_IGNORE.pattern,
+                                           'short': 'Free and low-cost groups and activities for women across Greater Manchester.'}, today))
     return written

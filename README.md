@@ -16,7 +16,7 @@ To add or change an activity, edit the Google Calendar, not the files here. The 
 |---|---|
 | index.html | Home page (search). Its design and menu are kept; the listings are rebuilt daily. |
 | events.json | All current listings, rebuilt daily |
-| area/, activity/, christmas/, 50-plus/, kids/ | Built automatically from the home page |
+| area/, activity/, christmas/, 50-plus/, kids/, women/ | Built automatically from the home page |
 | about/, add/, how-to-use/, link-workers/, map/, support/, privacy/, terms/ | Pages edited by hand |
 | embed/, for-partners/ | Partner list for licensed websites (for-partners is hidden) |
 | pc/ | Postcode data used for distances |
