@@ -214,6 +214,19 @@ def page(path, title, desc, h1, intro, body, nav, crumb, today):
 '''
 
 
+# Share picture (shown when a link is shared on WhatsApp, Facebook etc.): its own one for some pages, otherwise share.png
+SHARE_IMAGES = {
+    '/women/': ('share-women.png', 'Community Pages: women\u2019s groups near you. Free and \u00a35 and under across Greater Manchester.'),
+    '/50-plus/': ('share-50-plus.png', 'Community Pages: 50+ activities near you. Free and \u00a35 and under across Greater Manchester.'),
+    '/christmas/': ('share-christmas.png', 'Community Pages: Christmas activities near you. Free and \u00a35 and under across Greater Manchester.'),
+    '/kids/': ('share-kids.png', 'Community Pages: things to do with kids near you. Free and \u00a35 and under across Greater Manchester.'),
+}
+
+
+def share_image(path):
+    return SHARE_IMAGES.get(path, ('share.png', 'Community Pages: find activities near you. Local groups across Greater Manchester.'))
+
+
 def app_page(folder, path, title, desc, h1, intro, body, only, today):
     """A copy of the home page (same search box, date, postcode and Search button) that only shows some activities.
     `only` = regular expressions the page uses to pick its activities: 'text' (title or details) and 'org' (organiser)."""
@@ -244,10 +257,10 @@ def app_page(folder, path, title, desc, h1, intro, body, only, today):
 <meta property="og:description" content="{e(desc)}">
 <meta property="og:url" content="{url}">
 <meta property="og:locale" content="en_GB">
-<meta property="og:image" content="https://communitypages.org.uk/share.png">
+<meta property="og:image" content="https://communitypages.org.uk/{share_image(path)[0]}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Community Pages: find activities near you. Local groups across Greater Manchester.">
+<meta property="og:image:alt" content="{e(share_image(path)[1])}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
