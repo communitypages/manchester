@@ -532,6 +532,7 @@ function detailHTML(ev,day){
   if(ev.endGuess) h+='<dt></dt><dd class="note">Finish time not given, so it\'s a guess.</dd>';
   h+='<dt>Price</dt><dd>'+esc(ev.cost==="Low cost"?"£5 and under":(ev.cost||"£5 and under"))+'</dd>';
   if(ev.booking) h+='<dt>Booking</dt><dd>'+esc(ev.booking==="Drop in"?"Just turn up":"Book or confirm first")+'</dd>';
+  if(ev.checked){var cm=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],cp=ev.checked.split("-");h+='<dt>Checked</dt><dd>'+cm[+cp[1]-1]+' '+cp[0]+' <span class="note">(with the group)</span></dd>';}
   if(ev.link) h+='<dt>More info</dt><dd><a href="'+esc(ev.link)+'" target="_blank" rel="noopener">'+esc(ev.link.replace(/^https?:\/\/(www\.)?/,"").slice(0,60))+'</a></dd>';
   h+='</dl>';
   h+=calHTML(ev,day);
