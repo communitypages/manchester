@@ -459,7 +459,7 @@ function downloadIcs(ev,day){
 function calHTML(ev,day){
   day=day||nextDay(ev);
   var lbl=ev.rule?" ("+fmtDate(day)+")":"";
-  return '<div class="calrow"><button type="button" class="btn small" data-ics="'+esc(ev.id+"|"+day)+'">Save to my calendar</button><button type="button" class="btn small" data-share="'+esc(ev.id+"|"+day)+'">Share</button>'+editHTML(ev)+'</div>';
+  return '<div class="calrow"><button type="button" class="btn small" data-ics="'+esc(ev.id+"|"+day)+'">Add to calendar</button><button type="button" class="btn small" data-share="'+esc(ev.id+"|"+day)+'">Share</button>'+editHTML(ev)+'</div>';
 }
 function editHTML(ev){
   var when=ev.rule?ruleText(ev.rule)+", "+timeText(ev):fmtDate(ev.date)+", "+timeText(ev);
